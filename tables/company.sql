@@ -7,5 +7,5 @@ CREATE TABLE company(
     updated    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by VARCHAR(30),
     status     VARCHAR(30),
-    CONSTRAINT PK_ID PRIMARY KEY (id)
+    CONSTRAINT pk_company_id PRIMARY KEY (id)
 );
