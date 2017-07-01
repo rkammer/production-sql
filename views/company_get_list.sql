@@ -16,7 +16,6 @@ CREATE OR REPLACE VIEW company_get_list(
 ) AS
     SELECT company.id                                            AS company_id,
            company.name                                          AS company_name,
-           company.name,                                         AS company_name,
            company.address,                                      AS company_address,
            company.city,                                         AS company_city,
            company.state_code                                    AS company_state_code,

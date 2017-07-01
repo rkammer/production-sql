@@ -10,7 +10,7 @@ CREATE TABLE production(
     updated                  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by               VARCHAR(30),
     status                   VARCHAR(30),
-    CONSTRAINT pk_production_id                PRIMARY KEY (id)
+    CONSTRAINT pk_production_id                PRIMARY KEY (id),
     CONSTRAINT fk_production_network           FOREIGN KEY (network_id)           REFERENCES network           (id),
     CONSTRAINT fk_production_production_length FOREIGN KEY (production_length_id) REFERENCES production_length (id),
     CONSTRAINT fk_production_production_type   FOREIGN KEY (production_type_id)   REFERENCES production_type   (id)
