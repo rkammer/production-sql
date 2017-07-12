@@ -86,3 +86,21 @@ VALUES
 ('SL', 'Sale of Literary Material', 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('OP', 'Option',                    'RKAMMER', 'RKAMMER', 'CREATED'),
 ('',   'Unknown',                   'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO company
+(name, address, city, state_code, phone, website, logo_path, media_company, production_company, payroll_company, created_by, updated_by, status)
+VALUES
+('Media Company I',       NULL, NULL, 'CA', NULL, NULL, NULL, 'T', 'F', 'F', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Production Company I',  NULL, NULL, 'CA', NULL, NULL, NULL, 'F', 'T', 'F', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Production Company II', NULL, NULL, 'CA', NULL, NULL, NULL, 'F', 'T', 'F', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Payroll Company I',     NULL, NULL, 'CA', NULL, NULL, NULL, 'F', 'F', 'T', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Payroll Company II',    NULL, NULL, 'CA', NULL, NULL, NULL, 'F', 'F', 'T', 'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO network
+(name, media_company_id, logo_path, created_by, updated_by, status)
+VALUES
+('Network One',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Network Two',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Network Three', 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');

@@ -1,11 +1,11 @@
 DELIMITER //
 CREATE PROCEDURE network_set_list(
-    INOUT network_id           INTEGER,
-    IN    network_name         VARCHAR(50),
-    IN    network_company_id   INTEGER,
-    IN    network_logo_path    VARCHAR(120),
-    IN    network_created_by   VARCHAR(30),
-    IN    network_updated_by   VARCHAR(30)
+    INOUT network_id                 INTEGER,
+    IN    network_name               VARCHAR(50),
+    IN    network_media_company_id   INTEGER,
+    IN    network_logo_path          VARCHAR(120),
+    IN    network_created_by         VARCHAR(30),
+    IN    network_updated_by         VARCHAR(30)
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -18,7 +18,7 @@ BEGIN
      IF (ROW_EXISTS = 0) THEN
         INSERT INTO network
         (
-            company_id,
+            media_company_id,
             name,
             logo_path,
             created_by,
@@ -27,7 +27,7 @@ BEGIN
         )
         VALUES
         (
-            network_company_id,
+            network_media_company_id,
             network_name,
             network_logo_path,
             network_created_by,
@@ -40,12 +40,12 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE network
-           SET company_id = network_company_id,
-               name       = network_name,
-               logo_path  = network_logo_path,
-               updated_by = network_updated_by,
-               status     = 'UPDATED'
-         WHERE id         = network_id;
+           SET media_company_id = network_media_company_id,
+               name             = network_name,
+               logo_path        = network_logo_path,
+               updated_by       = network_updated_by,
+               status           = 'UPDATED'
+         WHERE id               = network_id;
      END IF;
 
      COMMIT;

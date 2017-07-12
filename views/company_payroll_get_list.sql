@@ -1,0 +1,38 @@
+CREATE OR REPLACE VIEW company_payroll_get_list(
+    company_payroll_id,
+    company_payroll_name,
+    company_payroll_address,
+    company_payroll_city,
+    company_payroll_state_code,
+    company_payroll_state_name,
+    company_payroll_phone,
+    company_payroll_website,
+    company_payroll_logo_path,
+    company_payroll_media_company,
+    company_payroll_production_company,
+    company_payroll_payroll_company,
+    company_payroll_created,
+    company_payroll_created_by,
+    company_payroll_updated,
+    company_payroll_updated_by,
+    company_payroll_status
+) AS
+    SELECT company_payroll.id                                            AS company_payroll_id,
+           company_payroll.name                                          AS company_payroll_name,
+           company_payroll.address                                       AS company_payroll_address,
+           company_payroll.city                                          AS company_payroll_city,
+           company_payroll.state_code                                    AS company_payroll_state_code,
+           state.name                                                    AS company_payroll_state_name,
+           company_payroll.phone                                         AS company_payroll_phone,
+           company_payroll.website                                       AS company_payroll_website,
+           company_payroll.logo_path                                     AS company_payroll_logo_path,
+           company_payroll.media_company                                 AS company_payroll_media_company,
+           company_payroll.production_company                            AS company_payroll_production_company,
+           company_payroll.payroll_company                               AS company_payroll_payroll_company,
+           company_payroll.created                                       AS company_payroll_created,
+           DATE_FORMAT(company_payroll.created_by,'%m/%d/%Y %H:%i:%S')   AS company_payroll_created_by,
+           company_payroll.updated                                       AS company_payroll_updated,
+           DATE_FORMAT(company_payroll.updated_by,'%m/%d/%Y %H:%i:%S')   AS company_payroll_updated_by,
+           company_payroll.status                                        AS company_payroll_status
+      FROM company AS company_payroll LEFT JOIN state AS state on state.code = company_payroll.state_code
+     WHERE company_payroll.payroll_company = 'T';

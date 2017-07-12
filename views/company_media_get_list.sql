@@ -1,0 +1,38 @@
+CREATE OR REPLACE VIEW company_media_get_list(
+    company_media_id,
+    company_media_name,
+    company_media_address,
+    company_media_city,
+    company_media_state_code,
+    company_media_state_name,
+    company_media_phone,
+    company_media_website,
+    company_media_logo_path,
+    company_media_media_company,
+    company_media_production_company,
+    company_media_payroll_company,
+    company_media_created,
+    company_media_created_by,
+    company_media_updated,
+    company_media_updated_by,
+    company_media_status
+) AS
+    SELECT company_media.id                                            AS company_media_id,
+           company_media.name                                          AS company_media_name,
+           company_media.address                                       AS company_media_address,
+           company_media.city                                          AS company_media_city,
+           company_media.state_code                                    AS company_media_state_code,
+           state.name                                                  AS company_media_state_name,
+           company_media.phone                                         AS company_media_phone,
+           company_media.website                                       AS company_media_website,
+           company_media.logo_path                                     AS company_media_logo_path,
+           company_media.media_company                                 AS company_media_media_company,
+           company_media.production_company                            AS company_media_production_company,
+           company_media.payroll_company                               AS company_media_payroll_company,
+           company_media.created                                       AS company_media_created,
+           DATE_FORMAT(company_media.created_by,'%m/%d/%Y %H:%i:%S')   AS company_media_created_by,
+           company_media.updated                                       AS company_media_updated,
+           DATE_FORMAT(company_media.updated_by,'%m/%d/%Y %H:%i:%S')   AS company_media_updated_by,
+           company_media.status                                        AS company_media_status
+      FROM company AS company_media LEFT JOIN state AS state on state.code = company_media.state_code
+     WHERE company_media.media_company = 'T';

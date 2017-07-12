@@ -1,0 +1,38 @@
+CREATE OR REPLACE VIEW company_production_get_list(
+    company_production_id,
+    company_production_name,
+    company_production_address,
+    company_production_city,
+    company_production_state_code,
+    company_production_state_name,
+    company_production_phone,
+    company_production_website,
+    company_production_logo_path,
+    company_production_media_company,
+    company_production_production_company,
+    company_production_payroll_company,
+    company_production_created,
+    company_production_created_by,
+    company_production_updated,
+    company_production_updated_by,
+    company_production_status
+) AS
+    SELECT company_production.id                                            AS company_production_id,
+           company_production.name                                          AS company_production_name,
+           company_production.address                                       AS company_production_address,
+           company_production.city                                          AS company_production_city,
+           company_production.state_code                                    AS company_production_state_code,
+           state.name                                                       AS company_production_state_name,
+           company_production.phone                                         AS company_production_phone,
+           company_production.website                                       AS company_production_website,
+           company_production.logo_path                                     AS company_production_logo_path,
+           company_production.media_company                                 AS company_production_media_company,
+           company_production.production_company                            AS company_production_production_company,
+           company_production.payroll_company                               AS company_production_payroll_company,
+           company_production.created                                       AS company_production_created,
+           DATE_FORMAT(company_production.created_by,'%m/%d/%Y %H:%i:%S')   AS company_production_created_by,
+           company_production.updated                                       AS company_production_updated,
+           DATE_FORMAT(company_production.updated_by,'%m/%d/%Y %H:%i:%S')   AS company_production_updated_by,
+           company_production.status                                        AS company_production_status
+      FROM company AS company_production LEFT JOIN state AS state on state.code = company_production.state_code
+     WHERE company_production.production_company = 'T';
