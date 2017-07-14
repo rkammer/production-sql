@@ -30,6 +30,9 @@ gulp.task('script', function(){
         'tables/season.sql',
         'tables/episode.sql',
 
+        //dga tables
+        'tables/dga_quarter.sql',
+
         'views/company_get_list.sql',
         'views/company_media_get_list.sql',
         'views/company_production_get_list.sql',
@@ -45,6 +48,9 @@ gulp.task('script', function(){
         'views/season_get_list.sql',
         'views/episode_get_list.sql',
 
+        //dga views
+        'views/dga_quarter_get_list.sql',
+
         'procedures/company_set_list.sql',
         'procedures/network_set_list.sql',
         // 'procedures/state_set_list.sql',
@@ -56,6 +62,9 @@ gulp.task('script', function(){
         'procedures/field_work_set_list.sql',
         'procedures/season_set_list.sql',
         'procedures/episode_set_list.sql',
+
+        //dga procedures
+        'procedures/dga_quarter_set_list.sql',
 
         'scripts/01-insert-data.sql'
 

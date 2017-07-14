@@ -104,3 +104,11 @@ VALUES
 ('Network One',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Network Two',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Network Three', 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO dga_quarter
+(name, description, created_by, updated_by, status)
+VALUES
+('1st', 'First Quarter',   'RKAMMER', 'RKAMMER', 'CREATED'),
+('2nd', 'Second Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('3rd', 'Third  Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('4st', 'Fourth Quarter',  'RKAMMER', 'RKAMMER', 'CREATED');

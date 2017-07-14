@@ -29,9 +29,9 @@ CREATE OR REPLACE VIEW company_get_list(
            company.media_company                                 AS company_media_company,
            company.production_company                            AS company_production_company,
            company.payroll_company                               AS company_payroll_company,
-           company.created                                       AS company_created,
-           DATE_FORMAT(company.created_by,'%m/%d/%Y %H:%i:%S')   AS company_created_by,
-           company.updated                                       AS company_updated,
-           DATE_FORMAT(company.updated_by,'%m/%d/%Y %H:%i:%S')   AS company_updated_by,
+           DATE_FORMAT(company.created,'%m/%d/%Y %H:%i:%S')      AS company_created,
+           company.created_by                                    AS company_created_by,
+           DATE_FORMAT(company.updated,'%m/%d/%Y %H:%i:%S')      AS company_updated,
+           company.updated_by                                    AS company_updated_by,
            company.status                                        AS company_status
       FROM company AS company LEFT JOIN state AS state on state.code = company.state_code;

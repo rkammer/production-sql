@@ -29,10 +29,10 @@ CREATE OR REPLACE VIEW company_production_get_list(
            company_production.media_company                                 AS company_production_media_company,
            company_production.production_company                            AS company_production_production_company,
            company_production.payroll_company                               AS company_production_payroll_company,
-           company_production.created                                       AS company_production_created,
-           DATE_FORMAT(company_production.created_by,'%m/%d/%Y %H:%i:%S')   AS company_production_created_by,
-           company_production.updated                                       AS company_production_updated,
-           DATE_FORMAT(company_production.updated_by,'%m/%d/%Y %H:%i:%S')   AS company_production_updated_by,
+           DATE_FORMAT(company_production.created,'%m/%d/%Y %H:%i:%S')      AS company_production_created,
+           company_production.created_by                                    AS company_production_created_by,
+           DATE_FORMAT(company_production.updated,'%m/%d/%Y %H:%i:%S')      AS company_production_updated,
+           company_production.updated_by                                    AS company_production_updated_by,
            company_production.status                                        AS company_production_status
       FROM company AS company_production LEFT JOIN state AS state on state.code = company_production.state_code
      WHERE company_production.production_company = 'T';
