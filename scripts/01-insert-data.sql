@@ -105,10 +105,28 @@ VALUES
 ('Network Two',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Network Three', 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
 
-INSERT INTO dga_quarter
-(name, description, created_by, updated_by, status)
+-- INSERT INTO dga_quarter
+-- (name, description, created_by, updated_by, status)
+-- VALUES
+-- ('1st', 'First Quarter',   'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('2nd', 'Second Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('3rd', 'Third  Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('4st', 'Fourth Quarter',  'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO contact
+(name, address, city, state_code, phone, email, website, picture_path, created_by, updated_by, status)
 VALUES
-('1st', 'First Quarter',   'RKAMMER', 'RKAMMER', 'CREATED'),
-('2nd', 'Second Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
-('3rd', 'Third  Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
-('4st', 'Fourth Quarter',  'RKAMMER', 'RKAMMER', 'CREATED');
+('Person Number One',   '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Person Number Two',   '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_two@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Person Number Three', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_three@level.com', NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Person Number Four',  '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_for@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO company_contact
+(company_id, contact_id, created_by, updated_by, status)
+VALUES
+(1, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(1, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(1, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(1, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 3, 'RKAMMER', 'RKAMMER', 'CREATED');

@@ -1,8 +1,28 @@
 var gulp   = require('gulp');
 var concat = require('gulp-concat');
+var mysql  = require('mysql');
 
-gulp.task('banana', function() {
-    console.log("Banana ii");
+gulp.task('mysql', function() {
+    console.log("connecting to Mysql");
+    var connection = mysql.createConnection({
+        host     : 'xxxxxxxxxxxxxxx',
+        user     : 'xxxxxxxxxxxxxxx',
+        password : 'xxxxxxxxxxxxxxx',
+        database : 'xxxxxxxxxxxxxxx',
+        typeCast : false
+    });
+
+    connection.connect();
+
+    connection.query('SELECT * FROM company', function (error, results, fields) {
+        if (error) throw error;
+        // console.log(fields);
+        console.log('The id:   ', results[0].id);
+        console.log('The name: ', results[0].name);
+    });
+
+    connection.end();
+
 });
 
 gulp.task('script', function(){
@@ -29,9 +49,11 @@ gulp.task('script', function(){
         'tables/field_work.sql',
         'tables/season.sql',
         'tables/episode.sql',
+        'tables/contact.sql',
+        'tables/company_contact.sql',
 
         //dga tables
-        'tables/dga_quarter.sql',
+        // 'tables/dga_quarter.sql',
 
         'views/company_get_list.sql',
         'views/company_media_get_list.sql',
@@ -47,9 +69,12 @@ gulp.task('script', function(){
         'views/field_work_get_list.sql',
         'views/season_get_list.sql',
         'views/episode_get_list.sql',
+        'views/contact_get_list.sql',
+        'views/company_contact_get_list.sql',
+
 
         //dga views
-        'views/dga_quarter_get_list.sql',
+        // 'views/dga_quarter_get_list.sql',
 
         'procedures/company_set_list.sql',
         'procedures/network_set_list.sql',
@@ -62,9 +87,11 @@ gulp.task('script', function(){
         'procedures/field_work_set_list.sql',
         'procedures/season_set_list.sql',
         'procedures/episode_set_list.sql',
+        'procedures/contact_set_list.sql',
+        'procedures/company_contact_set_list.sql',
 
         //dga procedures
-        'procedures/dga_quarter_set_list.sql',
+        // 'procedures/dga_quarter_set_list.sql',
 
         'scripts/01-insert-data.sql'
 
