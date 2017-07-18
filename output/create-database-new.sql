@@ -189,6 +189,38 @@ CREATE TABLE state(
     CONSTRAINT fk_episode_season     FOREIGN KEY (season_id) REFERENCES season (id)
 );
 
+ CREATE TABLE contact(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(100) NOT NULL,
+    address              VARCHAR(100),
+    city                 VARCHAR(100),
+    state_code           CHAR(2),
+    phone                VARCHAR(20),
+    email                VARCHAR(100),
+    website              VARCHAR(100),
+    picture_path         VARCHAR(120),
+    created              TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_contact_id    PRIMARY KEY (id),
+    CONSTRAINT fk_contact_state FOREIGN KEY (state_code) REFERENCES state (CODE)
+);
+
+ CREATE TABLE company_contact(
+    company_id           INTEGER,
+    contact_id           INTEGER,
+    created              TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_company_contact PRIMARY KEY (company_id, contact_id),
+    CONSTRAINT fk_company_contact_company FOREIGN KEY (company_id) REFERENCES company (id),
+    CONSTRAINT fk_company_contact_contact FOREIGN KEY (contact_id) REFERENCES contact (id)
+);
+
  CREATE OR REPLACE VIEW company_get_list(
     company_id,
     company_name,
@@ -678,6 +710,63 @@ SELECT production_state.production_id                                  AS produc
                               INNER JOIN network             AS network            ON network.id             = production.network_id
                               INNER JOIN production_length   AS production_length  ON production_length.id   = production.production_length_id
                               INNER JOIN production_type     AS production_type    ON production_type.id     = production.production_type_id;
+
+ CREATE OR REPLACE VIEW contact_get_list(
+    contact_id,
+    contact_name,
+    contact_address,
+    contact_city,
+    contact_state_code,
+    contact_state_name,
+    contact_phone,
+    contact_email,
+    contact_website,
+    contact_picture_path,
+    contact_created,
+    contact_created_by,
+    contact_updated,
+    contact_updated_by,
+    contact_status
+) AS
+    SELECT contact.id                                             AS contact_id,
+           contact.name                                           AS contact_name,
+           contact.address                                        AS contact_address,
+           contact.city                                           AS contact_city,
+           contact.state_code                                     AS contact_state_code,
+           state.name                                             AS contact_state_name,
+           contact.phone                                          AS contact_phone,
+           contact.email                                          AS contact_email,
+           contact.website                                        AS contact_website,
+           contact.picture_path                                   AS contact_picture_path,
+           DATE_FORMAT(contact.created,'%m/%d/%Y %H:%i:%S')       AS contact_created,
+           contact.created_by                                     AS contact_created_by,
+           DATE_FORMAT(contact.updated,'%m/%d/%Y %H:%i:%S')       AS contact_updated,
+           contact.updated_by                                     AS contact_updated_by,
+           contact.status                                         AS contact_status
+     FROM contact as contact INNER JOIN state AS state ON state.code = contact.state_code;
+
+ CREATE OR REPLACE VIEW company_contact_get_list(
+    company_contact_company_id,
+    company_contact_company_name,
+    company_contact_contact_id,
+    company_contact_contact_name,
+    company_contact_created,
+    company_contact_created_by,
+    company_contact_updated,
+    company_contact_updated_by,
+    company_contact_status
+) AS
+    SELECT company_contact.company_id                                  AS company_contact_company_id,
+           company.name                                                AS company_contact_company_name,
+           company_contact.contact_id                                  AS company_contact_contact_id,
+           contact.name                                                AS company_contact_contact_name,
+           DATE_FORMAT(company_contact.created,'%m/%d/%Y %H:%i:%S')    AS company_contact_created,
+           company_contact.created_by                                  AS company_contact_created_by,
+           DATE_FORMAT(company_contact.updated,'%m/%d/%Y %H:%i:%S')    AS company_contact_updated,
+           company_contact.updated_by                                  AS company_contact_updated_by,
+           company_contact.status                                      AS company_contact_status
+      FROM company_contact AS company_contact INNER JOIN company on company.id = company_contact.company_id
+                                              INNER JOIN contact on contact.id = company_contact.contact_id;
 
  DELIMITER //
 CREATE PROCEDURE company_set_list(
@@ -1333,6 +1422,131 @@ BEGIN
 END //
 DELIMITER ;
 
+ DELIMITER //
+CREATE PROCEDURE contact_set_list(
+    INOUT  contact_id                   INTEGER,
+    IN     contact_name                 VARCHAR(100),
+    IN     contact_address              VARCHAR(100),
+    IN     contact_city                 VARCHAR(100),
+    IN     contact_state_code           CHAR(2),
+    IN     contact_phone                VARCHAR(20),
+    IN     contact_email                VARCHAR(100),
+    IN     contact_website              VARCHAR(100),
+    IN     contact_picture_path         VARCHAR(120),
+    IN     contact_created_by           VARCHAR(30),
+    IN     contact_updated_by           VARCHAR(30),
+    IN     contact_status               VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM contact
+     WHERE id = contact_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO contact
+        (
+            name,
+            address,
+            city,
+            state_code,
+            phone,
+            email,
+            website,
+            picture_path,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            contact_name,
+            contact_address,
+            contact_city,
+            contact_state_code,
+            contact_phone,
+            contact_email,
+            contact_website,
+            contact_picture_path,
+            contact_created_by,
+            contact_updated_by,
+            'CREATED'
+        );
+
+        SET contact_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE contact
+           SET name         = name,
+               address      = address,
+               city         = city,
+               state_code   = state_code,
+               phone        = phone,
+               email        = email,
+               website      = website,
+               picture_path = picture_path,
+               created_by   = created_by,
+               updated_by   = updated_by,
+               status       = 'UPDATED'
+         WHERE id           = contact_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE company_contact_set_list(
+    INOUT company_contact_company_id  INTEGER,
+    IN    company_contact_contact_id  INTEGER,
+    IN    company_contact_created_by  VARCHAR(30),
+    IN    company_contact_updated_by  VARCHAR(30),
+    IN    company_contact_status      VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM company_contact
+     WHERE company_id = company_contact_company_id
+       AND contact_id = company_contact_contact_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO company_contact
+        (
+            company_id,
+            contact_id,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            company_contact_company_id,
+            company_contact_contact_id,
+            company_contact_created_by,
+            company_contact_updated_by,
+            'CREATED'
+        );
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE company_contact
+           SET created_by   =   company_contact_created_by,
+               updated_by   =   company_contact_updated_by,
+               status       =   'UPDATED'
+         WHERE company_id   = company_contact_company_id
+           AND contact_id   = company_contact_contact_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
  INSERT INTO production_type
 (name,created_by,updated_by,status)
 VALUES
@@ -1440,10 +1654,28 @@ VALUES
 ('Network Two',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Network Three', 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
 
-INSERT INTO dga_quarter
-(name, description, created_by, updated_by, status)
+-- INSERT INTO dga_quarter
+-- (name, description, created_by, updated_by, status)
+-- VALUES
+-- ('1st', 'First Quarter',   'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('2nd', 'Second Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('3rd', 'Third  Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('4st', 'Fourth Quarter',  'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO contact
+(name, address, city, state_code, phone, email, website, picture_path, created_by, updated_by, status)
 VALUES
-('1st', 'First Quarter',   'RKAMMER', 'RKAMMER', 'CREATED'),
-('2nd', 'Second Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
-('3rd', 'Third  Quarter',  'RKAMMER', 'RKAMMER', 'CREATED'),
-('4st', 'Fourth Quarter',  'RKAMMER', 'RKAMMER', 'CREATED');
+('Person Number One',   '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Person Number Two',   '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_two@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Person Number Three', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_three@level.com', NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Person Number Four',  '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_for@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO company_contact
+(company_id, contact_id, created_by, updated_by, status)
+VALUES
+(1, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(1, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(1, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(1, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 3, 'RKAMMER', 'RKAMMER', 'CREATED');
