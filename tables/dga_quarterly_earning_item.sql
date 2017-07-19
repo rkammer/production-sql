@@ -14,4 +14,4 @@ CREATE TABLE dga_quarterly_earning_item(
     CONSTRAINT pk_dga_quarterly_earning_item_id                    PRIMARY KEY (id),
     CONSTRAINT fk_dga_quarterly_earning_item_dga_quarterly_earning FOREIGN KEY (dga_quarterly_earning_id) REFERENCES dga_quarterly_earning (id),
     CONSTRAINT fk_dga_quarterly_earning_item_production            FOREIGN KEY (production_id)            REFERENCES production (id)
-);
+) ENGINE = InnoDB;

@@ -15,4 +15,4 @@ CREATE TABLE contact(
     status               VARCHAR(30),
     CONSTRAINT pk_contact_id    PRIMARY KEY (id),
     CONSTRAINT fk_contact_state FOREIGN KEY (state_code) REFERENCES state (CODE)
-);
+) ENGINE = InnoDB;

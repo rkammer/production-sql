@@ -7,4 +7,4 @@ CREATE TABLE state(
     updated_by VARCHAR(30),
     status     VARCHAR(30),
     CONSTRAINT pk_state_code PRIMARY KEY (code)
-);
+) ENGINE = InnoDB;

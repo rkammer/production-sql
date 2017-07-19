@@ -9,4 +9,4 @@ CREATE TABLE company_contact(
     CONSTRAINT pk_company_contact PRIMARY KEY (company_id, contact_id),
     CONSTRAINT fk_company_contact_company FOREIGN KEY (company_id) REFERENCES company (id),
     CONSTRAINT fk_company_contact_contact FOREIGN KEY (contact_id) REFERENCES contact (id)
-);
+) ENGINE = InnoDB;

@@ -21,4 +21,4 @@ CREATE TABLE episode(
     status                           VARCHAR(30),
     CONSTRAINT pk_episode_id         PRIMARY KEY (id),
     CONSTRAINT fk_episode_season     FOREIGN KEY (season_id) REFERENCES season (id)
-);
+) ENGINE = InnoDB;

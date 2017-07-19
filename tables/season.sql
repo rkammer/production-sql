@@ -22,4 +22,4 @@ CREATE TABLE season(
     status                           VARCHAR(30),
     CONSTRAINT pk_season_id          PRIMARY KEY (id),
     CONSTRAINT fk_season_production  FOREIGN KEY (production_id) REFERENCES production (id)
-);
+) ENGINE = InnoDB;

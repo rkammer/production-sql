@@ -51,12 +51,16 @@ gulp.task('script', function(){
         'tables/episode.sql',
         'tables/contact.sql',
         'tables/company_contact.sql',
+        'tables/media_type.sql',
+        'tables/period.sql',
 
         //dga tables
         'tables/dga_quarterly_earning.sql',
         'tables/dga_quarterly_earning_item.sql',
         'tables/dga_weekly_work.sql',
         'tables/dga_weekly_work_item.sql',
+        'tables/dga_director_deal_memo.sql',
+        'tables/dga_employment_data.sql',
 
         'views/company_get_list.sql',
         'views/company_media_get_list.sql',
@@ -74,13 +78,16 @@ gulp.task('script', function(){
         'views/episode_get_list.sql',
         'views/contact_get_list.sql',
         'views/company_contact_get_list.sql',
-
+        'views/media_type_get_list.sql',
+        'views/period_get_list.sql',
 
         //dga views
         'views/dga_quarterly_earning_get_list.sql',
         'views/dga_quarterly_earning_item_get_list.sql',
         'views/dga_weekly_work_get_list.sql',
         'views/dga_weekly_work_item_get_list.sql',
+        'views/dga_director_deal_memo_get_list.sql',
+        'views/dga_employment_data_get_list.sql',
 
         'procedures/company_set_list.sql',
         'procedures/network_set_list.sql',
@@ -103,6 +110,10 @@ gulp.task('script', function(){
         'procedures/dga_weekly_work_set_list.sql',
         'procedures/dga_weekly_work_item_set_list.sql',
         'procedures/dga_weekly_work_set_closed.sql',
+        'procedures/dga_director_deal_memo_set_list.sql',
+        'procedures/dga_director_deal_memo_set_closed.sql',
+        'procedures/dga_employment_data_set_list.sql',
+        'procedures/dga_employment_data_set_closed.sql',
 
         'scripts/01-insert-data.sql'
 

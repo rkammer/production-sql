@@ -7,4 +7,4 @@ CREATE TABLE production_length(
     updated_by VARCHAR(30),
     status     VARCHAR(30),
     CONSTRAINT pk_production_length_id PRIMARY KEY (id)
-);
+) ENGINE = InnoDB;

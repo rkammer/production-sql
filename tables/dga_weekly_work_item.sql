@@ -11,4 +11,4 @@ CREATE TABLE dga_weekly_work_item(
     status                      VARCHAR(30),
     CONSTRAINT pk_dga_weekly_work_item_id              PRIMARY KEY (id),
     CONSTRAINT fk_dga_weekly_work_item_dga_weekly_work FOREIGN KEY (dga_weekly_work_id) REFERENCES dga_weekly_work (id)
-);
+) ENGINE = InnoDB;

@@ -10,4 +10,4 @@ CREATE TABLE network(
     status           VARCHAR(30),
     CONSTRAINT       pk_network_id            PRIMARY KEY (id),
     CONSTRAINT       fk_network_media_company FOREIGN KEY (media_company_id) REFERENCES company (id)
-);
+) ENGINE = InnoDB;

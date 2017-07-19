@@ -130,3 +130,22 @@ VALUES
 (1, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
 (3, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
 (4, 3, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO period
+(name, period, plural, created_by, updated_by, status)
+VALUES
+('day',   'daily',   'days',   'RKAMMER', 'RKAMMER', 'CREATED'),
+('week',  'weekly',  'weeks',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('month', 'monthly', 'months', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('year',  'yearly',  'years',  'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO media_type
+(name, created_by, updated_by, status)
+VALUES
+('Network or FBC', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Non-Network',    'RKAMMER', 'RKAMMER', 'CREATED'),
+('Basic Cable',    'RKAMMER', 'RKAMMER', 'CREATED'),
+('Pay TV',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('Videodisc/Videocassete', 'RKAMMER', 'RKAMMER', 'CREATED');

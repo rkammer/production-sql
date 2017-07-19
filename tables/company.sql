@@ -17,4 +17,4 @@ CREATE TABLE company(
     status               VARCHAR(30),
     CONSTRAINT pk_company_id    PRIMARY KEY (id),
     CONSTRAINT fk_company_state FOREIGN KEY (state_code) REFERENCES state (code)
-);
+) ENGINE = InnoDB;
