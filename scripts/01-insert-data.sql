@@ -78,14 +78,14 @@ VALUES
 ('WY', 'Wyoming',              'RKAMMER', 'RKAMMER', 'CREATED');
 
 
-INSERT INTO deal_type
-(abreviation, name, created_by, updated_by, status)
-VALUES
-('FD', 'Flat Deal',                 'RKAMMER', 'RKAMMER', 'CREATED'),
-('ST', 'Staff',                     'RKAMMER', 'RKAMMER', 'CREATED'),
-('SL', 'Sale of Literary Material', 'RKAMMER', 'RKAMMER', 'CREATED'),
-('OP', 'Option',                    'RKAMMER', 'RKAMMER', 'CREATED'),
-('',   'Unknown',                   'RKAMMER', 'RKAMMER', 'CREATED');
+-- INSERT INTO deal_type
+-- (abreviation, name, created_by, updated_by, status)
+-- VALUES
+-- ('FD', 'Flat Deal',                 'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('ST', 'Staff',                     'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('SL', 'Sale of Literary Material', 'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('OP', 'Option',                    'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('',   'Unknown',                   'RKAMMER', 'RKAMMER', 'CREATED');
 
 
 INSERT INTO company

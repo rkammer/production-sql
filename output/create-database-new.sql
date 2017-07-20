@@ -7,7 +7,7 @@ CREATE TABLE state(
     updated_by VARCHAR(30),
     status     VARCHAR(30),
     CONSTRAINT pk_state_code PRIMARY KEY (code)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE company(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
@@ -28,7 +28,7 @@ CREATE TABLE state(
     status               VARCHAR(30),
     CONSTRAINT pk_company_id    PRIMARY KEY (id),
     CONSTRAINT fk_company_state FOREIGN KEY (state_code) REFERENCES state (code)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE network(
     id               INTEGER     NOT NULL AUTO_INCREMENT,
@@ -42,7 +42,7 @@ CREATE TABLE state(
     status           VARCHAR(30),
     CONSTRAINT       pk_network_id            PRIMARY KEY (id),
     CONSTRAINT       fk_network_media_company FOREIGN KEY (media_company_id) REFERENCES company (id)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE production_length(
     id         INTEGER     NOT NULL AUTO_INCREMENT,
@@ -53,7 +53,7 @@ CREATE TABLE state(
     updated_by VARCHAR(30),
     status     VARCHAR(30),
     CONSTRAINT pk_production_length_id PRIMARY KEY (id)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE production_type(
     id         INTEGER     NOT NULL AUTO_INCREMENT,
@@ -64,7 +64,7 @@ CREATE TABLE state(
     updated_by VARCHAR(30),
     status     VARCHAR(30),
     CONSTRAINT pk_production_type_id PRIMARY KEY (id)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE production(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
@@ -97,46 +97,20 @@ CREATE TABLE state(
     CONSTRAINT fk_production_production_type     FOREIGN KEY (production_type_id)         REFERENCES production_type   (id),
     CONSTRAINT fk_production_production_company  FOREIGN KEY (production_company_id)      REFERENCES company           (id),
     CONSTRAINT fk_production_payroll_company     FOREIGN KEY (payroll_company_id)         REFERENCES company           (id)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE production_state(
     production_id       INTEGER NOT NULL,
-    state_id            INTEGER NOT NULL,
+    state_code          CHAR(2) NOT NULL,
     created             TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     created_by          VARCHAR(30),
     updated             TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by          VARCHAR(30),
     status              VARCHAR(30),
-    CONSTRAINT pk_production_state            PRIMARY KEY (production_id, state_id),
+    CONSTRAINT pk_production_state            PRIMARY KEY (production_id, state_code),
     CONSTRAINT fk_production_state_production FOREIGN KEY (production_id) REFERENCES production (id),
-    CONSTRAINT fk_production_state_state      FOREIGN KEY (state_id)      REFERENCES state      (id)
-);
-
- CREATE TABLE deal_type(
-    id              INTEGER      NOT NULL AUTO_INCREMENT,
-    abreviation     CHAR(2),
-    name            VARCHAR(50),
-    created         TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-    created_by      VARCHAR(30),
-    updated         TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by      VARCHAR(30),
-    status          VARCHAR(30),
-    CONSTRAINT pk_deal_type_id    PRIMARY KEY (id)
-);
-
-
-
- CREATE TABLE field_work(
-    id              INTEGER     NOT NULL AUTO_INCREMENT,
-    abreviation     CHAR(2)     NOT NULL,
-    name            VARCHAR(50) NOT NULL,
-    created         TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-    created_by      VARCHAR(30),
-    updated         TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by      VARCHAR(30),
-    status          VARCHAR(30),
-    CONSTRAINT pk_field_work_id    PRIMARY KEY (id)
-);
+    CONSTRAINT fk_production_state_state      FOREIGN KEY (state_code)    REFERENCES state      (code)
+) ENGINE = InnoDB;
 
  CREATE TABLE season(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
@@ -162,7 +136,7 @@ CREATE TABLE state(
     status                           VARCHAR(30),
     CONSTRAINT pk_season_id          PRIMARY KEY (id),
     CONSTRAINT fk_season_production  FOREIGN KEY (production_id) REFERENCES production (id)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE episode(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
@@ -187,7 +161,7 @@ CREATE TABLE state(
     status                           VARCHAR(30),
     CONSTRAINT pk_episode_id         PRIMARY KEY (id),
     CONSTRAINT fk_episode_season     FOREIGN KEY (season_id) REFERENCES season (id)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE contact(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
@@ -206,7 +180,7 @@ CREATE TABLE state(
     status               VARCHAR(30),
     CONSTRAINT pk_contact_id    PRIMARY KEY (id),
     CONSTRAINT fk_contact_state FOREIGN KEY (state_code) REFERENCES state (CODE)
-);
+) ENGINE = InnoDB;
 
  CREATE TABLE company_contact(
     company_id           INTEGER,
@@ -219,7 +193,285 @@ CREATE TABLE state(
     CONSTRAINT pk_company_contact PRIMARY KEY (company_id, contact_id),
     CONSTRAINT fk_company_contact_company FOREIGN KEY (company_id) REFERENCES company (id),
     CONSTRAINT fk_company_contact_contact FOREIGN KEY (contact_id) REFERENCES contact (id)
-);
+) ENGINE = InnoDB;
+
+ CREATE TABLE media_type(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_media_type_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE period(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50)  NOT NULL,
+    period               VARCHAR(20)  NOT NULL,
+    plural               VARCHAR(30)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_period_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE dga_quarterly_earning(
+    id                   INTEGER     NOT NULL AUTO_INCREMENT,
+    quarter              VARCHAR(10) NOT NULL,
+    year                 YEAR        NOT NULL,
+    company_id           INTEGER     NOT NULL,
+    contact_id           INTEGER     NOT NULL,
+    prepared_by          VARCHAR(50),
+    phone                VARCHAR(20),
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_dga_quarterly_earning_id       PRIMARY KEY (id),
+    CONSTRAINT fk_dga_quarterly_company          FOREIGN KEY (company_id) REFERENCES company (id),
+    CONSTRAINT fk_dga_quarterly_contact          FOREIGN KEY (contact_id) REFERENCES contact (id),
+    CONSTRAINT fk_dga_quarterly_company_contact  FOREIGN KEY (company_id, contact_id) REFERENCES company_contact (company_id, contact_id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE dga_quarterly_earning_item(
+    id                          INTEGER        NOT NULL AUTO_INCREMENT,
+    dga_quarterly_earning_id    INTEGER        NOT NULL,
+    name                        VARCHAR(50)    NOT NULL,
+    ssn                         VARCHAR(11),
+    category                    VARCHAR(30),
+    production_id               INTEGER,
+    earnings                    NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    created                     TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by                  VARCHAR(30),
+    updated                     TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                  VARCHAR(30),
+    status                      VARCHAR(30),
+    CONSTRAINT pk_dga_quarterly_earning_item_id                    PRIMARY KEY (id),
+    CONSTRAINT fk_dga_quarterly_earning_item_dga_quarterly_earning FOREIGN KEY (dga_quarterly_earning_id) REFERENCES dga_quarterly_earning (id),
+    CONSTRAINT fk_dga_quarterly_earning_item_production            FOREIGN KEY (production_id)            REFERENCES production (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE dga_weekly_work(
+    id                   INTEGER     NOT NULL AUTO_INCREMENT,
+    production_id        INT         NOT NULL,
+    episode_id           INT         NOT NULL,
+    company_id           INT         NOT NULL,
+    contact_id           INT         NOT NULL,
+    week_start_date      DATE        NOT NULL,
+    week_end_date        DATE        NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_dga_weekly_work_id               PRIMARY KEY (id),
+    CONSTRAINT fk_dga_weekly_work_production       FOREIGN KEY (production_id)          REFERENCES production (id),
+    CONSTRAINT fk_dga_weekly_work_episode          FOREIGN KEY (episode_id)             REFERENCES episode    (id),
+    CONSTRAINT fk_dga_weekly_work_company          FOREIGN KEY (company_id)             REFERENCES company    (id),
+    CONSTRAINT fk_dga_weekly_work_contact          FOREIGN KEY (contact_id)             REFERENCES contact    (id),
+    CONSTRAINT fk_dga_weekly_work_company_contact  FOREIGN KEY (company_id, contact_id) REFERENCES company_contact (company_id, contact_id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE dga_weekly_work_item(
+    id                          INTEGER      NOT NULL AUTO_INCREMENT,
+    dga_weekly_work_id          INTEGER      NOT NULL,
+    name                        VARCHAR(50)  NOT NULL,
+    ssn                         VARCHAR(11),
+    category                    VARCHAR(30),
+    created                     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by                  VARCHAR(30),
+    updated                     TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                  VARCHAR(30),
+    status                      VARCHAR(30),
+    CONSTRAINT pk_dga_weekly_work_item_id              PRIMARY KEY (id),
+    CONSTRAINT fk_dga_weekly_work_item_dga_weekly_work FOREIGN KEY (dga_weekly_work_id) REFERENCES dga_weekly_work (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE dga_director_deal_memo(
+    id                                        INTEGER        NOT NULL AUTO_INCREMENT,
+    contact_id                                INT            NOT NULL,
+    ssn                                       VARCHAR(11)    NOT NULL,
+    loanout                                   VARCHAR(30)    NOT NULL,
+    fid                                       VARCHAR(30)    NOT NULL,
+    salary                                    NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    salary_period_id                          INT,
+    aditional_time                            NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    aditional_time_period_id                  INT            NOT NULL,
+    start_date                                DATE           NOT NULL,
+    guaranteed                                INT,
+    guaranteed_period_id                      INT,
+    dga_covered                               CHAR(1),
+    addition_terms                            VARCHAR(1024),
+    production_id                             INT            NOT NULL,
+    episode_id                                INT            NOT NULL,
+    episode_specific_length                   VARCHAR(50),
+    segment                                   CHAR(1) DEFAULT 'F',
+    segment_specific_length                   VARCHAR(50),
+    pilot                                     CHAR(1) DEFAULT 'F',
+    dramatic_basic_cable_budget               NUMERIC(15,2),
+    television_license_director               CHAR(1) DEFAULT 'F',
+    television_license_budget                 CHAR(1) DEFAULT 'F',
+    produced_for_network                      CHAR(1) DEFAULT 'F',
+    produced_for_non_network                  CHAR(1) DEFAULT 'F',
+    produced_for_basic_cable                  CHAR(1) DEFAULT 'F',
+    produced_for_pay_tv                       CHAR(1) DEFAULT 'F',
+    produced_for_home_video                   CHAR(1) DEFAULT 'F',
+    show_type_dramatic                        CHAR(1) DEFAULT 'F',
+    show_type_quiz_game                       CHAR(1) DEFAULT 'F',
+    show_type_variety                         CHAR(1) DEFAULT 'F',
+    show_type_sports_event                    CHAR(1) DEFAULT 'F',
+    show_type_sports_event_name               VARCHAR(50),
+    show_type_series_after_02102002           CHAR(1) DEFAULT 'F',
+    show_type_series_prior_02102002           CHAR(1) DEFAULT 'F',
+    show_type_special                         CHAR(1) DEFAULT 'F',
+    show_type_movie_mini_series               CHAR(1) DEFAULT 'F',
+    show_type_strip                           CHAR(1) DEFAULT 'F',
+    show_type_high_budget                     CHAR(1) DEFAULT 'F',
+    show_type_low_budget                      CHAR(1) DEFAULT 'F',
+    show_type_prime_time                      CHAR(1) DEFAULT 'F',
+    show_type_non_prime_time                  CHAR(1) DEFAULT 'F',
+    show_type_live_broadcast                  CHAR(1) DEFAULT 'F',
+    employer_name                             VARCHAR(50),
+    employee_name                             VARCHAR(50) NOT NULL,
+    employee_date                             DATE        NOT NULL,
+    signatory                                 VARCHAR(50) NOT NULL,
+    signatory_by                              VARCHAR(50) NOT NULL,
+    signatory_date                            DATE        NOT NULL,
+    created                                   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by                                VARCHAR(30),
+    updated                                   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                                VARCHAR(30),
+    status                                    VARCHAR(30),
+    CONSTRAINT pk_dga_director_deal_memo_id                     PRIMARY KEY (id),
+    CONSTRAINT fk_dga_director_deal_memo_contact                FOREIGN KEY (contact_id)               REFERENCES contact    (id),
+    CONSTRAINT fk_dga_director_deal_memo_salary_period          FOREIGN KEY (salary_period_id)         REFERENCES period     (id),
+    CONSTRAINT fk_dga_director_deal_memo_aditional_time_period  FOREIGN KEY (aditional_time_period_id) REFERENCES period     (id),
+    CONSTRAINT fk_dga_director_deal_memo_guaranteed_period      FOREIGN KEY (guaranteed_period_id)     REFERENCES period     (id),
+    CONSTRAINT fk_dga_director_deal_memo_production             FOREIGN KEY (production_id)            REFERENCES production (id),
+    CONSTRAINT fk_dga_director_deal_memo_episode                FOREIGN KEY (episode_id)               REFERENCES episode    (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE dga_employment_data(
+    id                                     INTEGER      NOT NULL AUTO_INCREMENT,
+    report_date                            DATE         NOT NULL,
+    prepared_by                            VARCHAR(50)  NOT NULL,
+    quarter                                VARCHAR(10)  NOT NULL,
+    year                                   YEAR         NOT NULL,
+    company_id                             INTEGER      NOT NULL,
+    production_id                          INTEGER      NOT NULL,
+    director_name                          VARCHAR(50),
+    director_first_number                  INTEGER,
+    director_gender                        CHAR(1),
+    director_caucasion                     CHAR(1),
+    director_afro_american                 CHAR(1),
+    director_latino                        CHAR(1),
+    director_native                        CHAR(1),
+    director_unknown                       CHAR(1),
+    unit_production_name                   VARCHAR(50),
+    unit_production_gender                 CHAR(1),
+    unit_production_caucasion              CHAR(1),
+    unit_production_afro_american          CHAR(1),
+    unit_production_latino                 CHAR(1),
+    unit_production_native                 CHAR(1),
+    unit_production_unknown                CHAR(1),
+    first_assistant_name                   VARCHAR(50),
+    first_assistant_gender                 CHAR(1),
+    first_assistant_caucasion              CHAR(1),
+    first_assistant_afro_american          CHAR(1),
+    first_assistant_latino                 CHAR(1),
+    first_assistant_native                 CHAR(1),
+    first_assistant_unknown                CHAR(1),
+    second_assistant_name                  VARCHAR(50),
+    second_assistant_gender                CHAR(1),
+    second_assistant_caucasion             CHAR(1),
+    second_assistant_afro_american         CHAR(1),
+    second_assistant_latino                CHAR(1),
+    second_assistant_native                CHAR(1),
+    second_assistant_unknown               CHAR(1),
+    associate_assistant_name               VARCHAR(50),
+    associate_assistant_gender             CHAR(1),
+    associate_assistant_caucasion          CHAR(1),
+    associate_assistant_afro_american      CHAR(1),
+    associate_assistant_latino             CHAR(1),
+    associate_assistant_native             CHAR(1),
+    associate_assistant_unknown            CHAR(1),
+    stage_assistant_name                   VARCHAR(50),
+    stage_assistant_gender                 CHAR(1),
+    stage_assistant_caucasion              CHAR(1),
+    stage_assistant_afro_american          CHAR(1),
+    stage_assistant_latino                 CHAR(1),
+    stage_assistant_native                 CHAR(1),
+    stage_assistant_unknown                CHAR(1),
+    created                                TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by                             VARCHAR(30),
+    updated                                TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                             VARCHAR(30),
+    status                                 VARCHAR(30),
+    CONSTRAINT pk_dga_employment_data_id         PRIMARY KEY (id),
+    CONSTRAINT fk_dga_employment_data_company    FOREIGN KEY (company_id)    REFERENCES company    (id),
+    CONSTRAINT fk_dga_employment_data_production FOREIGN KEY (production_id) REFERENCES production (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE dga_stage_manager_deal_memo(
+    id                                        INTEGER        NOT NULL AUTO_INCREMENT,
+    contact_id                                INT            NOT NULL,
+    ssn                                       VARCHAR(11)    NOT NULL,
+    loanout                                   VARCHAR(30)    NOT NULL,
+    fid                                       VARCHAR(30)    NOT NULL,
+    salary                                    NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    salary_period_id                          INT,
+    aditional_time                            NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    aditional_time_period_id                  INT            NOT NULL,
+    start_date                                DATE           NOT NULL,
+    guaranteed                                INT,
+    guaranteed_period_id                      INT,
+    production_id                             INT            NOT NULL,
+    episode_id                                INT            NOT NULL,
+    category_associate_director               CHAR(1),
+    category_stage_manager                    CHAR(1),
+    category_aditional_stage_manager          CHAR(1),
+    prime_time_per_week_studio                CHAR(1),
+    prime_time_per_week_location              CHAR(1),
+    prime_time_per_day_studio                 CHAR(1),
+    prime_time_per_day_location               CHAR(1),
+    other_per_week_40                         CHAR(1),
+    other_per_week_flat_60                    CHAR(1),
+    other_per_day_8                           CHAR(1),
+    other_per_day_flat_12                     CHAR(1),
+    project_info_30_lower                     CHAR(1),
+    project_info_30_between                   CHAR(1),
+    project_info_30_higher                    CHAR(1),
+    project_info_60_lower                     CHAR(1),
+    project_info_60_between                   CHAR(1),
+    project_info_60_higher                    CHAR(1),
+    project_info_120_lower                    CHAR(1),
+    project_info_120_between                  CHAR(1),
+    project_info_120_higher                   CHAR(1),
+    other_conditions                          VARCHAR(255),
+    employer_name                             VARCHAR(50),
+    employee_name                             VARCHAR(50) NOT NULL,
+    employee_date                             DATE        NOT NULL,
+    signatory                                 VARCHAR(50) NOT NULL,
+    signatory_by                              VARCHAR(50) NOT NULL,
+    signatory_date                            DATE        NOT NULL,
+    created                                   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by                                VARCHAR(30),
+    updated                                   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                                VARCHAR(30),
+    status                                    VARCHAR(30),
+    CONSTRAINT pk_dga_stage_manager_deal_memo_id                     PRIMARY KEY (id),
+    CONSTRAINT fk_dga_stage_manager_deal_memo_contact                FOREIGN KEY (contact_id)               REFERENCES contact    (id),
+    CONSTRAINT fk_dga_stage_manager_deal_memo_salary_period          FOREIGN KEY (salary_period_id)         REFERENCES period     (id),
+    CONSTRAINT fk_dga_stage_manager_deal_memo_aditional_time_period  FOREIGN KEY (aditional_time_period_id) REFERENCES period     (id),
+    CONSTRAINT fk_dga_stage_manager_deal_memo_guaranteed_period      FOREIGN KEY (guaranteed_period_id)     REFERENCES period     (id),
+    CONSTRAINT fk_dga_stage_manager_deal_memo_production             FOREIGN KEY (production_id)            REFERENCES production (id),
+    CONSTRAINT fk_dga_stage_manager_deal_memo_episode                FOREIGN KEY (episode_id)               REFERENCES episode    (id)
+) ENGINE = InnoDB;
 
  CREATE OR REPLACE VIEW company_get_list(
     company_id,
@@ -522,7 +774,7 @@ CREATE TABLE state(
 
  CREATE OR REPLACE VIEW production_state_get_list(
     production_state_production_id,
-    production_state_state_id,
+    production_state_state_code,
     production_state_created,
     production_state_created_by,
     production_state_updated,
@@ -530,53 +782,13 @@ CREATE TABLE state(
     production_state_status
 ) AS
 SELECT production_state.production_id                                  AS production_state_production_id,
-       production_state.state_id                                       AS production_state_state_id,
+       production_state.state_code                                     AS production_state_state_code,
        DATE_FORMAT(production_state.created,'%m/%d/%Y %H:%i:%S')       AS production_state_created,
        production_state.created_by                                     AS production_state_created_by,
        DATE_FORMAT(production_state.updated,'%m/%d/%Y %H:%i:%S')       AS production_state_updated,
        production_state.updated_by                                     AS production_state_updated_by,
        production_state.status                                         AS production_state_status
   FROM production_state AS production_state;
-
- CREATE OR REPLACE VIEW deal_type_get_list(
-    deal_type_id,
-    deal_type_abreviation,
-    deal_type_name,
-    deal_type_created,
-    deal_type_created_by,
-    deal_type_updated,
-    deal_type_updated_by,
-    deal_type_status
-) AS
-    SELECT deal_type.id                                            AS deal_type_id,
-           deal_type.abreviation                                   AS deal_type_abreviation,
-           deal_type.name                                          AS deal_type_name,
-           DATE_FORMAT(deal_type.created,'%m/%d/%Y %H:%i:%S')      AS deal_type_created,
-           deal_type.created_by                                    AS deal_type_created_by,
-           DATE_FORMAT(deal_type.updated,'%m/%d/%Y %H:%i:%S')      AS deal_type_updated,
-           deal_type.updated_by                                    AS deal_type_updated_by,
-           deal_type.status                                        AS deal_type_status
-      FROM deal_type AS deal_type;
-
- CREATE OR REPLACE VIEW field_work_get_list(
-    field_work_id,
-    field_work_abreviation,
-    field_work_name,
-    field_work_created,
-    field_work_created_by,
-    field_work_updated,
-    field_work_updated_by,
-    field_work_status
-) AS
-    SELECT field_work.id                                            AS field_work_id,
-           field_work.abreviation                                   AS field_work_abreviation,
-           field_work.name                                          AS field_work_name,
-           DATE_FORMAT(field_work.created,'%m/%d/%Y %H:%i:%S')      AS field_work_created,
-           field_work.created_by                                    AS field_work_created_by,
-           DATE_FORMAT(field_work.updated,'%m/%d/%Y %H:%i:%S')      AS field_work_updated,
-           field_work.updated_by                                    AS field_work_updated_by,
-           field_work.status                                        AS field_work_status
-      FROM field_work AS field_work;
 
  CREATE OR REPLACE VIEW season_get_list(
     season_id,
@@ -767,6 +979,638 @@ SELECT production_state.production_id                                  AS produc
            company_contact.status                                      AS company_contact_status
       FROM company_contact AS company_contact INNER JOIN company on company.id = company_contact.company_id
                                               INNER JOIN contact on contact.id = company_contact.contact_id;
+
+ CREATE OR REPLACE VIEW media_type_get_list(
+    media_type_id,
+    media_type_name,
+    media_type_created,
+    media_type_created_by,
+    media_type_updated,
+    media_type_updated_by,
+    media_type_status
+) AS
+    SELECT media_type.id                                            AS media_type_id,
+           media_type.name                                          AS media_type_name,
+           DATE_FORMAT(media_type.created,'%m/%d/%Y %H:%i:%S')      AS media_type_created,
+           media_type.created_by                                    AS media_type_created_by,
+           DATE_FORMAT(media_type.updated,'%m/%d/%Y %H:%i:%S')      AS media_type_updated,
+           media_type.updated_by                                    AS media_type_updated_by,
+           media_type.status                                        AS media_type_status
+      FROM media_type AS media_type;
+
+ CREATE OR REPLACE VIEW period_get_list(
+    period_id,
+    period_name,
+    period_period,
+    period_plural,
+    period_created,
+    period_created_by,
+    period_updated,
+    period_updated_by,
+    period_status
+) AS
+    SELECT period.id                                            AS period_id,
+           period.name                                          AS period_name,
+           period.period                                        AS period_period,
+           period.plural                                        AS period_plural,
+           DATE_FORMAT(period.created,'%m/%d/%Y %H:%i:%S')      AS period_created,
+           period.created_by                                    AS period_created_by,
+           DATE_FORMAT(period.updated,'%m/%d/%Y %H:%i:%S')      AS period_updated,
+           period.updated_by                                    AS period_updated_by,
+           period.status                                        AS period_status
+      FROM period AS period;
+
+ CREATE OR REPLACE VIEW dga_quarterly_earning_get_list(
+    dga_quarterly_earning_id,
+    dga_quarterly_earning_quarter,
+    dga_quarterly_earning_year,
+    dga_quarterly_earning_company_id,
+    dga_quarterly_earning_company_name,
+    dga_quarterly_earning_company_address,
+    dga_quarterly_earning_company_city,
+    dga_quarterly_earning_company_state_code,
+    dga_quarterly_earning_company_state_name,
+    dga_quarterly_earning_company_phone,
+    dga_quarterly_earning_company_website,
+    dga_quarterly_earning_company_logo_path,
+    dga_quarterly_earning_contact_id,
+    dga_quarterly_earning_contact_name,
+    dga_quarterly_earning_prepared_by,
+    dga_quarterly_earning_phone,
+    dga_quarterly_earning_created,
+    dga_quarterly_earning_created_by,
+    dga_quarterly_earning_updated,
+    dga_quarterly_earning_updated_by,
+    dga_quarterly_earning_status
+) AS
+    SELECT dga_quarterly_earning.id                                                       AS dga_quarterly_earning_id,
+           dga_quarterly_earning.quarter                                                  AS dga_quarterly_earning_quarter,
+           dga_quarterly_earning.year                                                     AS dga_quarterly_earning_year,
+           dga_quarterly_earning.company_id                                               AS dga_quarterly_earning_company_id,
+           company.name                                                                   AS dga_quarterly_earning_company_name,
+           company.address                                                                AS dga_quarterly_earning_company_address,
+           company.city                                                                   AS dga_quarterly_earning_company_city,
+           company.state_code                                                             AS dga_quarterly_earning_company_state_code,
+           state.name                                                                     AS dga_quarterly_earning_company_state_name,
+           company.phone                                                                  AS dga_quarterly_earning_company_phone,
+           company.website                                                                AS dga_quarterly_earning_company_website,
+           company.logo_path                                                              AS dga_quarterly_earning_company_logo_path,
+           dga_quarterly_earning.contact_id                                               AS dga_quarterly_earning_contact_id,
+           contact.name                                                                   AS dga_quarterly_earning_contact_name,
+           dga_quarterly_earning.prepared_by                                              AS dga_quarterly_earning_prepared_by,
+           dga_quarterly_earning.phone                                                    AS dga_quarterly_earning_phone,
+           DATE_FORMAT(dga_quarterly_earning.created,'%m/%d/%Y %H:%i:%S')                 AS dga_quarterly_earning_created,
+           dga_quarterly_earning.created_by                                               AS dga_quarterly_earning_created_by,
+           DATE_FORMAT(dga_quarterly_earning.updated,'%m/%d/%Y %H:%i:%S')                 AS dga_quarterly_earning_updated,
+           dga_quarterly_earning.updated_by                                               AS dga_quarterly_earning_updated_by,
+           dga_quarterly_earning.status                                                   AS dga_quarterly_earning_status
+      FROM dga_quarterly_earning AS dga_quarterly_earning INNER JOIN company_contact AS company_contact ON company_contact.company_id = dga_quarterly_earning.company_id
+                                                                                                       AND company_contact.contact_id = dga_quarterly_earning.contact_id
+                                                        INNER JOIN company         AS company           ON company.id                 = company_contact.company_id
+                                                        INNER JOIN contact         AS contact           ON contact.id                 = company_contact.contact_id
+                                                        INNER JOIN state           AS state             ON company.state_code         = state.code;
+
+ CREATE OR REPLACE VIEW dga_quarterly_earning_item_get_list(
+    dga_quarterly_earning_item_id,
+    dga_quarterly_earning_item_dga_quarterly_earning_id,
+    dga_quarterly_earning_item_dga_quarterly_earning_quarterly,
+    dga_quarterly_earning_item_dga_quarterly_earning_year,
+    dga_quarterly_earning_item_name,
+    dga_quarterly_earning_item_ssn,
+    dga_quarterly_earning_item_category,
+    dga_quarterly_earning_item_production_id,
+    dga_quarterly_earning_item_earnings,
+    dga_quarterly_earning_item_created,
+    dga_quarterly_earning_item_created_by,
+    dga_quarterly_earning_item_updated,
+    dga_quarterly_earning_item_updated_by,
+    dga_quarterly_earning_item_status
+) AS
+    SELECT dga_quarterly_earning_item.id                                                         AS  dga_quarterly_earning_item_id,
+           dga_quarterly_earning_item.dga_quarterly_earning_id                                   AS  dga_quarterly_earning_item_dga_quarterly_earning_id,
+           dga_quarterly_earning.quarter                                                         AS  dga_quarterly_earning_item_dga_quarterly_earning_quarterly,
+           dga_quarterly_earning.year                                                            AS  dga_quarterly_earning_item_dga_quarterly_earning_year,
+           dga_quarterly_earning_item.name                                                       AS  dga_quarterly_earning_item_name,
+           dga_quarterly_earning_item.ssn                                                        AS  dga_quarterly_earning_item_ssn,
+           dga_quarterly_earning_item.category                                                   AS  dga_quarterly_earning_item_category,
+           dga_quarterly_earning_item.production_id                                              AS  dga_quarterly_earning_item_production_id,
+           dga_quarterly_earning_item.earnings                                                   AS  dga_quarterly_earning_item_earnings,
+           DATE_FORMAT(dga_quarterly_earning_item.created,'%m/%d/%Y %H:%i:%S')                   AS  dga_quarterly_earning_item_created,
+           dga_quarterly_earning_item.created_by                                                 AS  dga_quarterly_earning_item_created_by,
+           DATE_FORMAT(dga_quarterly_earning_item.updated,'%m/%d/%Y %H:%i:%S')                   AS  dga_quarterly_earning_item_updated,
+           dga_quarterly_earning_item.updated_by                                                 AS  dga_quarterly_earning_item_updated_by,
+           dga_quarterly_earning_item.status                                                     AS  dga_quarterly_earning_item_status
+      FROM dga_quarterly_earning_item AS dga_quarterly_earning_item INNER JOIN dga_quarterly_earning AS dga_quarterly_earning ON dga_quarterly_earning.id = dga_quarterly_earning_item.dga_quarterly_earning_id;
+
+ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
+    dga_weekly_work_id,
+    dga_weekly_work_production_id,
+    dga_weekly_work_production_title,
+    dga_weekly_work_episode_id,
+    dga_weekly_work_episode_title,
+    dga_weekly_work_company_id,
+    dga_weekly_work_company_name,
+    dga_weekly_work_company_address,
+    dga_weekly_work_company_city,
+    dga_weekly_work_company_state_code,
+    dga_weekly_work_company_state_name,
+    dga_weekly_work_company_phone,
+    dga_weekly_work_company_website,
+    dga_weekly_work_company_logo_path,
+    dga_weekly_work_contact_id,
+    dga_weekly_work_contact_name,
+    dga_weekly_work_week_start_date,
+    dga_weekly_work_week_end_date,
+    dga_weekly_work_created,
+    dga_weekly_work_created_by,
+    dga_weekly_work_updated,
+    dga_weekly_work_updated_by,
+    dga_weekly_work_status
+) AS
+    SELECT dga_weekly_work.id                                                     AS dga_weekly_work_id,
+           dga_weekly_work.production_id                                          AS dga_weekly_work_production_id,
+           production.title                                                       AS dga_weekly_work_production_title,
+           dga_weekly_work.episode_id                                             AS dga_weekly_work_episode_id,
+           episode.title                                                          AS dga_weekly_work_episode_title,
+           dga_weekly_work.company_id                                             AS dga_weekly_work_company_id,
+           company.name                                                           AS dga_weekly_work_company_name,
+           company.address                                                        AS dga_weekly_work_company_address,
+           company.city                                                           AS dga_weekly_work_company_city,
+           company.state_code                                                     AS dga_weekly_work_company_state_code,
+           state.name                                                             AS dga_weekly_work_company_state_name,
+           company.phone                                                          AS dga_weekly_work_company_phone,
+           company.website                                                        AS dga_weekly_work_company_website,
+           company.logo_path                                                      AS dga_weekly_work_company_logo_path,
+           dga_weekly_work.contact_id                                             AS dga_weekly_work_contact_id,
+           contact.name                                                           AS dga_weekly_work_contact_name,
+           DATE_FORMAT(dga_weekly_work.week_start_date, '%m/%d/%Y')               AS dga_weekly_work_week_start_date,
+           DATE_FORMAT(dga_weekly_work.week_end_date,   '%m/%d/%Y')               AS dga_weekly_work_week_end_date,
+           DATE_FORMAT(dga_weekly_work.created,         '%m/%d/%Y %H:%i:%S')      AS dga_weekly_work_created,
+           dga_weekly_work.created_by                                             AS dga_weekly_work_created_by,
+           DATE_FORMAT(dga_weekly_work.updated,         '%m/%d/%Y %H:%i:%S')      AS dga_weekly_work_updated,
+           dga_weekly_work.updated_by                                             AS dga_weekly_work_updated_by,
+           dga_weekly_work.status                                                 AS dga_weekly_work_status
+      FROM dga_weekly_work AS dga_weekly_work INNER JOIN production AS production ON production.id       = dga_weekly_work.production_id
+                                              INNER JOIN episode    AS episode    ON episode.id          = dga_weekly_work.episode_id
+                                              INNER JOIN company    AS company    ON company.id          = dga_weekly_work.company_id
+                                              INNER JOIN contact    AS contact    ON contact.id          = dga_weekly_work.contact_id
+                                              INNER JOIN state      AS state      ON company.state_code  = state.code;
+
+ CREATE OR REPLACE VIEW dga_weekly_work_item_get_list(
+    dga_weekly_work_item_id,
+    dga_weekly_work_item_dga_weekly_work_id,
+    dga_weekly_work_item_name,
+    dga_weekly_work_item_ssn,
+    dga_weekly_work_item_category,
+    dga_weekly_work_item_created,
+    dga_weekly_work_item_created_by,
+    dga_weekly_work_item_updated,
+    dga_weekly_work_item_updated_by,
+    dga_weekly_work_item_status
+) AS
+    SELECT dga_weekly_work_item.id                                            AS dga_weekly_work_item_id,
+           dga_weekly_work_id                                                 AS dga_weekly_work_item_dga_weekly_work_id,
+           name                                                               AS dga_weekly_work_item_name,
+           ssn                                                                AS dga_weekly_work_item_ssn,
+           category                                                           AS dga_weekly_work_item_category,
+           DATE_FORMAT(dga_weekly_work_item.created,'%m/%d/%Y %H:%i:%S')      AS dga_weekly_work_item_created,
+           dga_weekly_work_item.created_by                                    AS dga_weekly_work_item_created_by,
+           DATE_FORMAT(dga_weekly_work_item.updated,'%m/%d/%Y %H:%i:%S')      AS dga_weekly_work_item_updated,
+           dga_weekly_work_item.updated_by                                    AS dga_weekly_work_item_updated_by,
+           dga_weekly_work_item.status                                        AS dga_weekly_work_item_status
+      FROM dga_weekly_work_item AS dga_weekly_work_item;
+
+ CREATE OR REPLACE VIEW dga_director_deal_memo_get_list(
+    dga_director_deal_memo_id,
+    dga_director_deal_memo_contact_id,
+    dga_director_deal_memo_contact_address,
+    dga_director_deal_memo_contact_city,
+    dga_director_deal_memo_contact_state_code,
+    dga_director_deal_memo_contact_state_name,
+    dga_director_deal_memo_contact_phone,
+    dga_director_deal_memo_contact_email,
+    dga_director_deal_memo_contact_name,
+    dga_director_deal_memo_ssn,
+    dga_director_deal_memo_loanout,
+    dga_director_deal_memo_fid,
+    dga_director_deal_memo_salary,
+    dga_director_deal_memo_salary_period_id,
+    dga_director_deal_memo_salary_period_name,
+    dga_director_deal_memo_salary_period_period,
+    dga_director_deal_memo_salary_period_plural,
+    dga_director_deal_memo_aditional_time,
+    dga_director_deal_memo_aditional_time_period_id,
+    dga_director_deal_memo_aditional_time_period_name,
+    dga_director_deal_memo_aditional_time_period_period,
+    dga_director_deal_memo_aditional_time_period_plural,
+    dga_director_deal_memo_start_date,
+    dga_director_deal_memo_guaranteed,
+    dga_director_deal_memo_guaranteed_period_id,
+    dga_director_deal_memo_guaranteed_period_name,
+    dga_director_deal_memo_guaranteed_period_period,
+    dga_director_deal_memo_guaranteed_period_plural,
+    dga_director_deal_memo_dga_covered,
+    dga_director_deal_memo_addition_terms,
+    dga_director_deal_memo_production_id,
+    dga_director_deal_memo_production_title,
+    dga_director_deal_memo_episode_id,
+    dga_director_deal_memo_episode_title,
+    dga_director_deal_memo_episode_episode_number,
+    dga_director_deal_memo_episode_episode_abreviation,
+    dga_director_deal_memo_episode_specific_length,
+    dga_director_deal_memo_segment,
+    dga_director_deal_memo_segment_specific_length,
+    dga_director_deal_memo_pilot,
+    dga_director_deal_memo_dramatic_basic_cable_budget,
+    dga_director_deal_memo_television_license_director,
+    dga_director_deal_memo_television_license_budget,
+    dga_director_deal_memo_produced_for_network,
+    dga_director_deal_memo_produced_for_non_network,
+    dga_director_deal_memo_produced_for_basic_cable,
+    dga_director_deal_memo_produced_for_pay_tv,
+    dga_director_deal_memo_produced_for_home_video,
+    dga_director_deal_memo_show_type_dramatic,
+    dga_director_deal_memo_show_type_quiz_game,
+    dga_director_deal_memo_show_type_variety,
+    dga_director_deal_memo_show_type_sports_event,
+    dga_director_deal_memo_show_type_sports_event_name,
+    dga_director_deal_memo_show_type_series_after_02102002,
+    dga_director_deal_memo_show_type_series_prior_02102002,
+    dga_director_deal_memo_show_type_special,
+    dga_director_deal_memo_show_type_movie_mini_series,
+    dga_director_deal_memo_show_type_strip,
+    dga_director_deal_memo_show_type_high_budget,
+    dga_director_deal_memo_show_type_low_budget,
+    dga_director_deal_memo_show_type_prime_time,
+    dga_director_deal_memo_show_type_non_prime_time,
+    dga_director_deal_memo_show_type_live_broadcast,
+    dga_director_deal_memo_employer_name,
+    dga_director_deal_memo_employee_name,
+    dga_director_deal_memo_employee_date,
+    dga_director_deal_memo_signatory,
+    dga_director_deal_memo_signatory_by,
+    dga_director_deal_memo_signatory_date,
+    dga_director_deal_memo_created,
+    dga_director_deal_memo_created_by,
+    dga_director_deal_memo_updated,
+    dga_director_deal_memo_updated_by,
+    dga_director_deal_memo_status
+) AS
+    SELECT dga_director_deal_memo.id                                                                AS dga_director_deal_memo_id,
+           dga_director_deal_memo.contact_id                                                        AS dga_director_deal_memo_contact_id,
+           contact.name                                                                             AS dga_director_deal_memo_contact_name,
+           contact.address                                                                          AS dga_director_deal_memo_contact_address,
+           contact.city                                                                             AS dga_director_deal_memo_contact_city,
+           contact.state_code                                                                       AS dga_director_deal_memo_contact_state_code,
+           state.name                                                                               AS dga_director_deal_memo_contact_state_name,
+           contact.phone                                                                            AS dga_director_deal_memo_contact_phone,
+           contact.email                                                                            AS dga_director_deal_memo_contact_email,
+           dga_director_deal_memo.ssn                                                               AS dga_director_deal_memo_ssn,
+           dga_director_deal_memo.loanout                                                           AS dga_director_deal_memo_loanout,
+           dga_director_deal_memo.fid                                                               AS dga_director_deal_memo_fid,
+           dga_director_deal_memo.salary                                                            AS dga_director_deal_memo_salary,
+           dga_director_deal_memo.salary_period_id                                                  AS dga_director_deal_memo_salary_period_id,
+           salary_period.name                                                                       AS dga_director_deal_memo_salary_period_name,
+           salary_period.period                                                                     AS dga_director_deal_memo_salary_period_period,
+           salary_period.plural                                                                     AS dga_director_deal_memo_salary_period_plural,
+           dga_director_deal_memo.aditional_time                                                    AS dga_director_deal_memo_aditional_time,
+           dga_director_deal_memo.aditional_time_period_id                                          AS dga_director_deal_memo_aditional_time_period_id,
+           aditional_time_period.name                                                               AS dga_director_deal_memo_aditional_time_period_name,
+           aditional_time_period.period                                                             AS dga_director_deal_memo_aditional_time_period_period,
+           aditional_time_period.plural                                                             AS dga_director_deal_memo_aditional_time_period_plural,
+           DATE_FORMAT(dga_director_deal_memo.start_date,'%m/%d/%Y %H:%i:%S')                       AS dga_director_deal_memo_start_date,
+           dga_director_deal_memo.guaranteed                                                        AS dga_director_deal_memo_guaranteed,
+           dga_director_deal_memo.guaranteed_period_id                                              AS dga_director_deal_memo_guaranteed_period_id,
+           guaranteed_period.name                                                                   AS dga_director_deal_memo_guaranteed_period_name,
+           guaranteed_period.period                                                                 AS dga_director_deal_memo_guaranteed_period_period,
+           guaranteed_period.plural                                                                 AS dga_director_deal_memo_guaranteed_period_plural,
+           dga_director_deal_memo.dga_covered                                                       AS dga_director_deal_memo_dga_covered,
+           dga_director_deal_memo.addition_terms                                                    AS dga_director_deal_memo_addition_terms,
+           dga_director_deal_memo.production_id                                                     AS dga_director_deal_memo_production_id,
+           production.title                                                                         AS dga_director_deal_memo_production_title,
+           dga_director_deal_memo.episode_id                                                        AS dga_director_deal_memo_episode_id,
+           episode.title                                                                            AS dga_director_deal_memo_episode_title,
+           LPAD(episode.episode_number, 2, 0)                                                       AS dga_director_deal_memo_episode_episode_number,
+           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))   AS dga_director_deal_memo_episode_episode_abreviation,
+           dga_director_deal_memo.episode_specific_length                                           AS dga_director_deal_memo_episode_specific_length,
+           dga_director_deal_memo.segment                                                           AS dga_director_deal_memo_segment,
+           dga_director_deal_memo.segment_specific_length                                           AS dga_director_deal_memo_segment_specific_length,
+           dga_director_deal_memo.pilot                                                             AS dga_director_deal_memo_pilot,
+           dga_director_deal_memo.dramatic_basic_cable_budget                                       AS dga_director_deal_memo_dramatic_basic_cable_budget,
+           dga_director_deal_memo.television_license_director                                       AS dga_director_deal_memo_television_license_director,
+           dga_director_deal_memo.television_license_budget                                         AS dga_director_deal_memo_television_license_budget,
+           dga_director_deal_memo.produced_for_network                                              AS dga_director_deal_memo_produced_for_network,
+           dga_director_deal_memo.produced_for_non_network                                          AS dga_director_deal_memo_produced_for_non_network,
+           dga_director_deal_memo.produced_for_basic_cable                                          AS dga_director_deal_memo_produced_for_basic_cable,
+           dga_director_deal_memo.produced_for_pay_tv                                               AS dga_director_deal_memo_produced_for_pay_tv,
+           dga_director_deal_memo.produced_for_home_video                                           AS dga_director_deal_memo_produced_for_home_video,
+           dga_director_deal_memo.show_type_dramatic                                                AS dga_director_deal_memo_show_type_dramatic,
+           dga_director_deal_memo.show_type_quiz_game                                               AS dga_director_deal_memo_show_type_quiz_game,
+           dga_director_deal_memo.show_type_variety                                                 AS dga_director_deal_memo_show_type_variety,
+           dga_director_deal_memo.show_type_sports_event                                            AS dga_director_deal_memo_show_type_sports_event,
+           dga_director_deal_memo.show_type_sports_event_name                                       AS dga_director_deal_memo_show_type_sports_event_name,
+           dga_director_deal_memo.show_type_series_after_02102002                                   AS dga_director_deal_memo_show_type_series_after_02102002,
+           dga_director_deal_memo.show_type_series_prior_02102002                                   AS dga_director_deal_memo_show_type_series_prior_02102002,
+           dga_director_deal_memo.show_type_special                                                 AS dga_director_deal_memo_show_type_special,
+           dga_director_deal_memo.show_type_movie_mini_series                                       AS dga_director_deal_memo_show_type_movie_mini_series,
+           dga_director_deal_memo.show_type_strip                                                   AS dga_director_deal_memo_show_type_strip,
+           dga_director_deal_memo.show_type_high_budget                                             AS dga_director_deal_memo_show_type_high_budget,
+           dga_director_deal_memo.show_type_low_budget                                              AS dga_director_deal_memo_show_type_low_budget,
+           dga_director_deal_memo.show_type_prime_time                                              AS dga_director_deal_memo_show_type_prime_time,
+           dga_director_deal_memo.show_type_non_prime_time                                          AS dga_director_deal_memo_show_type_non_prime_time,
+           dga_director_deal_memo.show_type_live_broadcast                                          AS dga_director_deal_memo_show_type_live_broadcast,
+           dga_director_deal_memo.employer_name                                                     AS dga_director_deal_memo_employer_name,
+           dga_director_deal_memo.employee_name                                                     AS dga_director_deal_memo_employee_name,
+           dga_director_deal_memo.employee_date                                                     AS dga_director_deal_memo_employee_date,
+           dga_director_deal_memo.signatory                                                         AS dga_director_deal_memo_signatory,
+           dga_director_deal_memo.signatory_by                                                      AS dga_director_deal_memo_signatory_by,
+           DATE_FORMAT(dga_director_deal_memo.signatory_date,'%m/%d/%Y')                            AS dga_director_deal_memo_signatory_date,
+           DATE_FORMAT(dga_director_deal_memo.created,'%m/%d/%Y %H:%i:%S')                          AS dga_director_deal_memo_created,
+           dga_director_deal_memo.created_by                                                        AS dga_director_deal_memo_created_by,
+           DATE_FORMAT(dga_director_deal_memo.updated,'%m/%d/%Y %H:%i:%S')                          AS dga_director_deal_memo_updated,
+           dga_director_deal_memo.updated_by                                                        AS dga_director_deal_memo_updated_by,
+           dga_director_deal_memo.status                                                            AS dga_director_deal_memo_status
+      FROM dga_director_deal_memo AS dga_director_deal_memo
+                                                            INNER JOIN contact    AS contact               ON contact.id               = dga_director_deal_memo.contact_id
+                                                            LEFT  JOIN state      AS state                 ON state.code               = contact.state_code
+                                                            LEFT  JOIN period     AS salary_period         ON salary_period.id         = dga_director_deal_memo.salary_period_id
+                                                            LEFT  JOIN period     AS aditional_time_period ON aditional_time_period.id = dga_director_deal_memo.aditional_time_period_id
+                                                            LEFT  JOIN period     AS guaranteed_period     ON guaranteed_period.id     = dga_director_deal_memo.guaranteed_period_id
+                                                            INNER JOIN production AS production            ON production.id            = dga_director_deal_memo.production_id
+                                                            INNER JOIN episode    AS episode               ON episode.id               = dga_director_deal_memo.episode_id
+                                                            INNER JOIN season     AS season                ON episode.season_id        = season.id;
+
+ CREATE OR REPLACE VIEW dga_employment_data_get_list(
+    dga_employment_data_id,
+    dga_employment_data_report_date,
+    dga_employment_data_prepared_by,
+    dga_employment_data_quarter,
+    dga_employment_data_year,
+    dga_employment_data_company_id,
+    dga_employment_data_company_name,
+    dga_employment_data_company_address,
+    dga_employment_data_company_city,
+    dga_employment_data_company_state_code,
+    dga_employment_data_company_phone,
+    dga_employment_data_company_website,
+    dga_employment_data_production_id,
+    dga_employment_data_production_title,
+    dga_employment_data_director_name,
+    dga_employment_data_director_first_number,
+    dga_employment_data_director_gender,
+    dga_employment_data_director_caucasion,
+    dga_employment_data_director_afro_american,
+    dga_employment_data_director_latino,
+    dga_employment_data_director_native,
+    dga_employment_data_director_unknown,
+    dga_employment_data_unit_production_name,
+    dga_employment_data_unit_production_gender,
+    dga_employment_data_unit_production_caucasion,
+    dga_employment_data_unit_production_afro_american,
+    dga_employment_data_unit_production_latino,
+    dga_employment_data_unit_production_native,
+    dga_employment_data_unit_production_unknown,
+    dga_employment_data_first_assistant_name,
+    dga_employment_data_first_assistant_gender,
+    dga_employment_data_first_assistant_caucasion,
+    dga_employment_data_first_assistant_afro_american,
+    dga_employment_data_first_assistant_latino,
+    dga_employment_data_first_assistant_native,
+    dga_employment_data_first_assistant_unknown,
+    dga_employment_data_second_assistant_name,
+    dga_employment_data_second_assistant_gender,
+    dga_employment_data_second_assistant_caucasion,
+    dga_employment_data_second_assistant_afro_american,
+    dga_employment_data_second_assistant_latino,
+    dga_employment_data_second_assistant_native,
+    dga_employment_data_second_assistant_unknown,
+    dga_employment_data_associate_assistant_name,
+    dga_employment_data_associate_assistant_gender,
+    dga_employment_data_associate_assistant_caucasion,
+    dga_employment_data_associate_assistant_afro_american,
+    dga_employment_data_associate_assistant_latino,
+    dga_employment_data_associate_assistant_native,
+    dga_employment_data_associate_assistant_unknown,
+    dga_employment_data_stage_assistant_name,
+    dga_employment_data_stage_assistant_gender,
+    dga_employment_data_stage_assistant_caucasion,
+    dga_employment_data_stage_assistant_afro_american,
+    dga_employment_data_stage_assistant_latino,
+    dga_employment_data_stage_assistant_native,
+    dga_employment_data_stage_assistant_unknown,
+    dga_employment_data_created,
+    dga_employment_data_created_by,
+    dga_employment_data_updated,
+    dga_employment_data_updated_by,
+    dga_employment_data_status
+) AS
+    SELECT dga_employment_data.id                                                             AS dga_employment_data_id,
+           dga_employment_data.report_date                                                    AS dga_employment_data_report_date,
+           dga_employment_data.prepared_by                                                    AS dga_employment_data_prepared_by,
+           dga_employment_data.quarter                                                        AS dga_employment_data_quarter,
+           dga_employment_data.year                                                           AS dga_employment_data_year,
+           dga_employment_data.company_id                                                     AS dga_employment_data_company_id,
+           company.name                                                                       AS dga_employment_data_company_name,
+           company.address                                                                    AS dga_employment_data_company_address,
+           company.city                                                                       AS dga_employment_data_company_city,
+           company.state_code                                                                 AS dga_employment_data_company_state_code,
+           company.phone                                                                      AS dga_employment_data_company_phone,
+           company.website                                                                    AS dga_employment_data_company_website,
+           dga_employment_data.production_id                                                  AS dga_employment_data_production_id,
+           production.title                                                                   AS dga_employment_data_production_title,
+           dga_employment_data.director_name                                                  AS dga_employment_data_director_name,
+           dga_employment_data.director_first_number                                          AS dga_employment_data_director_first_number,
+           dga_employment_data.director_gender                                                AS dga_employment_data_director_gender,
+           dga_employment_data.director_caucasion                                             AS dga_employment_data_director_caucasion,
+           dga_employment_data.director_afro_american                                         AS dga_employment_data_director_afro_american,
+           dga_employment_data.director_latino                                                AS dga_employment_data_director_latino,
+           dga_employment_data.director_native                                                AS dga_employment_data_director_native,
+           dga_employment_data.director_unknown                                               AS dga_employment_data_director_unknown,
+           dga_employment_data.unit_production_name                                           AS dga_employment_data_unit_production_name,
+           dga_employment_data.unit_production_gender                                         AS dga_employment_data_unit_production_gender,
+           dga_employment_data.unit_production_caucasion                                      AS dga_employment_data_unit_production_caucasion,
+           dga_employment_data.unit_production_afro_american                                  AS dga_employment_data_unit_production_afro_american,
+           dga_employment_data.unit_production_latino                                         AS dga_employment_data_unit_production_latino,
+           dga_employment_data.unit_production_native                                         AS dga_employment_data_unit_production_native,
+           dga_employment_data.unit_production_unknown                                        AS dga_employment_data_unit_production_unknown,
+           dga_employment_data.first_assistant_name                                           AS dga_employment_data_first_assistant_name,
+           dga_employment_data.first_assistant_gender                                         AS dga_employment_data_first_assistant_gender,
+           dga_employment_data.first_assistant_caucasion                                      AS dga_employment_data_first_assistant_caucasion,
+           dga_employment_data.first_assistant_afro_american                                  AS dga_employment_data_first_assistant_afro_american,
+           dga_employment_data.first_assistant_latino                                         AS dga_employment_data_first_assistant_latino,
+           dga_employment_data.first_assistant_native                                         AS dga_employment_data_first_assistant_native,
+           dga_employment_data.first_assistant_unknown                                        AS dga_employment_data_first_assistant_unknown,
+           dga_employment_data.second_assistant_name                                          AS dga_employment_data_second_assistant_name,
+           dga_employment_data.second_assistant_gender                                        AS dga_employment_data_second_assistant_gender,
+           dga_employment_data.second_assistant_caucasion                                     AS dga_employment_data_second_assistant_caucasion,
+           dga_employment_data.second_assistant_afro_american                                 AS dga_employment_data_second_assistant_afro_american,
+           dga_employment_data.second_assistant_latino                                        AS dga_employment_data_second_assistant_latino,
+           dga_employment_data.second_assistant_native                                        AS dga_employment_data_second_assistant_native,
+           dga_employment_data.second_assistant_unknown                                       AS dga_employment_data_second_assistant_unknown,
+           dga_employment_data.associate_assistant_name                                       AS dga_employment_data_associate_assistant_name,
+           dga_employment_data.associate_assistant_gender                                     AS dga_employment_data_associate_assistant_gender,
+           dga_employment_data.associate_assistant_caucasion                                  AS dga_employment_data_associate_assistant_caucasion,
+           dga_employment_data.associate_assistant_afro_american                              AS dga_employment_data_associate_assistant_afro_american,
+           dga_employment_data.associate_assistant_latino                                     AS dga_employment_data_associate_assistant_latino,
+           dga_employment_data.associate_assistant_native                                     AS dga_employment_data_associate_assistant_native,
+           dga_employment_data.associate_assistant_unknown                                    AS dga_employment_data_associate_assistant_unknown,
+           dga_employment_data.stage_assistant_name                                           AS dga_employment_data_stage_assistant_name,
+           dga_employment_data.stage_assistant_gender                                         AS dga_employment_data_stage_assistant_gender,
+           dga_employment_data.stage_assistant_caucasion                                      AS dga_employment_data_stage_assistant_caucasion,
+           dga_employment_data.stage_assistant_afro_american                                  AS dga_employment_data_stage_assistant_afro_american,
+           dga_employment_data.stage_assistant_latino                                         AS dga_employment_data_stage_assistant_latino,
+           dga_employment_data.stage_assistant_native                                         AS dga_employment_data_stage_assistant_native,
+           dga_employment_data.stage_assistant_unknown                                        AS dga_employment_data_stage_assistant_unknown,
+           DATE_FORMAT(dga_employment_data.created,'%m/%d/%Y %H:%i:%S')                       AS dga_employment_data_created,
+           dga_employment_data.created_by                                                     AS dga_employment_data_created_by,
+           DATE_FORMAT(dga_employment_data.updated,'%m/%d/%Y %H:%i:%S')                       AS dga_employment_data_updated,
+           dga_employment_data.updated_by                                                     AS dga_employment_data_updated_by,
+           dga_employment_data.status                                                         AS dga_employment_data_status
+      FROM dga_employment_data AS dga_employment_data INNER JOIN company    AS company    ON company.id    =  dga_employment_data.company_id
+                                                      INNER JOIN production AS production ON production.id = dga_employment_data.production_id;
+
+ CREATE OR REPLACE VIEW dga_stage_manager_deal_memo_get_list(
+    dga_stage_manager_deal_memo_id,
+    dga_stage_manager_deal_memo_contact_id,
+    dga_stage_manager_memo_contact_name,
+    dga_stage_manager_memo_contact_address,
+    dga_stage_manager_memo_contact_city,
+    dga_stage_manager_memo_contact_state_code,
+    dga_stage_manager_memo_contact_state_name,
+    dga_stage_manager_memo_contact_phone,
+    dga_stage_manager_memo_contact_email,
+    dga_stage_manager_deal_memo_ssn,
+    dga_stage_manager_deal_memo_loanout,
+    dga_stage_manager_deal_memo_fid,
+    dga_stage_manager_deal_memo_salary,
+    dga_stage_manager_deal_memo_salary_period_id,
+    dga_stage_manager_deal_memo_salary_period_name,
+    dga_stage_manager_deal_memo_salary_period_period,
+    dga_stage_manager_deal_memo_salary_period_plural,
+    dga_stage_manager_deal_memo_aditional_time,
+    dga_stage_manager_deal_memo_aditional_time_period_id,
+    dga_stage_manager_deal_memo_aditional_time_period_name,
+    dga_stage_manager_deal_memo_aditional_time_period_period,
+    dga_stage_manager_deal_memo_aditional_time_period_plural,
+    dga_stage_manager_deal_memo_start_date,
+    dga_stage_manager_deal_memo_guaranteed,
+    dga_stage_manager_deal_memo_guaranteed_period_id,
+    dga_stage_manager_deal_memo_guaranteed_period_name,
+    dga_stage_manager_deal_memo_guaranteed_period_period,
+    dga_stage_manager_deal_memo_guaranteed_period_plural,
+    dga_stage_manager_deal_memo_production_id,
+    dga_stage_manager_deal_memo_production_title,
+    dga_stage_manager_deal_memo_episode_id,
+    dga_stage_manager_deal_memo_episode_title,
+    dga_stage_manager_deal_memo_episode_episode_number,
+    dga_stage_manager_deal_memo_episode_episode_abreviation,
+    dga_stage_manager_deal_memo_category_associate_director,
+    dga_stage_manager_deal_memo_category_stage_manager,
+    dga_stage_manager_deal_memo_category_aditional_stage_manager,
+    dga_stage_manager_deal_memo_prime_time_per_week_studio,
+    dga_stage_manager_deal_memo_prime_time_per_week_location,
+    dga_stage_manager_deal_memo_prime_time_per_day_studio,
+    dga_stage_manager_deal_memo_prime_time_per_day_location,
+    dga_stage_manager_deal_memo_other_per_week_40,
+    dga_stage_manager_deal_memo_other_per_week_flat_60,
+    dga_stage_manager_deal_memo_other_per_day_8,
+    dga_stage_manager_deal_memo_other_per_day_flat_12,
+    dga_stage_manager_deal_memo_project_info_30_lower,
+    dga_stage_manager_deal_memo_project_info_30_between,
+    dga_stage_manager_deal_memo_project_info_30_higher,
+    dga_stage_manager_deal_memo_project_info_60_lower,
+    dga_stage_manager_deal_memo_project_info_60_between,
+    dga_stage_manager_deal_memo_project_info_60_higher,
+    dga_stage_manager_deal_memo_project_info_120_lower,
+    dga_stage_manager_deal_memo_project_info_120_between,
+    dga_stage_manager_deal_memo_project_info_120_higher,
+    dga_stage_manager_deal_memo_other_conditions,
+    dga_stage_manager_deal_memo_employer_name,
+    dga_stage_manager_deal_memo_employee_name,
+    dga_stage_manager_deal_memo_employee_date,
+    dga_stage_manager_deal_memo_signatory,
+    dga_stage_manager_deal_memo_signatory_by,
+    dga_stage_manager_deal_memo_signatory_date,
+    dga_stage_manager_deal_memo_created,
+    dga_stage_manager_deal_memo_created_by,
+    dga_stage_manager_deal_memo_updated,
+    dga_stage_manager_deal_memo_updated_by,
+    dga_stage_manager_deal_memo_status
+) AS
+    SELECT dga_stage_manager_deal_memo.id                                                            AS dga_stage_manager_deal_memo_id,
+           dga_stage_manager_deal_memo.contact_id                                                    AS dga_stage_manager_deal_memo_contact_id,
+           contact.name                                                                              AS dga_stage_manager_memo_contact_name,
+           contact.address                                                                           AS dga_stage_manager_memo_contact_address,
+           contact.city                                                                              AS dga_stage_manager_memo_contact_city,
+           contact.state_code                                                                        AS dga_stage_manager_memo_contact_state_code,
+           state.name                                                                                AS dga_stage_manager_memo_contact_state_name,
+           contact.phone                                                                             AS dga_stage_manager_memo_contact_phone,
+           contact.email                                                                             AS dga_stage_manager_memo_contact_email,
+           dga_stage_manager_deal_memo.ssn                                                           AS dga_stage_manager_deal_memo_ssn,
+           dga_stage_manager_deal_memo.loanout                                                       AS dga_stage_manager_deal_memo_loanout,
+           dga_stage_manager_deal_memo.fid                                                           AS dga_stage_manager_deal_memo_fid,
+           dga_stage_manager_deal_memo.salary                                                        AS dga_stage_manager_deal_memo_salary,
+           dga_stage_manager_deal_memo.salary_period_id                                              AS dga_stage_manager_deal_memo_salary_period_id,
+           salary_period.name                                                                        AS dga_stage_manager_deal_memo_salary_period_name,
+           salary_period.period                                                                      AS dga_stage_manager_deal_memo_salary_period_period,
+           salary_period.plural                                                                      AS dga_stage_manager_deal_memo_salary_period_plural,
+           dga_stage_manager_deal_memo.aditional_time                                                AS dga_stage_manager_deal_memo_aditional_time,
+           dga_stage_manager_deal_memo.aditional_time_period_id                                      AS dga_stage_manager_deal_memo_aditional_time_period_id,
+           aditional_time_period.name                                                                AS dga_stage_manager_deal_memo_aditional_time_period_name,
+           aditional_time_period.period                                                              AS dga_stage_manager_deal_memo_aditional_time_period_period,
+           aditional_time_period.plural                                                              AS dga_stage_manager_deal_memo_aditional_time_period_plural,
+           dga_stage_manager_deal_memo.start_date                                                    AS dga_stage_manager_deal_memo_start_date,
+           dga_stage_manager_deal_memo.guaranteed                                                    AS dga_stage_manager_deal_memo_guaranteed,
+           dga_stage_manager_deal_memo.guaranteed_period_id                                          AS dga_stage_manager_deal_memo_guaranteed_period_id,
+           guaranteed_period.name                                                                    AS dga_stage_manager_deal_memo_guaranteed_period_name,
+           guaranteed_period.period                                                                  AS dga_stage_manager_deal_memo_guaranteed_period_period,
+           guaranteed_period.plural                                                                  AS dga_stage_manager_deal_memo_guaranteed_period_plural,
+           dga_stage_manager_deal_memo.production_id                                                 AS dga_stage_manager_deal_memo_production_id,
+           production.title                                                                          AS dga_stage_manager_deal_memo_production_title,
+           dga_stage_manager_deal_memo.episode_id                                                    AS dga_stage_manager_deal_memo_episode_id,
+           episode.title                                                                             AS dga_stage_manager_deal_memo_episode_title,
+           LPAD(episode.episode_number, 2, 0)                                                        AS dga_stage_manager_deal_memo_episode_episode_number,
+           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))    AS dga_stage_manager_deal_memo_episode_episode_abreviation,
+           dga_stage_manager_deal_memo.category_associate_director                                   AS dga_stage_manager_deal_memo_category_associate_director,
+           dga_stage_manager_deal_memo.category_stage_manager                                        AS dga_stage_manager_deal_memo_category_stage_manager,
+           dga_stage_manager_deal_memo.category_aditional_stage_manager                              AS dga_stage_manager_deal_memo_category_aditional_stage_manager,
+           dga_stage_manager_deal_memo.prime_time_per_week_studio                                    AS dga_stage_manager_deal_memo_prime_time_per_week_studio,
+           dga_stage_manager_deal_memo.prime_time_per_week_location                                  AS dga_stage_manager_deal_memo_prime_time_per_week_location,
+           dga_stage_manager_deal_memo.prime_time_per_day_studio                                     AS dga_stage_manager_deal_memo_prime_time_per_day_studio,
+           dga_stage_manager_deal_memo.prime_time_per_day_location                                   AS dga_stage_manager_deal_memo_prime_time_per_day_location,
+           dga_stage_manager_deal_memo.other_per_week_40                                             AS dga_stage_manager_deal_memo_other_per_week_40,
+           dga_stage_manager_deal_memo.other_per_week_flat_60                                        AS dga_stage_manager_deal_memo_other_per_week_flat_60,
+           dga_stage_manager_deal_memo.other_per_day_8                                               AS dga_stage_manager_deal_memo_other_per_day_8,
+           dga_stage_manager_deal_memo.other_per_day_flat_12                                         AS dga_stage_manager_deal_memo_other_per_day_flat_12,
+           dga_stage_manager_deal_memo.project_info_30_lower                                         AS dga_stage_manager_deal_memo_project_info_30_lower,
+           dga_stage_manager_deal_memo.project_info_30_between                                       AS dga_stage_manager_deal_memo_project_info_30_between,
+           dga_stage_manager_deal_memo.project_info_30_higher                                        AS dga_stage_manager_deal_memo_project_info_30_higher,
+           dga_stage_manager_deal_memo.project_info_60_lower                                         AS dga_stage_manager_deal_memo_project_info_60_lower,
+           dga_stage_manager_deal_memo.project_info_60_between                                       AS dga_stage_manager_deal_memo_project_info_60_between,
+           dga_stage_manager_deal_memo.project_info_60_higher                                        AS dga_stage_manager_deal_memo_project_info_60_higher,
+           dga_stage_manager_deal_memo.project_info_120_lower                                        AS dga_stage_manager_deal_memo_project_info_120_lower,
+           dga_stage_manager_deal_memo.project_info_120_between                                      AS dga_stage_manager_deal_memo_project_info_120_between,
+           dga_stage_manager_deal_memo.project_info_120_higher                                       AS dga_stage_manager_deal_memo_project_info_120_higher,
+           dga_stage_manager_deal_memo.other_conditions                                              AS dga_stage_manager_deal_memo_other_conditions,
+           dga_stage_manager_deal_memo.employer_name                                                 AS dga_stage_manager_deal_memo_employer_name,
+           dga_stage_manager_deal_memo.employee_name                                                 AS dga_stage_manager_deal_memo_employee_name,
+           dga_stage_manager_deal_memo.employee_date                                                 AS dga_stage_manager_deal_memo_employee_date,
+           dga_stage_manager_deal_memo.signatory                                                     AS dga_stage_manager_deal_memo_signatory,
+           dga_stage_manager_deal_memo.signatory_by                                                  AS dga_stage_manager_deal_memo_signatory_by,
+           dga_stage_manager_deal_memo.signatory_date                                                AS dga_stage_manager_deal_memo_signatory_date,
+           DATE_FORMAT(dga_stage_manager_deal_memo.created,'%m/%d/%Y %H:%i:%S')                      AS dga_stage_manager_deal_memo_created,
+           dga_stage_manager_deal_memo.created_by                                                    AS dga_stage_manager_deal_memo_created_by,
+           DATE_FORMAT(dga_stage_manager_deal_memo.updated,'%m/%d/%Y %H:%i:%S')                      AS dga_stage_manager_deal_memo_updated,
+           dga_stage_manager_deal_memo.updated_by                                                    AS dga_stage_manager_deal_memo_updated_by,
+           dga_stage_manager_deal_memo.status                                                        AS dga_stage_manager_deal_memo_status
+      FROM dga_stage_manager_deal_memo AS dga_stage_manager_deal_memo INNER JOIN contact    AS contact               ON contact.id               = dga_stage_manager_deal_memo.contact_id
+                                                                      LEFT  JOIN state      AS state                 ON state.code               = contact.state_code
+                                                                      LEFT  JOIN period     AS salary_period         ON salary_period.id         = dga_stage_manager_deal_memo.salary_period_id
+                                                                      LEFT  JOIN period     AS aditional_time_period ON aditional_time_period.id = dga_stage_manager_deal_memo.aditional_time_period_id
+                                                                      LEFT  JOIN period     AS guaranteed_period     ON guaranteed_period.id     = dga_stage_manager_deal_memo.guaranteed_period_id
+                                                                      INNER JOIN production AS production            ON production.id            = dga_stage_manager_deal_memo.production_id
+                                                                      INNER JOIN episode    AS episode               ON episode.id               = dga_stage_manager_deal_memo.episode_id
+                                                                      INNER JOIN season     AS season                ON episode.season_id        = season.id;;
 
  DELIMITER //
 CREATE PROCEDURE company_set_list(
@@ -1115,108 +1959,6 @@ DELIMITER ;
  
 
  DELIMITER //
-CREATE PROCEDURE deal_type_set_list(
-    INOUT deal_type_id              INTEGER,
-    IN    deal_type_abreviation     CHAR(2),
-    IN    deal_type_name            CHAR(50),
-    IN    deal_type_created_by      VARCHAR(30),
-    IN    deal_type_updated_by      VARCHAR(30),
-    IN    deal_type_status          VARCHAR(30)
-)
-BEGIN
-    DECLARE ROW_EXISTS INTEGER;
-
-    SELECT COUNT(*)
-      INTO ROW_EXISTS
-      FROM deal_type
-     WHERE id = deal_type_id;
-
-     IF (ROW_EXISTS = 0) THEN
-        INSERT INTO deal_type
-        (
-            abreviation,
-            name,
-            created_by,
-            updated_by,
-            status
-        )
-        VALUES
-        (
-            deal_type_abreviation,
-            deal_type_name,
-            deal_type_created_by,
-            deal_type_updated_by,
-            'CREATED'
-        );
-
-        SET deal_type_id = LAST_INSERT_ID();
-     END IF;
-
-     IF (ROW_EXISTS >= 1) THEN
-        UPDATE deal_type
-           SET abreviation   = abreviation,
-               name          = name,
-               updated_by    = updated_by,
-               status        = 'UPDATED'
-         WHERE id            = deal_type_id;
-     END IF;
-
-     COMMIT;
-END //
-DELIMITER ;
-
- DELIMITER //
-CREATE PROCEDURE field_work_set_list(
-    INOUT field_work_id              INTEGER,
-    IN    field_work_abreviation     CHAR(2),
-    IN    field_work_name            CHAR(50),
-    IN    field_work_created_by      VARCHAR(30),
-    IN    field_work_updated_by      VARCHAR(30),
-    IN    field_work_status          VARCHAR(30)
-)
-BEGIN
-    DECLARE ROW_EXISTS INTEGER;
-
-    SELECT COUNT(*)
-      INTO ROW_EXISTS
-      FROM field_work
-     WHERE id = field_work_id;
-
-     IF (ROW_EXISTS = 0) THEN
-        INSERT INTO field_work
-        (
-            abreviation,
-            name,
-            created_by,
-            updated_by,
-            status
-        )
-        VALUES
-        (
-            field_work_abreviation,
-            field_work_name,
-            field_work_created_by,
-            field_work_updated_by,
-            'CREATED'
-        );
-
-        SET field_work_id = LAST_INSERT_ID();
-     END IF;
-
-     IF (ROW_EXISTS >= 1) THEN
-        UPDATE field_work
-           SET abreviation   = abreviation,
-               name          = name,
-               updated_by    = updated_by,
-               status        = 'UPDATED'
-         WHERE id            = field_work_id;
-     END IF;
-
-     COMMIT;
-END //
-DELIMITER ;
-
- DELIMITER //
 CREATE PROCEDURE season_set_list(
     INOUT  season_id                               INTEGER,
     IN     season_title                            VARCHAR(50),
@@ -1547,6 +2289,1038 @@ BEGIN
 END //
 DELIMITER ;
 
+ DELIMITER //
+CREATE PROCEDURE dga_quarterly_earning_set_list(
+    INOUT dga_quarterly_earning_id                   INTEGER,
+    IN    dga_quarterly_earning_quarterly            VARCHAR(10),
+    IN    dga_quarterly_earning_year                 YEAR,
+    IN    dga_quarterly_earning_company_id           INTEGER,
+    IN    dga_quarterly_earning_contact_id           INTEGER,
+    IN    dga_quarterly_earning_prepared_by          VARCHAR(50),
+    IN    dga_quarterly_earning_phone                VARCHAR(20),
+    IN    dga_quarterly_earning_created_by           VARCHAR(30),
+    IN    dga_quarterly_earning_updated_by           VARCHAR(30),
+    IN    dga_quarterly_earning_status               VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_quarterly_earning
+     WHERE id = dga_quarterly_earning_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_quarterly_earning
+        (
+            quarter,
+            year,
+            company_id,
+            contact_id,
+            prepared_by,
+            phone,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_quarterly_earning_quarter,
+            dga_quarterly_earning_year,
+            dga_quarterly_earning_company_id,
+            dga_quarterly_earning_contact_id,
+            dga_quarterly_earning_prepared_by,
+            dga_quarterly_earning_phone,
+            dga_quarterly_earning_created_by,
+            dga_quarterly_earning_updated_by,
+            'CREATED'
+        );
+
+        SET dga_quarterly_earning_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_quarterly_earning
+           SET quarter     = dga_quarterly_earning_quarter,
+               year        = dga_quarterly_earning_year,
+               company_id  = dga_quarterly_earning_company_id,
+               contact_id  = dga_quarterly_earning_contact_id,
+               prepared_by = dga_quarterly_earning_prepared_by,
+               phone       = dga_quarterly_earning_phone,
+               created_by  = dga_quarterly_earning_created_by,
+               updated_by  = dga_quarterly_earning_updated_by,
+               status      = 'UPDATED'
+         WHERE id          = dga_quarterly_earning_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_quartely_earning_item_set_list(
+    INOUT dga_quartely_earning_item_id                          INTEGER,
+    IN    dga_quartely_earning_item_dga_quarterly_earning_id    INTEGER,
+    IN    dga_quartely_earning_item_name                        VARCHAR(50),
+    IN    dga_quartely_earning_item_ssn                         VARCHAR(11),
+    IN    dga_quartely_earning_item_category                    VARCHAR(30),
+    IN    dga_quartely_earning_item_production_id               INTEGER,
+    IN    dga_quartely_earning_item_earnings                    NUMERIC(15,2),
+    IN    dga_quartely_earning_item_created_by                  VARCHAR(30),
+    IN    dga_quartely_earning_item_updated_by                  VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_quartely_earning_item
+     WHERE id = dga_quartely_earning_item_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_quartely_earning_item
+        (
+            dga_quarterly_earning_id,
+            name,
+            ssn,
+            category,
+            production_id,
+            earnings,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_quartely_earning_item_dga_quarterly_earning_id,
+            dga_quartely_earning_item_name,
+            dga_quartely_earning_item_ssn,
+            dga_quartely_earning_item_category,
+            dga_quartely_earning_item_production_id,
+            dga_quartely_earning_item_earnings,
+            dga_quartely_earning_item_created_by,
+            dga_quartely_earning_item_updated_by,
+            'CREATED'
+        );
+
+        SET dga_quartely_earning_item_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_quartely_earning_item
+           SET dga_quarterly_earning_id =   dga_quartely_earning_item_dga_quarterly_earning_id,
+               name                     =   dga_quartely_earning_item_name,
+               ssn                      =   dga_quartely_earning_item_ssn,
+               category                 =   dga_quartely_earning_item_category,
+               production_id            =   dga_quartely_earning_item_production_id,
+               earnings                 =   dga_quartely_earning_item_earnings,
+               updated_by               =   dga_quartely_earning_item_updated_by,
+               status                   =   'UPDATED'
+         WHERE id                       =   dga_quartely_earning_item_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_quarterly_earning_set_closed(
+    IN dga_quarterly_earning_id          INTEGER,
+    IN dga_quarterly_earning_updated_by  VARCHAR(30)
+)
+BEGIN
+
+    UPDATE dga_quarterly_earning
+       SET status     = 'CLOSED',
+           updated_by = dga_quarterly_earning_updated_by
+     WHERE id = dga_quarterly_earning_id;
+     COMMIT;
+
+     UPDATE dga_quarterly_earning_item
+       SET status     = 'CLOSED',
+           updated_by = dga_quarterly_earning_updated_by
+     WHERE dga_quarterly_earning_id = dga_quarterly_earning_id
+       AND status != 'DELETED';
+     COMMIT;
+
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_weekly_work_set_list(
+    INOUT dga_weekly_work_id                   INTEGER,
+    IN    dga_weekly_work_production_id        INT,
+    IN    dga_weekly_work_episode_id           INT,
+    IN    dga_weekly_work_company_id           INT,
+    IN    dga_weekly_work_contact_id           INT,
+    IN    dga_weekly_work_week_start_date      DATE,
+    IN    dga_weekly_work_week_end_date        DATE,
+    IN    dga_weekly_work_created_by           VARCHAR(30),
+    IN    dga_weekly_work_updated_by           VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_weekly_work
+     WHERE id = dga_weekly_work_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_weekly_work
+        (
+            production_id,
+            episode_id,
+            company_id,
+            contact_id,
+            week_start_date,
+            week_end_date,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_weekly_work_production_id,
+            dga_weekly_work_episode_id,
+            dga_weekly_work_company_id,
+            dga_weekly_work_contact_id,
+            dga_weekly_work_week_start_date,
+            dga_weekly_work_week_end_date,
+            dga_weekly_work_created_by,
+            dga_weekly_work_updated_by,
+            'CREATED'
+        );
+
+        SET dga_weekly_work_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_weekly_work
+           SET production_id      =    dga_weekly_work_production_id,
+               episode_id         =    dga_weekly_work_episode_id,
+               company_id         =    dga_weekly_work_company_id,
+               contact_id         =    dga_weekly_work_contact_id,
+               week_start_date    =    dga_weekly_work_week_start_date,
+               week_end_date      =    dga_weekly_work_week_end_date,
+               updated_by         =    dga_weekly_work_updated_by,
+               status             =    'UPDATED'
+         WHERE id                 =    dga_weekly_work_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_weekly_work_item_set_list(
+    INOUT dga_weekly_work_item_id                          INTEGER,
+    IN    dga_weekly_work_item_dga_weekly_work_id          INTEGER,
+    IN    dga_weekly_work_item_name                        VARCHAR(50),
+    IN    dga_weekly_work_item_ssn                         VARCHAR(11),
+    IN    dga_weekly_work_item_category                    VARCHAR(30),
+    IN    dga_weekly_work_item_created_by                  VARCHAR(30),
+    IN    dga_weekly_work_item_updated_by                  VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_weekly_work_item
+     WHERE id = dga_weekly_work_item_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_weekly_work_item
+        (
+            dga_weekly_work_id,
+            name,
+            ssn,
+            category,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_weekly_work_item_dga_weekly_work_id,
+            dga_weekly_work_item_name,
+            dga_weekly_work_item_ssn,
+            dga_weekly_work_item_category,
+            dga_weekly_work_item_created_by,
+            dga_weekly_work_item_updated_by,
+            'CREATED'
+        );
+
+        SET dga_weekly_work_item_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_weekly_work_item
+           SET dga_weekly_work_id  =  dga_weekly_work_item_dga_weekly_work_id,
+               name                =  dga_weekly_work_item_name,
+               ssn                 =  dga_weekly_work_item_ssn,
+               category            =  dga_weekly_work_item_category,
+               updated_by          =  dga_weekly_work_item_updated_by,
+               status              =  'UPDATED'
+         WHERE id                  =  dga_weekly_work_item_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_weekly_work_set_closed(
+    IN dga_weekly_work_item_id          INTEGER,
+    IN dga_weekly_work_item_updated_by  VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    UPDATE dga_weekly_work
+       SET status     = 'CLOSED',
+           updated_by = dga_weekly_work_item_updated_by
+     WHERE id         = dga_weekly_work_item_id;
+
+    UPDATE dga_weekly_work_item
+       SET status     = 'CLOSED',
+           updated_by = dga_weekly_work_item_updated_by
+     WHERE id         = dga_weekly_work_item_id
+       AND status    != 'DELETED';
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_director_deal_memo_set_list(
+    INOUT  dga_director_deal_memo_id                                 INT,
+    IN     dga_director_deal_memo_contact_id                         INT,
+    IN     dga_director_deal_memo_ssn                                VARCHAR(11),
+    IN     dga_director_deal_memo_loanout                            VARCHAR(30),
+    IN     dga_director_deal_memo_fid                                VARCHAR(30),
+    IN     dga_director_deal_memo_salary                             DECIMAL,
+    IN     dga_director_deal_memo_salary_period_id                   INT,
+    IN     dga_director_deal_memo_aditional_time                     DECIMAL,
+    IN     dga_director_deal_memo_aditional_time_period_id           INT,
+    IN     dga_director_deal_memo_start_date                         DATE,
+    IN     dga_director_deal_memo_guaranteed                         INT,
+    IN     dga_director_deal_memo_guaranteed_period_id               INT,
+    IN     dga_director_deal_memo_dga_covered                        CHAR(1),
+    IN     dga_director_deal_memo_addition_terms                     VARCHAR(1024),
+    IN     dga_director_deal_memo_production_id                      INT,
+    IN     dga_director_deal_memo_episode_id                         INT,
+    IN     dga_director_deal_memo_episode_specific_length            VARCHAR(50),
+    IN     dga_director_deal_memo_segment                            CHAR(1),
+    IN     dga_director_deal_memo_segment_specific_length            VARCHAR(50),
+    IN     dga_director_deal_memo_pilot                              CHAR(1),
+    IN     dga_director_deal_memo_dramatic_basic_cable_budget        DECIMAL,
+    IN     dga_director_deal_memo_television_license_director        CHAR(1),
+    IN     dga_director_deal_memo_television_license_budget          CHAR(1),
+    IN     dga_director_deal_memo_produced_for_network               CHAR(1),
+    IN     dga_director_deal_memo_produced_for_non_network           CHAR(1),
+    IN     dga_director_deal_memo_produced_for_basic_cable           CHAR(1),
+    IN     dga_director_deal_memo_produced_for_pay_tv                CHAR(1),
+    IN     dga_director_deal_memo_produced_for_home_video            CHAR(1),
+    IN     dga_director_deal_memo_show_type_dramatic                 CHAR(1),
+    IN     dga_director_deal_memo_show_type_quiz_game                CHAR(1),
+    IN     dga_director_deal_memo_show_type_variety                  CHAR(1),
+    IN     dga_director_deal_memo_show_type_sports_event             CHAR(1),
+    IN     dga_director_deal_memo_show_type_sports_event_name        VARCHAR(50),
+    IN     dga_director_deal_memo_show_type_series_after_02102002    CHAR(1),
+    IN     dga_director_deal_memo_show_type_series_prior_02102002    CHAR(1),
+    IN     dga_director_deal_memo_show_type_special                  CHAR(1),
+    IN     dga_director_deal_memo_show_type_movie_mini_series        CHAR(1),
+    IN     dga_director_deal_memo_show_type_strip                    CHAR(1),
+    IN     dga_director_deal_memo_show_type_high_budget              CHAR(1),
+    IN     dga_director_deal_memo_show_type_low_budget               CHAR(1),
+    IN     dga_director_deal_memo_show_type_prime_time               CHAR(1),
+    IN     dga_director_deal_memo_show_type_non_prime_time           CHAR(1),
+    IN     dga_director_deal_memo_show_type_live_broadcast           CHAR(1),
+    IN     dga_director_deal_memo_employer_name                      VARCHAR(50),
+    IN     dga_director_deal_memo_employee_name                      VARCHAR(50),
+    IN     dga_director_deal_memo_employee_date                      DATE,
+    IN     dga_director_deal_memo_signatory                          VARCHAR(50),
+    IN     dga_director_deal_memo_signatory_by                       VARCHAR(50),
+    IN     dga_director_deal_memo_signatory_date                     DATE,
+    IN     dga_director_deal_memo_created_by                         VARCHAR(30),
+    IN     dga_director_deal_memo_updated_by                         VARCHAR(30),
+    IN     dga_director_deal_memo_status                             VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_director_deal_memo
+     WHERE id = dga_director_deal_memo_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_director_deal_memo
+        (
+            contact_id,
+            ssn,
+            loanout,
+            fid,
+            salary,
+            salary_period_id,
+            aditional_time,
+            aditional_time_period_id,
+            start_date,
+            guaranteed,
+            guaranteed_period_id,
+            dga_covered,
+            addition_terms,
+            production_id,
+            episode_id,
+            episode_specific_length,
+            segment,
+            segment_specific_length,
+            pilot,
+            dramatic_basic_cable_budget,
+            television_license_director,
+            television_license_budget,
+            produced_for_network,
+            produced_for_non_network,
+            produced_for_basic_cable,
+            produced_for_pay_tv,
+            produced_for_home_video,
+            show_type_dramatic,
+            show_type_quiz_game,
+            show_type_variety,
+            show_type_sports_event,
+            show_type_sports_event_name,
+            show_type_series_after_02102002,
+            show_type_series_prior_02102002,
+            show_type_special,
+            show_type_movie_mini_series,
+            show_type_strip,
+            show_type_high_budget,
+            show_type_low_budget,
+            show_type_prime_time,
+            show_type_non_prime_time,
+            show_type_live_broadcast,
+            employer_name,
+            employee_name,
+            employee_date,
+            signatory,
+            signatory_by,
+            signatory_date,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_director_deal_memo_contact_id,
+            dga_director_deal_memo_ssn,
+            dga_director_deal_memo_loanout,
+            dga_director_deal_memo_fid,
+            dga_director_deal_memo_salary,
+            dga_director_deal_memo_salary_period_id,
+            dga_director_deal_memo_aditional_time,
+            dga_director_deal_memo_aditional_time_period_id,
+            dga_director_deal_memo_start_date,
+            dga_director_deal_memo_guaranteed,
+            dga_director_deal_memo_guaranteed_period_id,
+            dga_director_deal_memo_dga_covered,
+            dga_director_deal_memo_addition_terms,
+            dga_director_deal_memo_production_id,
+            dga_director_deal_memo_episode_id,
+            dga_director_deal_memo_episode_specific_length,
+            dga_director_deal_memo_segment,
+            dga_director_deal_memo_segment_specific_length,
+            dga_director_deal_memo_pilot,
+            dga_director_deal_memo_dramatic_basic_cable_budget,
+            dga_director_deal_memo_television_license_director,
+            dga_director_deal_memo_television_license_budget,
+            dga_director_deal_memo_produced_for_network,
+            dga_director_deal_memo_produced_for_non_network,
+            dga_director_deal_memo_produced_for_basic_cable,
+            dga_director_deal_memo_produced_for_pay_tv,
+            dga_director_deal_memo_produced_for_home_video,
+            dga_director_deal_memo_show_type_dramatic,
+            dga_director_deal_memo_show_type_quiz_game,
+            dga_director_deal_memo_show_type_variety,
+            dga_director_deal_memo_show_type_sports_event,
+            dga_director_deal_memo_show_type_sports_event_name,
+            dga_director_deal_memo_show_type_series_after_02102002,
+            dga_director_deal_memo_show_type_series_prior_02102002,
+            dga_director_deal_memo_show_type_special,
+            dga_director_deal_memo_show_type_movie_mini_series,
+            dga_director_deal_memo_show_type_strip,
+            dga_director_deal_memo_show_type_high_budget,
+            dga_director_deal_memo_show_type_low_budget,
+            dga_director_deal_memo_show_type_prime_time,
+            dga_director_deal_memo_show_type_non_prime_time,
+            dga_director_deal_memo_show_type_live_broadcast,
+            dga_director_deal_memo_employer_name,
+            dga_director_deal_memo_employee_name,
+            dga_director_deal_memo_employee_date,
+            dga_director_deal_memo_signatory,
+            dga_director_deal_memo_signatory_by,
+            dga_director_deal_memo_signatory_date,
+            dga_director_deal_memo_created_by,
+            dga_director_deal_memo_updated_by,
+            'CREATED'
+        );
+
+        SET dga_director_deal_memo_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_director_deal_memo
+           SET contact_id                      = dga_director_deal_memo_contact_id,
+               ssn                             = dga_director_deal_memo_ssn,
+               loanout                         = dga_director_deal_memo_loanout,
+               fid                             = dga_director_deal_memo_fid,
+               salary                          = dga_director_deal_memo_salary,
+               salary_period_id                = dga_director_deal_memo_salary_period_id,
+               aditional_time                  = dga_director_deal_memo_aditional_time,
+               aditional_time_period_id        = dga_director_deal_memo_aditional_time_period_id,
+               start_date                      = dga_director_deal_memo_start_date,
+               guaranteed                      = dga_director_deal_memo_guaranteed,
+               guaranteed_period_id            = dga_director_deal_memo_guaranteed_period_id,
+               dga_covered                     = dga_director_deal_memo_dga_covered,
+               addition_terms                  = dga_director_deal_memo_addition_terms,
+               production_id                   = dga_director_deal_memo_production_id,
+               episode_id                      = dga_director_deal_memo_episode_id,
+               episode_specific_length         = dga_director_deal_memo_episode_specific_length,
+               segment                         = dga_director_deal_memo_segment,
+               segment_specific_length         = dga_director_deal_memo_segment_specific_length,
+               pilot                           = dga_director_deal_memo_pilot,
+               dramatic_basic_cable_budget     = dga_director_deal_memo_dramatic_basic_cable_budget,
+               television_license_director     = dga_director_deal_memo_television_license_director,
+               television_license_budget       = dga_director_deal_memo_television_license_budget,
+               produced_for_network            = dga_director_deal_memo_produced_for_network,
+               produced_for_non_network        = dga_director_deal_memo_produced_for_non_network,
+               produced_for_basic_cable        = dga_director_deal_memo_produced_for_basic_cable,
+               produced_for_pay_tv             = dga_director_deal_memo_produced_for_pay_tv,
+               produced_for_home_video         = dga_director_deal_memo_produced_for_home_video,
+               show_type_dramatic              = dga_director_deal_memo_show_type_dramatic,
+               show_type_quiz_game             = dga_director_deal_memo_show_type_quiz_game,
+               show_type_variety               = dga_director_deal_memo_show_type_variety,
+               show_type_sports_event          = dga_director_deal_memo_show_type_sports_event,
+               show_type_sports_event_name     = dga_director_deal_memo_show_type_sports_event_name,
+               show_type_series_after_02102002 = dga_director_deal_memo_show_type_series_after_02102002,
+               show_type_series_prior_02102002 = dga_director_deal_memo_show_type_series_prior_02102002,
+               show_type_special               = dga_director_deal_memo_show_type_special,
+               show_type_movie_mini_series     = dga_director_deal_memo_show_type_movie_mini_series,
+               show_type_strip                 = dga_director_deal_memo_show_type_strip,
+               show_type_high_budget           = dga_director_deal_memo_show_type_high_budget,
+               show_type_low_budget            = dga_director_deal_memo_show_type_low_budget,
+               show_type_prime_time            = dga_director_deal_memo_show_type_prime_time,
+               show_type_non_prime_time        = dga_director_deal_memo_show_type_non_prime_time,
+               show_type_live_broadcast        = dga_director_deal_memo_show_type_live_broadcast,
+               employer_name                   = dga_director_deal_memo_employer_name,
+               employee_name                   = dga_director_deal_memo_employee_name,
+               employee_date                   = dga_director_deal_memo_employee_date,
+               signatory                       = dga_director_deal_memo_signatory,
+               signatory_by                    = dga_director_deal_memo_signatory_by,
+               signatory_date                  = dga_director_deal_memo_signatory_date,
+               created_by                      = dga_director_deal_memo_created_by,
+               updated_by                      = dga_director_deal_memo_updated_by,
+               status                          = dga_director_deal_memo_status
+         WHERE id                              = dga_director_deal_memo_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_director_deal_memo_set_closed(
+    IN dga_director_deal_memo_id                   INTEGER,
+    IN dga_director_deal_memo_updated_by           VARCHAR(30)
+)
+BEGIN
+
+    UPDATE dga_director_deal_memo
+       SET status     = 'CLOSED',
+           updated_by = dga_director_deal_memo_updated_by
+     WHERE id         = dga_director_deal_memo_id;
+     COMMIT;
+
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_employment_data_set_list(
+    INOUT dga_employment_data_id                                  INT,
+    IN    dga_employment_data_report_date                         DATE,
+    IN    dga_employment_data_prepared_by                         VARCHAR(50),
+    IN    dga_employment_data_quarter                             VARCHAR(10),
+    IN    dga_employment_data_year                                YEAR,
+    IN    dga_employment_data_company_id                          INT,
+    IN    dga_employment_data_production_id                       INT,
+    IN    dga_employment_data_director_name                       VARCHAR(50),
+    IN    dga_employment_data_director_first_number               INT,
+    IN    dga_employment_data_director_gender                     CHAR(1),
+    IN    dga_employment_data_director_caucasion                  CHAR(1),
+    IN    dga_employment_data_director_afro_american              CHAR(1),
+    IN    dga_employment_data_director_latino                     CHAR(1),
+    IN    dga_employment_data_director_native                     CHAR(1),
+    IN    dga_employment_data_director_unknown                    CHAR(1),
+    IN    dga_employment_data_unit_production_name                VARCHAR(50),
+    IN    dga_employment_data_unit_production_gender              CHAR(1),
+    IN    dga_employment_data_unit_production_caucasion           CHAR(1),
+    IN    dga_employment_data_unit_production_afro_american       CHAR(1),
+    IN    dga_employment_data_unit_production_latino              CHAR(1),
+    IN    dga_employment_data_unit_production_native              CHAR(1),
+    IN    dga_employment_data_unit_production_unknown             CHAR(1),
+    IN    dga_employment_data_first_assistant_name                VARCHAR(50),
+    IN    dga_employment_data_first_assistant_gender              CHAR(1),
+    IN    dga_employment_data_first_assistant_caucasion           CHAR(1),
+    IN    dga_employment_data_first_assistant_afro_american       CHAR(1),
+    IN    dga_employment_data_first_assistant_latino              CHAR(1),
+    IN    dga_employment_data_first_assistant_native              CHAR(1),
+    IN    dga_employment_data_first_assistant_unknown             CHAR(1),
+    IN    dga_employment_data_second_assistant_name               VARCHAR(50),
+    IN    dga_employment_data_second_assistant_gender             CHAR(1),
+    IN    dga_employment_data_second_assistant_caucasion          CHAR(1),
+    IN    dga_employment_data_second_assistant_afro_american      CHAR(1),
+    IN    dga_employment_data_second_assistant_latino             CHAR(1),
+    IN    dga_employment_data_second_assistant_native             CHAR(1),
+    IN    dga_employment_data_second_assistant_unknown            CHAR(1),
+    IN    dga_employment_data_associate_assistant_name            VARCHAR(50),
+    IN    dga_employment_data_associate_assistant_gender          CHAR(1),
+    IN    dga_employment_data_associate_assistant_caucasion       CHAR(1),
+    IN    dga_employment_data_associate_assistant_afro_american   CHAR(1),
+    IN    dga_employment_data_associate_assistant_latino          CHAR(1),
+    IN    dga_employment_data_associate_assistant_native          CHAR(1),
+    IN    dga_employment_data_associate_assistant_unknown         CHAR(1),
+    IN    dga_employment_data_stage_assistant_name                VARCHAR(50),
+    IN    dga_employment_data_stage_assistant_gender              CHAR(1),
+    IN    dga_employment_data_stage_assistant_caucasion           CHAR(1),
+    IN    dga_employment_data_stage_assistant_afro_american       CHAR(1),
+    IN    dga_employment_data_stage_assistant_latino              CHAR(1),
+    IN    dga_employment_data_stage_assistant_native              CHAR(1),
+    IN    dga_employment_data_stage_assistant_unknown             CHAR(1),
+    IN    dga_employment_data_created_by                          VARCHAR(30),
+    IN    dga_employment_data_updated_by                          VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_employment_data
+     WHERE id = dga_employment_data_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_employment_data
+        (
+            report_date,
+            prepared_by,
+            quarter,
+            year,
+            company_id,
+            production_id,
+            director_name,
+            director_first_number,
+            director_gender,
+            director_caucasion,
+            director_afro_american,
+            director_latino,
+            director_native,
+            director_unknown,
+            unit_production_name,
+            unit_production_gender,
+            unit_production_caucasion,
+            unit_production_afro_american,
+            unit_production_latino,
+            unit_production_native,
+            unit_production_unknown,
+            first_assistant_name,
+            first_assistant_gender,
+            first_assistant_caucasion,
+            first_assistant_afro_american,
+            first_assistant_latino,
+            first_assistant_native,
+            first_assistant_unknown,
+            second_assistant_name,
+            second_assistant_gender,
+            second_assistant_caucasion,
+            second_assistant_afro_american,
+            second_assistant_latino,
+            second_assistant_native,
+            second_assistant_unknown,
+            associate_assistant_name,
+            associate_assistant_gender,
+            associate_assistant_caucasion,
+            associate_assistant_afro_american,
+            associate_assistant_latino,
+            associate_assistant_native,
+            associate_assistant_unknown,
+            stage_assistant_name,
+            stage_assistant_gender,
+            stage_assistant_caucasion,
+            stage_assistant_afro_american,
+            stage_assistant_latino,
+            stage_assistant_native,
+            stage_assistant_unknown,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_employment_data_report_date,
+            dga_employment_data_prepared_by,
+            dga_employment_data_quarter,
+            dga_employment_data_year,
+            dga_employment_data_company_id,
+            dga_employment_data_production_id,
+            dga_employment_data_director_name,
+            dga_employment_data_director_first_number,
+            dga_employment_data_director_gender,
+            dga_employment_data_director_caucasion,
+            dga_employment_data_director_afro_american,
+            dga_employment_data_director_latino,
+            dga_employment_data_director_native,
+            dga_employment_data_director_unknown,
+            dga_employment_data_unit_production_name,
+            dga_employment_data_unit_production_gender,
+            dga_employment_data_unit_production_caucasion,
+            dga_employment_data_unit_production_afro_american,
+            dga_employment_data_unit_production_latino,
+            dga_employment_data_unit_production_native,
+            dga_employment_data_unit_production_unknown,
+            dga_employment_data_first_assistant_name,
+            dga_employment_data_first_assistant_gender,
+            dga_employment_data_first_assistant_caucasion,
+            dga_employment_data_first_assistant_afro_american,
+            dga_employment_data_first_assistant_latino,
+            dga_employment_data_first_assistant_native,
+            dga_employment_data_first_assistant_unknown,
+            dga_employment_data_second_assistant_name,
+            dga_employment_data_second_assistant_gender,
+            dga_employment_data_second_assistant_caucasion,
+            dga_employment_data_second_assistant_afro_american,
+            dga_employment_data_second_assistant_latino,
+            dga_employment_data_second_assistant_native,
+            dga_employment_data_second_assistant_unknown,
+            dga_employment_data_associate_assistant_name,
+            dga_employment_data_associate_assistant_gender,
+            dga_employment_data_associate_assistant_caucasion,
+            dga_employment_data_associate_assistant_afro_american,
+            dga_employment_data_associate_assistant_latino,
+            dga_employment_data_associate_assistant_native,
+            dga_employment_data_associate_assistant_unknown,
+            dga_employment_data_stage_assistant_name,
+            dga_employment_data_stage_assistant_gender,
+            dga_employment_data_stage_assistant_caucasion,
+            dga_employment_data_stage_assistant_afro_american,
+            dga_employment_data_stage_assistant_latino,
+            dga_employment_data_stage_assistant_native,
+            dga_employment_data_stage_assistant_unknown,
+            dga_employment_data_created_by,
+            dga_employment_data_updated_by,
+            dga_employment_data_status,
+            'CREATED'
+        );
+
+        SET dga_employment_data_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_employment_data
+           SET report_date                       = dga_employment_data_report_date,
+               prepared_by                       = dga_employment_data_prepared_by,
+               quarter                           = dga_employment_data_quarter,
+               year                              = dga_employment_data_year,
+               company_id                        = dga_employment_data_company_id,
+               production_id                     = dga_employment_data_production_id,
+               director_name                     = dga_employment_data_director_name,
+               director_first_number             = dga_employment_data_director_first_number,
+               director_gender                   = dga_employment_data_director_gender,
+               director_caucasion                = dga_employment_data_director_caucasion,
+               director_afro_american            = dga_employment_data_director_afro_american,
+               director_latino                   = dga_employment_data_director_latino,
+               director_native                   = dga_employment_data_director_native,
+               director_unknown                  = dga_employment_data_director_unknown,
+               unit_production_name              = dga_employment_data_unit_production_name,
+               unit_production_gender            = dga_employment_data_unit_production_gender,
+               unit_production_caucasion         = dga_employment_data_unit_production_caucasion,
+               unit_production_afro_american     = dga_employment_data_unit_production_afro_american,
+               unit_production_latino            = dga_employment_data_unit_production_latino,
+               unit_production_native            = dga_employment_data_unit_production_native,
+               unit_production_unknown           = dga_employment_data_unit_production_unknown,
+               first_assistant_name              = dga_employment_data_first_assistant_name,
+               first_assistant_gender            = dga_employment_data_first_assistant_gender,
+               first_assistant_caucasion         = dga_employment_data_first_assistant_caucasion,
+               first_assistant_afro_american     = dga_employment_data_first_assistant_afro_american,
+               first_assistant_latino            = dga_employment_data_first_assistant_latino,
+               first_assistant_native            = dga_employment_data_first_assistant_native,
+               first_assistant_unknown           = dga_employment_data_first_assistant_unknown,
+               second_assistant_name             = dga_employment_data_second_assistant_name,
+               second_assistant_gender           = dga_employment_data_second_assistant_gender,
+               second_assistant_caucasion        = dga_employment_data_second_assistant_caucasion,
+               second_assistant_afro_american    = dga_employment_data_second_assistant_afro_american,
+               second_assistant_latino           = dga_employment_data_second_assistant_latino,
+               second_assistant_native           = dga_employment_data_second_assistant_native,
+               second_assistant_unknown          = dga_employment_data_second_assistant_unknown,
+               associate_assistant_name          = dga_employment_data_associate_assistant_name,
+               associate_assistant_gender        = dga_employment_data_associate_assistant_gender,
+               associate_assistant_caucasion     = dga_employment_data_associate_assistant_caucasion,
+               associate_assistant_afro_american = dga_employment_data_associate_assistant_afro_american,
+               associate_assistant_latino        = dga_employment_data_associate_assistant_latino,
+               associate_assistant_native        = dga_employment_data_associate_assistant_native,
+               associate_assistant_unknown       = dga_employment_data_associate_assistant_unknown,
+               stage_assistant_name              = dga_employment_data_stage_assistant_name,
+               stage_assistant_gender            = dga_employment_data_stage_assistant_gender,
+               stage_assistant_caucasion         = dga_employment_data_stage_assistant_caucasion,
+               stage_assistant_afro_american     = dga_employment_data_stage_assistant_afro_american,
+               stage_assistant_latino            = dga_employment_data_stage_assistant_latino,
+               stage_assistant_native            = dga_employment_data_stage_assistant_native,
+               stage_assistant_unknown           = dga_employment_data_stage_assistant_unknown,
+               updated_by                        = dga_employment_data_updated_by,
+               status                            = 'UPDATED'
+         WHERE id =    dga_employment_data_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_employment_data_set_closed_set_closed(
+    IN dga_employment_data_set_closed_id                   INTEGER,
+    IN dga_employment_data_set_closed_updated_by           VARCHAR(30)
+)
+BEGIN
+
+    UPDATE dga_employment_data
+       SET status     = 'CLOSED',
+           updated_by = dga_employment_data_set_closed_updated_by
+     WHERE id         = dga_employment_data_set_closed_id;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_stage_manager_deal_memo_set_list(
+    IN dga_stage_manager_deal_memo_id                                  INT,
+    IN dga_stage_manager_deal_memo_contact_id                          INT,
+    IN dga_stage_manager_deal_memo_ssn                                 VARCHAR(11),
+    IN dga_stage_manager_deal_memo_loanout                             VARCHAR(30),
+    IN dga_stage_manager_deal_memo_fid                                 VARCHAR(30),
+    IN dga_stage_manager_deal_memo_salary                              DECIMAL,
+    IN dga_stage_manager_deal_memo_salary_period_id                    INT,
+    IN dga_stage_manager_deal_memo_aditional_time                      DECIMAL,
+    IN dga_stage_manager_deal_memo_aditional_time_period_id            INT,
+    IN dga_stage_manager_deal_memo_start_date                          DATE,
+    IN dga_stage_manager_deal_memo_guaranteed                          INT,
+    IN dga_stage_manager_deal_memo_guaranteed_period_id                INT,
+    IN dga_stage_manager_deal_memo_production_id                       INT,
+    IN dga_stage_manager_deal_memo_episode_id                          INT,
+    IN dga_stage_manager_deal_memo_category_associate_director         CHAR(1),
+    IN dga_stage_manager_deal_memo_category_stage_manager              CHAR(1),
+    IN dga_stage_manager_deal_memo_category_aditional_stage_manager    CHAR(1),
+    IN dga_stage_manager_deal_memo_prime_time_per_week_studio          CHAR(1),
+    IN dga_stage_manager_deal_memo_prime_time_per_week_location        CHAR(1),
+    IN dga_stage_manager_deal_memo_prime_time_per_day_studio           CHAR(1),
+    IN dga_stage_manager_deal_memo_prime_time_per_day_location         CHAR(1),
+    IN dga_stage_manager_deal_memo_other_per_week_40                   CHAR(1),
+    IN dga_stage_manager_deal_memo_other_per_week_flat_60              CHAR(1),
+    IN dga_stage_manager_deal_memo_other_per_day_8                     CHAR(1),
+    IN dga_stage_manager_deal_memo_other_per_day_flat_12               CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_30_lower               CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_30_between             CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_30_higher              CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_60_lower               CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_60_between             CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_60_higher              CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_120_lower              CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_120_between            CHAR(1),
+    IN dga_stage_manager_deal_memo_project_info_120_higher             CHAR(1),
+    IN dga_stage_manager_deal_memo_other_conditions                    VARCHAR(255),
+    IN dga_stage_manager_deal_memo_employer_name                       VARCHAR(50),
+    IN dga_stage_manager_deal_memo_employee_name                       VARCHAR(50),
+    IN dga_stage_manager_deal_memo_employee_date                       DATE,
+    IN dga_stage_manager_deal_memo_signatory                           VARCHAR(50),
+    IN dga_stage_manager_deal_memo_signatory_by                        VARCHAR(50),
+    IN dga_stage_manager_deal_memo_signatory_date                      DATE,
+    IN dga_stage_manager_deal_memo_created_by                          VARCHAR(30),
+    IN dga_stage_manager_deal_memo_updated_by                          VARCHAR(30),
+    IN dga_stage_manager_deal_memo_status                              VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_stage_manager_deal_memo
+     WHERE id = dga_stage_manager_deal_memo_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_stage_manager_deal_memo
+        (
+            contact_id,
+            ssn,
+            loanout,
+            fid,
+            salary,
+            salary_period_id,
+            aditional_time,
+            aditional_time_period_id,
+            start_date,
+            guaranteed,
+            guaranteed_period_id,
+            production_id,
+            episode_id,
+            category_associate_director,
+            category_stage_manager,
+            category_aditional_stage_manager,
+            prime_time_per_week_studio,
+            prime_time_per_week_location,
+            prime_time_per_day_studio,
+            prime_time_per_day_location,
+            other_per_week_40,
+            other_per_week_flat_60,
+            other_per_day_8,
+            other_per_day_flat_12,
+            project_info_30_lower,
+            project_info_30_between,
+            project_info_30_higher,
+            project_info_60_lower,
+            project_info_60_between,
+            project_info_60_higher,
+            project_info_120_lower,
+            project_info_120_between,
+            project_info_120_higher,
+            other_conditions,
+            employer_name,
+            employee_name,
+            employee_date,
+            signatory,
+            signatory_by,
+            signatory_date,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_stage_manager_deal_memo_contact_id,
+            dga_stage_manager_deal_memo_ssn,
+            dga_stage_manager_deal_memo_loanout,
+            dga_stage_manager_deal_memo_fid,
+            dga_stage_manager_deal_memo_salary,
+            dga_stage_manager_deal_memo_salary_period_id,
+            dga_stage_manager_deal_memo_aditional_time,
+            dga_stage_manager_deal_memo_aditional_time_period_id,
+            dga_stage_manager_deal_memo_start_date,
+            dga_stage_manager_deal_memo_guaranteed,
+            dga_stage_manager_deal_memo_guaranteed_period_id,
+            dga_stage_manager_deal_memo_production_id,
+            dga_stage_manager_deal_memo_episode_id,
+            dga_stage_manager_deal_memo_category_associate_director,
+            dga_stage_manager_deal_memo_category_stage_manager,
+            dga_stage_manager_deal_memo_category_aditional_stage_manager,
+            dga_stage_manager_deal_memo_prime_time_per_week_studio,
+            dga_stage_manager_deal_memo_prime_time_per_week_location,
+            dga_stage_manager_deal_memo_prime_time_per_day_studio,
+            dga_stage_manager_deal_memo_prime_time_per_day_location,
+            dga_stage_manager_deal_memo_other_per_week_40,
+            dga_stage_manager_deal_memo_other_per_week_flat_60,
+            dga_stage_manager_deal_memo_other_per_day_8,
+            dga_stage_manager_deal_memo_other_per_day_flat_12,
+            dga_stage_manager_deal_memo_project_info_30_lower,
+            dga_stage_manager_deal_memo_project_info_30_between,
+            dga_stage_manager_deal_memo_project_info_30_higher,
+            dga_stage_manager_deal_memo_project_info_60_lower,
+            dga_stage_manager_deal_memo_project_info_60_between,
+            dga_stage_manager_deal_memo_project_info_60_higher,
+            dga_stage_manager_deal_memo_project_info_120_lower,
+            dga_stage_manager_deal_memo_project_info_120_between,
+            dga_stage_manager_deal_memo_project_info_120_higher,
+            dga_stage_manager_deal_memo_other_conditions,
+            dga_stage_manager_deal_memo_employer_name,
+            dga_stage_manager_deal_memo_employee_name,
+            dga_stage_manager_deal_memo_employee_date,
+            dga_stage_manager_deal_memo_signatory,
+            dga_stage_manager_deal_memo_signatory_by,
+            dga_stage_manager_deal_memo_signatory_date,
+            dga_stage_manager_deal_memo_created_by,
+            dga_stage_manager_deal_memo_updated_by,
+            'CREATED'
+        );
+
+        SET dga_stage_manager_deal_memo_id = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_stage_manager_deal_memo
+           SET id                               = dga_stage_manager_deal_memo_id,
+               contact_id                       = dga_stage_manager_deal_memo_contact_id,
+               ssn                              = dga_stage_manager_deal_memo_ssn,
+               loanout                          = dga_stage_manager_deal_memo_loanout,
+               fid                              = dga_stage_manager_deal_memo_fid,
+               salary                           = dga_stage_manager_deal_memo_salary,
+               salary_period_id                 = dga_stage_manager_deal_memo_salary_period_id,
+               aditional_time                   = dga_stage_manager_deal_memo_aditional_time,
+               aditional_time_period_id         = dga_stage_manager_deal_memo_aditional_time_period_id,
+               start_date                       = dga_stage_manager_deal_memo_start_date,
+               guaranteed                       = dga_stage_manager_deal_memo_guaranteed,
+               guaranteed_period_id             = dga_stage_manager_deal_memo_guaranteed_period_id,
+               production_id                    = dga_stage_manager_deal_memo_production_id,
+               episode_id                       = dga_stage_manager_deal_memo_episode_id,
+               category_associate_director      = dga_stage_manager_deal_memo_category_associate_director,
+               category_stage_manager           = dga_stage_manager_deal_memo_category_stage_manager,
+               category_aditional_stage_manager = dga_stage_manager_deal_memo_category_aditional_stage_manager,
+               prime_time_per_week_studio       = dga_stage_manager_deal_memo_prime_time_per_week_studio,
+               prime_time_per_week_location     = dga_stage_manager_deal_memo_prime_time_per_week_location,
+               prime_time_per_day_studio        = dga_stage_manager_deal_memo_prime_time_per_day_studio,
+               prime_time_per_day_location      = dga_stage_manager_deal_memo_prime_time_per_day_location,
+               other_per_week_40                = dga_stage_manager_deal_memo_other_per_week_40,
+               other_per_week_flat_60           = dga_stage_manager_deal_memo_other_per_week_flat_60,
+               other_per_day_8                  = dga_stage_manager_deal_memo_other_per_day_8,
+               other_per_day_flat_12            = dga_stage_manager_deal_memo_other_per_day_flat_12,
+               project_info_30_lower            = dga_stage_manager_deal_memo_project_info_30_lower,
+               project_info_30_between          = dga_stage_manager_deal_memo_project_info_30_between,
+               project_info_30_higher           = dga_stage_manager_deal_memo_project_info_30_higher,
+               project_info_60_lower            = dga_stage_manager_deal_memo_project_info_60_lower,
+               project_info_60_between          = dga_stage_manager_deal_memo_project_info_60_between,
+               project_info_60_higher           = dga_stage_manager_deal_memo_project_info_60_higher,
+               project_info_120_lower           = dga_stage_manager_deal_memo_project_info_120_lower,
+               project_info_120_between         = dga_stage_manager_deal_memo_project_info_120_between,
+               project_info_120_higher          = dga_stage_manager_deal_memo_project_info_120_higher,
+               other_conditions                 = dga_stage_manager_deal_memo_other_conditions,
+               employer_name                    = dga_stage_manager_deal_memo_employer_name,
+               employee_name                    = dga_stage_manager_deal_memo_employee_name,
+               employee_date                    = dga_stage_manager_deal_memo_employee_date,
+               signatory                        = dga_stage_manager_deal_memo_signatory,
+               signatory_by                     = dga_stage_manager_deal_memo_signatory_by,
+               signatory_date                   = dga_stage_manager_deal_memo_signatory_date,
+               created_by                       = dga_stage_manager_deal_memo_created_by,
+               updated_by                       = dga_stage_manager_deal_memo_updated_by,
+               status = 'UPDATED'
+         WHERE id                 =    dga_stage_manager_deal_memo_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_stage_manager_deal_memo_set_closed(
+    IN dga_stage_manager_deal_memo_id                   INTEGER,
+    IN dga_stage_manager_deal_memo_updated_by           VARCHAR(30)
+)
+BEGIN
+
+    UPDATE dga_stage_manager_deal_memo
+       SET status     = 'CLOSED',
+           updated_by = dga_stage_manager_deal_memo_updated_by
+     WHERE id         = dga_stage_manager_deal_memo_id;
+     COMMIT;
+
+END //
+DELIMITER ;
+
  INSERT INTO production_type
 (name,created_by,updated_by,status)
 VALUES
@@ -1627,14 +3401,14 @@ VALUES
 ('WY', 'Wyoming',              'RKAMMER', 'RKAMMER', 'CREATED');
 
 
-INSERT INTO deal_type
-(abreviation, name, created_by, updated_by, status)
-VALUES
-('FD', 'Flat Deal',                 'RKAMMER', 'RKAMMER', 'CREATED'),
-('ST', 'Staff',                     'RKAMMER', 'RKAMMER', 'CREATED'),
-('SL', 'Sale of Literary Material', 'RKAMMER', 'RKAMMER', 'CREATED'),
-('OP', 'Option',                    'RKAMMER', 'RKAMMER', 'CREATED'),
-('',   'Unknown',                   'RKAMMER', 'RKAMMER', 'CREATED');
+-- INSERT INTO deal_type
+-- (abreviation, name, created_by, updated_by, status)
+-- VALUES
+-- ('FD', 'Flat Deal',                 'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('ST', 'Staff',                     'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('SL', 'Sale of Literary Material', 'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('OP', 'Option',                    'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('',   'Unknown',                   'RKAMMER', 'RKAMMER', 'CREATED');
 
 
 INSERT INTO company
@@ -1679,3 +3453,22 @@ VALUES
 (1, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
 (3, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
 (4, 3, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO period
+(name, period, plural, created_by, updated_by, status)
+VALUES
+('day',   'daily',   'days',   'RKAMMER', 'RKAMMER', 'CREATED'),
+('week',  'weekly',  'weeks',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('month', 'monthly', 'months', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('year',  'yearly',  'years',  'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO media_type
+(name, created_by, updated_by, status)
+VALUES
+('Network or FBC', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Non-Network',    'RKAMMER', 'RKAMMER', 'CREATED'),
+('Basic Cable',    'RKAMMER', 'RKAMMER', 'CREATED'),
+('Pay TV',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('Videodisc/Videocassete', 'RKAMMER', 'RKAMMER', 'CREATED');
