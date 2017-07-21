@@ -1,6 +1,9 @@
 CREATE OR REPLACE VIEW contact_get_list(
     contact_id,
-    contact_name,
+    contact_first_name,
+    contact_middle_name,
+    contact_last_name,
+    contact_suffix,
     contact_address,
     contact_city,
     contact_state_code,
@@ -16,7 +19,11 @@ CREATE OR REPLACE VIEW contact_get_list(
     contact_status
 ) AS
     SELECT contact.id                                             AS contact_id,
-           contact.name                                           AS contact_name,
+           contact.first_name                                     AS contact_first_name,
+           contact.middle_name                                    AS contact_middle_name,
+           contact.last_name                                      AS contact_last_name,
+           contact.suffix                                         AS contact_suffix,
+
            contact.address                                        AS contact_address,
            contact.city                                           AS contact_city,
            contact.state_code                                     AS contact_state_code,

@@ -1,6 +1,9 @@
 CREATE TABLE contact(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
-    name                 VARCHAR(100) NOT NULL,
+    first_name           VARCHAR(50)  NOT NULL,
+    middle_name          VARCHAR(50),
+    last_name            VARCHAR(50)  NOT NULL,
+    suffix               VARCHAR(50),
     address              VARCHAR(100),
     city                 VARCHAR(100),
     state_code           CHAR(2),

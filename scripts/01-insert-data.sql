@@ -149,3 +149,28 @@ VALUES
 ('Basic Cable',    'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Pay TV',         'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Videodisc/Videocassete', 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO wga_deal_type
+(code, title, created_by, updated_by, status)
+VALUES
+('FD', 'Flat Deal',                 'RKAMMER', 'RKAMMER', 'CREATED'),
+('ST', 'Staff',                     'RKAMMER', 'RKAMMER', 'CREATED'),
+('SL', 'Sale of Literary Material', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('OP', 'Option',                    'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL, 'Unknown',                   'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO wga_field_of_work
+(code, title, created_by, updated_by, status)
+VALUES
+('S',  'Screen',                'RKAMMER', 'RKAMMER', 'CREATED'),
+('T',  'Television',            'RKAMMER', 'RKAMMER', 'CREATED'),
+('R',  'Radio',                 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Z',  'TV News/Promo',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('P',  'Pay TV/VD/VC',          'RKAMMER', 'RKAMMER', 'CREATED'),
+('W',  'New Media',             'RKAMMER', 'RKAMMER', 'CREATED'),
+('A',  'Animation Television',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('B',  'Animation Screen',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('I',  'Informational',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('N',  'Interactive',           'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL, 'Unknown',               'RKAMMER', 'RKAMMER', 'CREATED');

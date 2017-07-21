@@ -49,7 +49,7 @@ CREATE TABLE dga_upm_deal_memo(
     created_by                                          VARCHAR(30),
     updated                                             TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by                                          VARCHAR(30),
-    status                                              VARCHAR(30),
+    status                                              VARCHAR(30)
     CONSTRAINT pk_dga_director_scripted_deal_memo_id                     PRIMARY KEY (id),
     CONSTRAINT fk_dga_director_scripted_deal_memo_contact                FOREIGN KEY (contact_id)                 REFERENCES contact    (id),
     CONSTRAINT fk_dga_director_scripted_deal_memo_salary_studio_period   FOREIGN KEY (salary_studio_period_id)    REFERENCES period     (id),
