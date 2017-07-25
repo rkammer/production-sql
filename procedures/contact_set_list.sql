@@ -1,17 +1,18 @@
 DELIMITER //
 CREATE PROCEDURE contact_set_list(
-    INOUT  contact_id                   INTEGER,
-    IN     contact_name                 VARCHAR(100),
-    IN     contact_address              VARCHAR(100),
-    IN     contact_city                 VARCHAR(100),
-    IN     contact_state_code           CHAR(2),
-    IN     contact_phone                VARCHAR(20),
-    IN     contact_email                VARCHAR(100),
-    IN     contact_website              VARCHAR(100),
-    IN     contact_picture_path         VARCHAR(120),
-    IN     contact_created_by           VARCHAR(30),
-    IN     contact_updated_by           VARCHAR(30),
-    IN     contact_status               VARCHAR(30)
+    IN  contact_id                   INTEGER,
+    IN  contact_name                 VARCHAR(100),
+    IN  contact_address              VARCHAR(100),
+    IN  contact_city                 VARCHAR(100),
+    IN  contact_state_code           CHAR(2),
+    IN  contact_phone                VARCHAR(20),
+    IN  contact_email                VARCHAR(100),
+    IN  contact_website              VARCHAR(100),
+    IN  contact_picture_path         VARCHAR(120),
+    IN  contact_created_by           VARCHAR(30),
+    IN  contact_updated_by           VARCHAR(30),
+    IN  contact_status               VARCHAR(30),
+    OUT return_value                 INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -51,7 +52,7 @@ BEGIN
             'CREATED'
         );
 
-        SET contact_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -68,6 +69,8 @@ BEGIN
                updated_by   = updated_by,
                status       = 'UPDATED'
          WHERE id           = contact_id;
+
+         SET return_value = contact_id;
      END IF;
 
      COMMIT;

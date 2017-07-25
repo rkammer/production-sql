@@ -1,14 +1,15 @@
 DELIMITER //
 CREATE PROCEDURE dga_quartely_earning_item_set_list(
-    INOUT dga_quartely_earning_item_id                          INTEGER,
-    IN    dga_quartely_earning_item_dga_quarterly_earning_id    INTEGER,
-    IN    dga_quartely_earning_item_name                        VARCHAR(50),
-    IN    dga_quartely_earning_item_ssn                         VARCHAR(11),
-    IN    dga_quartely_earning_item_category                    VARCHAR(30),
-    IN    dga_quartely_earning_item_production_id               INTEGER,
-    IN    dga_quartely_earning_item_earnings                    NUMERIC(15,2),
-    IN    dga_quartely_earning_item_created_by                  VARCHAR(30),
-    IN    dga_quartely_earning_item_updated_by                  VARCHAR(30)
+    IN  dga_quartely_earning_item_id                          INTEGER,
+    IN  dga_quartely_earning_item_dga_quarterly_earning_id    INTEGER,
+    IN  dga_quartely_earning_item_name                        VARCHAR(50),
+    IN  dga_quartely_earning_item_ssn                         VARCHAR(11),
+    IN  dga_quartely_earning_item_category                    VARCHAR(30),
+    IN  dga_quartely_earning_item_production_id               INTEGER,
+    IN  dga_quartely_earning_item_earnings                    NUMERIC(15,2),
+    IN  dga_quartely_earning_item_created_by                  VARCHAR(30),
+    IN  dga_quartely_earning_item_updated_by                  VARCHAR(30),
+    OUT return_value                                          INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -44,7 +45,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_quartely_earning_item_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -59,6 +60,8 @@ BEGIN
                status                   =   'UPDATED'
          WHERE id                       =   dga_quartely_earning_item_id;
      END IF;
+
+     SET return_value = dga_quartely_earning_item_id;
 
      COMMIT;
 END //

@@ -1,18 +1,19 @@
 DELIMITER //
 CREATE PROCEDURE company_set_list(
-    INOUT company_id                   INTEGER,
-    IN    company_name                 VARCHAR(50),
-    IN    company_address              VARCHAR(100),
-    IN    company_city                 VARCHAR(100),
-    IN    company_state_code           CHAR(2),
-    IN    company_phone                VARCHAR(20),
-    IN    company_website              VARCHAR(100),
-    IN    company_logo_path            VARCHAR(120),
-    IN    company_media_company        CHAR(1),
-    IN    company_production_company   CHAR(1),
-    IN    company_payroll_company      CHAR(1),
-    IN    company_created_by           VARCHAR(30),
-    IN    company_updated_by           VARCHAR(30)
+    IN  company_id                   INTEGER,
+    IN  company_name                 VARCHAR(50),
+    IN  company_address              VARCHAR(100),
+    IN  company_city                 VARCHAR(100),
+    IN  company_state_code           CHAR(2),
+    IN  company_phone                VARCHAR(20),
+    IN  company_website              VARCHAR(100),
+    IN  company_logo_path            VARCHAR(120),
+    IN  company_media_company        CHAR(1),
+    IN  company_production_company   CHAR(1),
+    IN  company_payroll_company      CHAR(1),
+    IN  company_created_by           VARCHAR(30),
+    IN  company_updated_by           VARCHAR(30),
+    OUT return_value                 INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -56,7 +57,7 @@ BEGIN
             'CREATED'
         );
 
-        SET company_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -74,6 +75,8 @@ BEGIN
                updated_by         =    company_updated_by,
                status             =    'UPDATED'
          WHERE id                 =    company_id;
+
+         SET return_value = company_id;
      END IF;
 
      COMMIT;

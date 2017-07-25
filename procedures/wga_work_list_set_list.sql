@@ -1,13 +1,14 @@
 DELIMITER //
 CREATE PROCEDURE wga_work_list_set_list(
-    INOUT wga_work_list_id                INT,
-    IN    wga_work_list_company_id        INT,
-    IN    wga_work_list_company_number    INT,
-    IN    wga_work_list_week_ending       INT,
-    IN    wga_work_list_contact_id        INT,
-    IN    wga_work_list_name              VARCHAR(50),
-    IN    wga_work_list_created_by        VARCHAR(30),
-    IN    wga_work_list_updated_by        VARCHAR(30)
+    IN  wga_work_list_id                INT,
+    IN  wga_work_list_company_id        INT,
+    IN  wga_work_list_company_number    INT,
+    IN  wga_work_list_week_ending       INT,
+    IN  wga_work_list_contact_id        INT,
+    IN  wga_work_list_name              VARCHAR(50),
+    IN  wga_work_list_created_by        VARCHAR(30),
+    IN  wga_work_list_updated_by        VARCHAR(30),
+    OUT return_value                    INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -42,7 +43,7 @@ BEGIN
             'CREATED'
         );
 
-        SET wga_work_list_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -58,6 +59,8 @@ BEGIN
                updated_by     = wga_work_list_updated_by,
                status         = 'UPDATED'
          WHERE id             = wga_work_list_id;
+
+         SET return_value = wga_work_list_id;
      END IF;
 
      COMMIT;

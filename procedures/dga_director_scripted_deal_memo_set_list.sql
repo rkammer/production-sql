@@ -1,54 +1,55 @@
 DELIMITER //
 CREATE PROCEDURE dga_director_scripted_deal_memo_set_list(
-    INOUT dga_director_scripted_deal_memo_id                             INT,
-    IN    dga_director_scripted_deal_memo_contact_id                     INT,
-    IN    dga_director_scripted_deal_memo_ssn                            VARCHAR(11),
-    IN    dga_director_scripted_deal_memo_loanout                        VARCHAR(30),
-    IN    dga_director_scripted_deal_memo_fid                            VARCHAR(30),
-    IN    dga_director_scripted_deal_memo_salary                         DECIMAL,
-    IN    dga_director_scripted_deal_memo_salary_period_id               INT,
-    IN    dga_director_scripted_deal_memo_aditional_time                 DECIMAL,
-    IN    dga_director_scripted_deal_memo_aditional_time_period_id       INT,
-    IN    dga_director_scripted_deal_memo_start_date                     DATE,
-    IN    dga_director_scripted_deal_memo_guaranteed                     INT,
-    IN    dga_director_scripted_deal_memo_guaranteed_period_id           INT,
-    IN    dga_director_scripted_deal_memo_dga_covered                    CHAR(1),
-    IN    dga_director_scripted_deal_memo_addition_terms                 VARCHAR(1024),
-    IN    dga_director_scripted_deal_memo_production_id                  INT,
-    IN    dga_director_scripted_deal_memo_project_number                 VARCHAR(30),
-    IN    dga_director_scripted_deal_memo_episode_id                     INT,
-    IN    dga_director_scripted_deal_memo_episode_specific_length        VARCHAR(50),
-    IN    dga_director_scripted_deal_memo_segment                        CHAR(1),
-    IN    dga_director_scripted_deal_memo_segment_specific_length        VARCHAR(50),
-    IN    dga_director_scripted_deal_memo_length_30                      CHAR(1),
-    IN    dga_director_scripted_deal_memo_length_60                      CHAR(1),
-    IN    dga_director_scripted_deal_memo_length_90                      CHAR(1),
-    IN    dga_director_scripted_deal_memo_length_120                     CHAR(1),
-    IN    dga_director_scripted_deal_memo_length_other                   CHAR(1),
-    IN    dga_director_scripted_deal_memo_pilot                          CHAR(1),
-    IN    dga_director_scripted_deal_memo_dramatic_basic_cable_budget    DECIMAL,
-    IN    dga_director_scripted_deal_memo_type_production_multi_camera   CHAR(1),
-    IN    dga_director_scripted_deal_memo_type_production_single_camera  CHAR(1),
-    IN    dga_director_scripted_deal_memo_television_license_director    CHAR(1),
-    IN    dga_director_scripted_deal_memo_television_license_budget      CHAR(1),
-    IN    dga_director_scripted_deal_memo_produced_for_network           CHAR(1),
-    IN    dga_director_scripted_deal_memo_produced_for_non_network       CHAR(1),
-    IN    dga_director_scripted_deal_memo_produced_for_basic_cable       CHAR(1),
-    IN    dga_director_scripted_deal_memo_produced_for_pay_tv            CHAR(1),
-    IN    dga_director_scripted_deal_memo_produced_for_home_video        CHAR(1),
-    IN    dga_director_scripted_deal_memo_project_budget_more            CHAR(1),
-    IN    dga_director_scripted_deal_memo_project_budget_less            CHAR(1),
-    IN    dga_director_scripted_deal_memo_second_unit_director           CHAR(1),
-    IN    dga_director_scripted_deal_memo_segment_applicable             CHAR(1),
-    IN    dga_director_scripted_deal_memo_employer_name                  VARCHAR(50),
-    IN    dga_director_scripted_deal_memo_employee_name                  VARCHAR(50),
-    IN    dga_director_scripted_deal_memo_employee_date                  DATE,
-    IN    dga_director_scripted_deal_memo_signatory                      VARCHAR(50),
-    IN    dga_director_scripted_deal_memo_signatory_by                   VARCHAR(50),
-    IN    dga_director_scripted_deal_memo_signatory_date                 DATE,
-    IN    dga_director_scripted_deal_memo_created_by                     VARCHAR(30),
-    IN    dga_director_scripted_deal_memo_updated_by                     VARCHAR(30),
-    IN    dga_director_scripted_deal_memo_status                         VARCHAR(30)
+    IN  dga_director_scripted_deal_memo_id                             INT,
+    IN  dga_director_scripted_deal_memo_contact_id                     INT,
+    IN  dga_director_scripted_deal_memo_ssn                            VARCHAR(11),
+    IN  dga_director_scripted_deal_memo_loanout                        VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_fid                            VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_salary                         DECIMAL,
+    IN  dga_director_scripted_deal_memo_salary_period_id               INT,
+    IN  dga_director_scripted_deal_memo_aditional_time                 DECIMAL,
+    IN  dga_director_scripted_deal_memo_aditional_time_period_id       INT,
+    IN  dga_director_scripted_deal_memo_start_date                     DATE,
+    IN  dga_director_scripted_deal_memo_guaranteed                     INT,
+    IN  dga_director_scripted_deal_memo_guaranteed_period_id           INT,
+    IN  dga_director_scripted_deal_memo_dga_covered                    CHAR(1),
+    IN  dga_director_scripted_deal_memo_addition_terms                 VARCHAR(1024),
+    IN  dga_director_scripted_deal_memo_production_id                  INT,
+    IN  dga_director_scripted_deal_memo_project_number                 VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_episode_id                     INT,
+    IN  dga_director_scripted_deal_memo_episode_specific_length        VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_segment                        CHAR(1),
+    IN  dga_director_scripted_deal_memo_segment_specific_length        VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_length_30                      CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_60                      CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_90                      CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_120                     CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_other                   CHAR(1),
+    IN  dga_director_scripted_deal_memo_pilot                          CHAR(1),
+    IN  dga_director_scripted_deal_memo_dramatic_basic_cable_budget    DECIMAL,
+    IN  dga_director_scripted_deal_memo_type_production_multi_camera   CHAR(1),
+    IN  dga_director_scripted_deal_memo_type_production_single_camera  CHAR(1),
+    IN  dga_director_scripted_deal_memo_television_license_director    CHAR(1),
+    IN  dga_director_scripted_deal_memo_television_license_budget      CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_network           CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_non_network       CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_basic_cable       CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_pay_tv            CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_home_video        CHAR(1),
+    IN  dga_director_scripted_deal_memo_project_budget_more            CHAR(1),
+    IN  dga_director_scripted_deal_memo_project_budget_less            CHAR(1),
+    IN  dga_director_scripted_deal_memo_second_unit_director           CHAR(1),
+    IN  dga_director_scripted_deal_memo_segment_applicable             CHAR(1),
+    IN  dga_director_scripted_deal_memo_employer_name                  VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_employee_name                  VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_employee_date                  DATE,
+    IN  dga_director_scripted_deal_memo_signatory                      VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_signatory_by                   VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_signatory_date                 DATE,
+    IN  dga_director_scripted_deal_memo_created_by                     VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_updated_by                     VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_status                         VARCHAR(30),
+    OUT return_value                                                   INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -162,7 +163,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_director_scripted_deal_memo_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -218,6 +219,8 @@ BEGIN
                updated_by                    = dga_director_scripted_deal_memo_updated_by,
                status                        = 'UPDATED'
          WHERE id                            = dga_director_scripted_deal_memo_id;
+
+         SET return_value = dga_director_scripted_deal_memo_id;
      END IF;
 
      COMMIT;

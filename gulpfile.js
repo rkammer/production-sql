@@ -38,6 +38,9 @@ gulp.task('script', function(){
     //                   date.getSeconds().toString();
 
     gulp.src([
+
+        // 'scripts/00-drop-objects.sql',
+
         'tables/state.sql',
         'tables/company.sql',
         'tables/network.sql',

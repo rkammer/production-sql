@@ -1,27 +1,28 @@
 DELIMITER //
 CREATE PROCEDURE production_set_list(
-    INOUT production_id                               INTEGER,
-    IN    production_title                            VARCHAR(50),
-    IN    production_budget                           NUMERIC(15,2),
-    IN    production_writing_start_date               DATE,
-    IN    production_writing_end_date                 DATE,
-    IN    production_pre_production_start_date        DATE,
-    IN    production_pre_production_end_date          DATE,
-    IN    production_photography_start_date           DATE,
-    IN    production_photography_end_date             DATE,
-    IN    production_post_production_start_date       DATE,
-    IN    production_post_production_end_date         DATE,
-    IN    production_network_production_start_date    DATE,
-    IN    production_network_production_end_date      DATE,
-    IN    production_production_length_id             INTEGER,
-    IN    production_network_id                       INTEGER,
-    IN    production_production_type_id               INTEGER,
-    IN    production_production_company_id            INTEGER,
-    IN    production_payroll_company_id               INTEGER,
-    IN    production_logo_path                        VARCHAR(120),
-    IN    production_created_by                       VARCHAR(30),
-    IN    production_updated_by                       VARCHAR(30),
-    IN    production_status                           VARCHAR(30)
+    IN  production_id                               INTEGER,
+    IN  production_title                            VARCHAR(50),
+    IN  production_budget                           NUMERIC(15,2),
+    IN  production_writing_start_date               DATE,
+    IN  production_writing_end_date                 DATE,
+    IN  production_pre_production_start_date        DATE,
+    IN  production_pre_production_end_date          DATE,
+    IN  production_photography_start_date           DATE,
+    IN  production_photography_end_date             DATE,
+    IN  production_post_production_start_date       DATE,
+    IN  production_post_production_end_date         DATE,
+    IN  production_network_production_start_date    DATE,
+    IN  production_network_production_end_date      DATE,
+    IN  production_production_length_id             INTEGER,
+    IN  production_network_id                       INTEGER,
+    IN  production_production_type_id               INTEGER,
+    IN  production_production_company_id            INTEGER,
+    IN  production_payroll_company_id               INTEGER,
+    IN  production_logo_path                        VARCHAR(120),
+    IN  production_created_by                       VARCHAR(30),
+    IN  production_updated_by                       VARCHAR(30),
+    IN  production_status                           VARCHAR(30),
+    OUT return_value                                INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -81,7 +82,7 @@ BEGIN
             'CREATED'
         );
 
-        SET production_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -107,6 +108,8 @@ BEGIN
                updated_by                     =  production_updated_by,
                status                         =  'UPDATED'
          WHERE id                             =   production_id;
+
+         SET return_value = production_id;
      END IF;
 
      COMMIT;

@@ -1,4 +1,3 @@
---TODO move field company_number to table company as wga_company_number
 CREATE TABLE wga_work_list(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
     company_id           INTEGER      NOT NULL,

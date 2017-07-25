@@ -1,9 +1,10 @@
 DELIMITER //
 CREATE PROCEDURE production_type_set_list(
-    INOUT production_type_id           INTEGER,
-    IN    production_type_name         VARCHAR(50),
-    IN    production_type_created_by   VARCHAR(30),
-    IN    production_type_updated_by   VARCHAR(30)
+    IN  production_type_id           INTEGER,
+    IN  production_type_name         VARCHAR(50),
+    IN  production_type_created_by   VARCHAR(30),
+    IN  production_type_updated_by   VARCHAR(30),
+    OUT return_value                 INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -29,7 +30,7 @@ BEGIN
             'CREATED'
         );
 
-        SET production_type_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -38,6 +39,8 @@ BEGIN
                updated_by = production_type_updated_by,
                status     = 'UPDATED'
          WHERE id         = production_type_id;
+
+         SET return_value = production_type_id;
      END IF;
 
      COMMIT;

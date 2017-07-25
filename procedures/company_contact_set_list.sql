@@ -1,10 +1,10 @@
 DELIMITER //
 CREATE PROCEDURE company_contact_set_list(
-    INOUT company_contact_company_id  INTEGER,
-    IN    company_contact_contact_id  INTEGER,
-    IN    company_contact_created_by  VARCHAR(30),
-    IN    company_contact_updated_by  VARCHAR(30),
-    IN    company_contact_status      VARCHAR(30)
+    IN company_contact_company_id  INTEGER,
+    IN company_contact_contact_id  INTEGER,
+    IN company_contact_created_by  VARCHAR(30),
+    IN company_contact_updated_by  VARCHAR(30),
+    IN company_contact_status      VARCHAR(30)
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;

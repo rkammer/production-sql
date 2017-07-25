@@ -1,22 +1,23 @@
 DELIMITER //
 CREATE PROCEDURE episode_set_list(
-    INOUT  episode_id                               INTEGER,
-    IN     episode_title                            VARCHAR(50),
-    IN     episode_episode_number                   INTEGER,
-    IN     episode_season_id                        INTEGER,
-    IN     episode_budget                           NUMERIC(15,2),
-    IN     episode_writing_start_date               DATE,
-    IN     episode_writing_end_date                 DATE,
-    IN     episode_pre_production_start_date        DATE,
-    IN     episode_pre_production_end_date          DATE,
-    IN     episode_photography_start_date           DATE,
-    IN     episode_photography_end_date             DATE,
-    IN     episode_post_production_start_date       DATE,
-    IN     episode_post_production_end_date         DATE,
-    IN     episode_network_production_start_date    DATE,
-    IN     episode_network_production_end_date      DATE,
-    IN     episode_created_by                       VARCHAR(30),
-    IN     episode_updated_by                       VARCHAR(30)
+    IN  episode_id                               INTEGER,
+    IN  episode_title                            VARCHAR(50),
+    IN  episode_episode_number                   INTEGER,
+    IN  episode_season_id                        INTEGER,
+    IN  episode_budget                           NUMERIC(15,2),
+    IN  episode_writing_start_date               DATE,
+    IN  episode_writing_end_date                 DATE,
+    IN  episode_pre_production_start_date        DATE,
+    IN  episode_pre_production_end_date          DATE,
+    IN  episode_photography_start_date           DATE,
+    IN  episode_photography_end_date             DATE,
+    IN  episode_post_production_start_date       DATE,
+    IN  episode_post_production_end_date         DATE,
+    IN  episode_network_production_start_date    DATE,
+    IN  episode_network_production_end_date      DATE,
+    IN  episode_created_by                       VARCHAR(30),
+    IN  episode_updated_by                       VARCHAR(30),
+    OUT return_value                             INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -70,7 +71,7 @@ BEGIN
             'CREATED'
         );
 
-        SET episode_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -93,6 +94,8 @@ BEGIN
                updated_by                     =  episode_updated_by,
                status                         =  'UPDATED'
          WHERE id                             =  episode_id;
+
+         SET return_value = episode_id;
      END IF;
 
      COMMIT;

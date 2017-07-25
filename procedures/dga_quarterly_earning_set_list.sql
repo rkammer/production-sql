@@ -1,15 +1,16 @@
 DELIMITER //
 CREATE PROCEDURE dga_quarterly_earning_set_list(
-    INOUT dga_quarterly_earning_id                   INTEGER,
-    IN    dga_quarterly_earning_quarterly            VARCHAR(10),
-    IN    dga_quarterly_earning_year                 YEAR,
-    IN    dga_quarterly_earning_company_id           INTEGER,
-    IN    dga_quarterly_earning_contact_id           INTEGER,
-    IN    dga_quarterly_earning_prepared_by          VARCHAR(50),
-    IN    dga_quarterly_earning_phone                VARCHAR(20),
-    IN    dga_quarterly_earning_created_by           VARCHAR(30),
-    IN    dga_quarterly_earning_updated_by           VARCHAR(30),
-    IN    dga_quarterly_earning_status               VARCHAR(30)
+    IN  dga_quarterly_earning_id                   INTEGER,
+    IN  dga_quarterly_earning_quarterly            VARCHAR(10),
+    IN  dga_quarterly_earning_year                 YEAR,
+    IN  dga_quarterly_earning_company_id           INTEGER,
+    IN  dga_quarterly_earning_contact_id           INTEGER,
+    IN  dga_quarterly_earning_prepared_by          VARCHAR(50),
+    IN  dga_quarterly_earning_phone                VARCHAR(20),
+    IN  dga_quarterly_earning_created_by           VARCHAR(30),
+    IN  dga_quarterly_earning_updated_by           VARCHAR(30),
+    IN  dga_quarterly_earning_status               VARCHAR(30),
+    OUT return_value                               INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -45,7 +46,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_quarterly_earning_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -60,6 +61,8 @@ BEGIN
                updated_by  = dga_quarterly_earning_updated_by,
                status      = 'UPDATED'
          WHERE id          = dga_quarterly_earning_id;
+
+         SET return_value = dga_quarterly_earning_id;
      END IF;
 
      COMMIT;

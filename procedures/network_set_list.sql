@@ -1,11 +1,12 @@
 DELIMITER //
 CREATE PROCEDURE network_set_list(
-    INOUT network_id                 INTEGER,
-    IN    network_name               VARCHAR(50),
-    IN    network_media_company_id   INTEGER,
-    IN    network_logo_path          VARCHAR(120),
-    IN    network_created_by         VARCHAR(30),
-    IN    network_updated_by         VARCHAR(30)
+    IN  network_id                 INTEGER,
+    IN  network_name               VARCHAR(50),
+    IN  network_media_company_id   INTEGER,
+    IN  network_logo_path          VARCHAR(120),
+    IN  network_created_by         VARCHAR(30),
+    IN  network_updated_by         VARCHAR(30),
+    OUT return_value               INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -35,7 +36,7 @@ BEGIN
             'CREATED'
         );
 
-        SET network_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -46,6 +47,8 @@ BEGIN
                updated_by       = network_updated_by,
                status           = 'UPDATED'
          WHERE id               = network_id;
+
+         SET return_value = network_id;
      END IF;
 
      COMMIT;

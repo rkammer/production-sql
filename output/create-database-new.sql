@@ -165,7 +165,10 @@ CREATE TABLE state(
 
  CREATE TABLE contact(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
-    name                 VARCHAR(100) NOT NULL,
+    first_name           VARCHAR(50)  NOT NULL,
+    middle_name          VARCHAR(50),
+    last_name            VARCHAR(50)  NOT NULL,
+    suffix               VARCHAR(50),
     address              VARCHAR(100),
     city                 VARCHAR(100),
     state_code           CHAR(2),
@@ -472,6 +475,139 @@ CREATE TABLE state(
     CONSTRAINT fk_dga_stage_manager_deal_memo_production             FOREIGN KEY (production_id)            REFERENCES production (id),
     CONSTRAINT fk_dga_stage_manager_deal_memo_episode                FOREIGN KEY (episode_id)               REFERENCES episode    (id)
 ) ENGINE = InnoDB;
+
+ CREATE TABLE dga_director_scripted_deal_memo(
+    id                                        INTEGER        NOT NULL AUTO_INCREMENT,
+    contact_id                                INT            NOT NULL,
+    ssn                                       VARCHAR(11)    NOT NULL,
+    loanout                                   VARCHAR(30)    NOT NULL,
+    fid                                       VARCHAR(30)    NOT NULL,
+    salary                                    NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    salary_period_id                          INT,
+    aditional_time                            NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    aditional_time_period_id                  INT            NOT NULL,
+    start_date                                DATE           NOT NULL,
+    guaranteed                                INT,
+    guaranteed_period_id                      INT,
+    dga_covered                               CHAR(1),
+    addition_terms                            VARCHAR(1024),
+    production_id                             INT            NOT NULL,
+    project_number                            VARCHAR(30),
+    episode_id                                INT            NOT NULL,
+    episode_specific_length                   VARCHAR(50),
+    segment                                   CHAR(1) DEFAULT 'F',
+    segment_specific_length                   VARCHAR(50),
+    length_30                                 CHAR(1) DEFAULT 'F',
+    length_60                                 CHAR(1) DEFAULT 'F',
+    length_90                                 CHAR(1) DEFAULT 'F',
+    length_120                                CHAR(1) DEFAULT 'F',
+    length_other                              CHAR(1) DEFAULT 'F',
+    pilot                                     CHAR(1) DEFAULT 'F',
+    dramatic_basic_cable_budget               NUMERIC(15,2),
+    type_production_multi_camera              CHAR(1) DEFAULT 'F',
+    type_production_single_camera             CHAR(1) DEFAULT 'F',
+    television_license_director               CHAR(1) DEFAULT 'F',
+    television_license_budget                 CHAR(1) DEFAULT 'F',
+    produced_for_network                      CHAR(1) DEFAULT 'F',
+    produced_for_non_network                  CHAR(1) DEFAULT 'F',
+    produced_for_basic_cable                  CHAR(1) DEFAULT 'F',
+    produced_for_pay_tv                       CHAR(1) DEFAULT 'F',
+    produced_for_home_video                   CHAR(1) DEFAULT 'F',
+    project_budget_more                       CHAR(1) DEFAULT 'F',
+    project_budget_less                       CHAR(1) DEFAULT 'F',
+    second_unit_director                      CHAR(1) DEFAULT 'F',
+    segment_applicable                        CHAR(1) DEFAULT 'F',
+    employer_name                             VARCHAR(50),
+    employee_name                             VARCHAR(50) NOT NULL,
+    employee_date                             DATE        NOT NULL,
+    signatory                                 VARCHAR(50) NOT NULL,
+    signatory_by                              VARCHAR(50) NOT NULL,
+    signatory_date                            DATE        NOT NULL,
+    created                                   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by                                VARCHAR(30),
+    updated                                   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                                VARCHAR(30),
+    status                                    VARCHAR(30),
+    CONSTRAINT pk_dga_director_scripted_deal_memo_id                     PRIMARY KEY (id),
+    CONSTRAINT fk_dga_director_scripted_deal_memo_contact                FOREIGN KEY (contact_id)               REFERENCES contact    (id),
+    CONSTRAINT fk_dga_director_scripted_deal_memo_salary_period          FOREIGN KEY (salary_period_id)         REFERENCES period     (id),
+    CONSTRAINT fk_dga_director_scripted_deal_memo_aditional_time_period  FOREIGN KEY (aditional_time_period_id) REFERENCES period     (id),
+    CONSTRAINT fk_dga_director_scripted_deal_memo_guaranteed_period      FOREIGN KEY (guaranteed_period_id)     REFERENCES period     (id),
+    CONSTRAINT fk_dga_director_scripted_deal_memo_production             FOREIGN KEY (production_id)            REFERENCES production (id),
+    CONSTRAINT fk_dga_director_scripted_deal_memo_episode                FOREIGN KEY (episode_id)               REFERENCES episode    (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_work_list(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    company_id           INTEGER      NOT NULL,
+    company_number       INTEGER      NOT NULL,
+    week_ending          INT          NOT NULL,
+    contact_id           INTEGER      NOT NULL,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_work_list_id               PRIMARY KEY (id),
+    CONSTRAINT fk_wga_work_list_company          FOREIGN KEY (company_id)             REFERENCES company (id),
+    CONSTRAINT fk_wga_work_list_contact          FOREIGN KEY (contact_id)             REFERENCES contact (id),
+    CONSTRAINT fk_wga_work_list_company_contact  FOREIGN KEY (company_id, contact_id) REFERENCES company_contact (company_id, contact_id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_deal_type(
+    id                   INTEGER     NOT NULL AUTO_INCREMENT,
+    code                 CHAR(2),
+    title                VARCHAR(30) NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_deal_type_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_field_of_work(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    code                 CHAR(1),
+    title                VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_field_of_work_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ DELIMITER //
+CREATE FUNCTION contact_get_full_name(contact_id INT)
+RETURNS VARCHAR(255)
+BEGIN
+    DECLARE wk_full_name VARCHAR(255);
+
+    SELECT CASE WHEN TRIM(contact.middle_name) IS NULL
+                  OR TRIM(contact.middle_name) = '' THEN
+                  CASE WHEN TRIM(contact.suffix) IS NULL OR TRIM(contact.suffix) = '' THEN
+                        CONCAT(TRIM(contact.first_name), ' ', TRIM(contact.last_name))
+                  ELSE
+                        CONCAT(TRIM(contact.first_name), ' ', TRIM(contact.last_name), ' ', TRIM(contact.suffix))
+                  END
+           ELSE
+                  CASE WHEN TRIM(contact.suffix) IS NULL OR TRIM(contact.suffix) = '' THEN
+                        CONCAT(TRIM(contact.first_name), ' ', TRIM(contact.middle_name), ' ', TRIM(contact.last_name))
+                  ELSE
+                        CONCAT(TRIM(contact.first_name), ' ', TRIM(contact.middle_name), ' ', TRIM(contact.last_name), ' ', TRIM(contact.suffix))
+
+                  END
+           END
+           INTO wk_full_name
+      FROM contact AS contact
+     WHERE contact.id = contact_id;
+
+     RETURN wk_full_name;
+
+END //
+DELIMITER ;
 
  CREATE OR REPLACE VIEW company_get_list(
     company_id,
@@ -925,8 +1061,12 @@ SELECT production_state.production_id                                  AS produc
 
  CREATE OR REPLACE VIEW contact_get_list(
     contact_id,
-    contact_name,
+    contact_first_name,
+    contact_middle_name,
+    contact_last_name,
+    contact_suffix,
     contact_address,
+    contact_full_name,
     contact_city,
     contact_state_code,
     contact_state_name,
@@ -941,7 +1081,11 @@ SELECT production_state.production_id                                  AS produc
     contact_status
 ) AS
     SELECT contact.id                                             AS contact_id,
-           contact.name                                           AS contact_name,
+           contact.first_name                                     AS contact_first_name,
+           contact.middle_name                                    AS contact_middle_name,
+           contact.last_name                                      AS contact_last_name,
+           contact.suffix                                         AS contact_suffix,
+           contact_get_full_name(contact.id)                      AS contact_full_name,
            contact.address                                        AS contact_address,
            contact.city                                           AS contact_city,
            contact.state_code                                     AS contact_state_code,
@@ -959,7 +1103,12 @@ SELECT production_state.production_id                                  AS produc
 
  CREATE OR REPLACE VIEW company_contact_get_list(
     company_contact_company_id,
-    company_contact_company_name,
+    -- company_contact_company_name,
+    contact_contact_first_name,
+    contact_contact_middle_name,
+    contact_contact_last_name,
+    contact_contact_suffix,
+    contact_contact_full_name,
     company_contact_contact_id,
     company_contact_contact_name,
     company_contact_created,
@@ -971,7 +1120,12 @@ SELECT production_state.production_id                                  AS produc
     SELECT company_contact.company_id                                  AS company_contact_company_id,
            company.name                                                AS company_contact_company_name,
            company_contact.contact_id                                  AS company_contact_contact_id,
-           contact.name                                                AS company_contact_contact_name,
+        --    contact.name                                                AS company_contact_contact_name,
+           contact.first_name                                          AS contact_contact_first_name,
+           contact.middle_name                                         AS contact_contact_middle_name,
+           contact.last_name                                           AS contact_contact_last_name,
+           contact.suffix                                              AS contact_contact_suffix,
+           contact_get_full_name(contact.id)                           AS contact_contact_full_name,
            DATE_FORMAT(company_contact.created,'%m/%d/%Y %H:%i:%S')    AS company_contact_created,
            company_contact.created_by                                  AS company_contact_created_by,
            DATE_FORMAT(company_contact.updated,'%m/%d/%Y %H:%i:%S')    AS company_contact_updated,
@@ -1034,7 +1188,12 @@ SELECT production_state.production_id                                  AS produc
     dga_quarterly_earning_company_website,
     dga_quarterly_earning_company_logo_path,
     dga_quarterly_earning_contact_id,
-    dga_quarterly_earning_contact_name,
+    -- dga_quarterly_earning_contact_name,
+    dga_quarterly_earning_contact_first_name,
+    dga_quarterly_earning_contact_middle_name,
+    dga_quarterly_earning_contact_last_name,
+    dga_quarterly_earning_contact_suffix,
+    dga_quarterly_earning_contact_full_name,
     dga_quarterly_earning_prepared_by,
     dga_quarterly_earning_phone,
     dga_quarterly_earning_created,
@@ -1056,7 +1215,12 @@ SELECT production_state.production_id                                  AS produc
            company.website                                                                AS dga_quarterly_earning_company_website,
            company.logo_path                                                              AS dga_quarterly_earning_company_logo_path,
            dga_quarterly_earning.contact_id                                               AS dga_quarterly_earning_contact_id,
-           contact.name                                                                   AS dga_quarterly_earning_contact_name,
+        --    contact.name                                                                   AS dga_quarterly_earning_contact_name,
+           contact.first_name                                                             AS dga_quarterly_earning_contact_first_name,
+           contact.middle_name                                                            AS dga_quarterly_earning_contact_middle_name,
+           contact.last_name                                                              AS dga_quarterly_earning_contact_last_name,
+           contact.suffix                                                                 AS dga_quarterly_earning_contact_suffix,
+           contact_get_full_name(contact.id)                                              AS dga_quarterly_earning_contact_full_name,
            dga_quarterly_earning.prepared_by                                              AS dga_quarterly_earning_prepared_by,
            dga_quarterly_earning.phone                                                    AS dga_quarterly_earning_phone,
            DATE_FORMAT(dga_quarterly_earning.created,'%m/%d/%Y %H:%i:%S')                 AS dga_quarterly_earning_created,
@@ -1118,7 +1282,12 @@ SELECT production_state.production_id                                  AS produc
     dga_weekly_work_company_website,
     dga_weekly_work_company_logo_path,
     dga_weekly_work_contact_id,
-    dga_weekly_work_contact_name,
+    -- dga_weekly_work_contact_name,
+    dga_weekly_work_contact_first_name,
+    dga_weekly_work_contact_middle_name,
+    dga_weekly_work_contact_last_name,
+    dga_weekly_work_contact_suffix,
+    dga_weekly_work_contact_full_name,
     dga_weekly_work_week_start_date,
     dga_weekly_work_week_end_date,
     dga_weekly_work_created,
@@ -1142,7 +1311,12 @@ SELECT production_state.production_id                                  AS produc
            company.website                                                        AS dga_weekly_work_company_website,
            company.logo_path                                                      AS dga_weekly_work_company_logo_path,
            dga_weekly_work.contact_id                                             AS dga_weekly_work_contact_id,
-           contact.name                                                           AS dga_weekly_work_contact_name,
+        --    contact.name                                                           AS dga_weekly_work_contact_name,
+           contact.first_name                                                     AS dga_weekly_work_contact_first_name,
+           contact.middle_name                                                    AS dga_weekly_work_contact_middle_name,
+           contact.last_name                                                      AS dga_weekly_work_contact_last_name,
+           contact.suffix                                                         AS dga_weekly_work_contact_suffix,
+           contact_get_full_name(contact.id)                                      AS dga_weekly_work_contact_full_name,
            DATE_FORMAT(dga_weekly_work.week_start_date, '%m/%d/%Y')               AS dga_weekly_work_week_start_date,
            DATE_FORMAT(dga_weekly_work.week_end_date,   '%m/%d/%Y')               AS dga_weekly_work_week_end_date,
            DATE_FORMAT(dga_weekly_work.created,         '%m/%d/%Y %H:%i:%S')      AS dga_weekly_work_created,
@@ -1189,7 +1363,12 @@ SELECT production_state.production_id                                  AS produc
     dga_director_deal_memo_contact_state_name,
     dga_director_deal_memo_contact_phone,
     dga_director_deal_memo_contact_email,
-    dga_director_deal_memo_contact_name,
+    -- dga_director_deal_memo_contact_name,
+    dga_director_deal_memo_contact_first_name,
+    dga_director_deal_memo_contact_middle_name,
+    dga_director_deal_memo_contact_last_name,
+    dga_director_deal_memo_contact_suffix,
+    dga_director_deal_memo_contact_full_name,
     dga_director_deal_memo_ssn,
     dga_director_deal_memo_loanout,
     dga_director_deal_memo_fid,
@@ -1258,7 +1437,12 @@ SELECT production_state.production_id                                  AS produc
 ) AS
     SELECT dga_director_deal_memo.id                                                                AS dga_director_deal_memo_id,
            dga_director_deal_memo.contact_id                                                        AS dga_director_deal_memo_contact_id,
-           contact.name                                                                             AS dga_director_deal_memo_contact_name,
+        --    contact.name                                                                             AS dga_director_deal_memo_contact_name,
+           contact.first_name                                                                       AS dga_director_deal_memo_contact_first_name,
+           contact.middle_name                                                                      AS dga_director_deal_memo_contact_middle_name,
+           contact.last_name                                                                        AS dga_director_deal_memo_contact_last_name,
+           contact.suffix                                                                           AS dga_director_deal_memo_contact_suffix,
+           contact_get_full_name(contact.id)                                                        AS dga_director_deal_memo_contact_full_name,
            contact.address                                                                          AS dga_director_deal_memo_contact_address,
            contact.city                                                                             AS dga_director_deal_memo_contact_city,
            contact.state_code                                                                       AS dga_director_deal_memo_contact_state_code,
@@ -1472,7 +1656,12 @@ SELECT production_state.production_id                                  AS produc
  CREATE OR REPLACE VIEW dga_stage_manager_deal_memo_get_list(
     dga_stage_manager_deal_memo_id,
     dga_stage_manager_deal_memo_contact_id,
-    dga_stage_manager_memo_contact_name,
+    -- dga_stage_manager_memo_contact_name,
+    dga_stage_manager_deal_memo_contact_first_name,
+    dga_stage_manager_deal_memo_contact_middle_name,
+    dga_stage_manager_deal_memo_contact_last_name,
+    dga_stage_manager_deal_memo_contact_suffix,
+    dga_stage_manager_deal_memo_contact_full_name,
     dga_stage_manager_memo_contact_address,
     dga_stage_manager_memo_contact_city,
     dga_stage_manager_memo_contact_state_code,
@@ -1539,7 +1728,12 @@ SELECT production_state.production_id                                  AS produc
 ) AS
     SELECT dga_stage_manager_deal_memo.id                                                            AS dga_stage_manager_deal_memo_id,
            dga_stage_manager_deal_memo.contact_id                                                    AS dga_stage_manager_deal_memo_contact_id,
-           contact.name                                                                              AS dga_stage_manager_memo_contact_name,
+        --    contact.name                                                                              AS dga_stage_manager_memo_contact_name,
+           contact.first_name                                                                        AS dga_stage_manager_deal_memo_contact_first_name,
+           contact.middle_name                                                                       AS dga_stage_manager_deal_memo_contact_middle_name,
+           contact.last_name                                                                         AS dga_stage_manager_deal_memo_contact_last_name,
+           contact.suffix                                                                            AS dga_stage_manager_deal_memo_contact_suffix,
+           contact_get_full_name(contact.id)                                                         AS dga_stage_manager_deal_memo_contact_full_name,
            contact.address                                                                           AS dga_stage_manager_memo_contact_address,
            contact.city                                                                              AS dga_stage_manager_memo_contact_city,
            contact.state_code                                                                        AS dga_stage_manager_memo_contact_state_code,
@@ -1612,21 +1806,306 @@ SELECT production_state.production_id                                  AS produc
                                                                       INNER JOIN episode    AS episode               ON episode.id               = dga_stage_manager_deal_memo.episode_id
                                                                       INNER JOIN season     AS season                ON episode.season_id        = season.id;;
 
+ CREATE OR REPLACE VIEW dga_director_scripted_deal_memo_get_list(
+    dga_director_scripted_deal_memo_id,
+    dga_director_scripted_deal_memo_contact_id,
+    -- dga_director_scripted_deal_memo_contact_name,
+    dga_director_scripted_deal_memo_contact_first_name,
+    dga_director_scripted_deal_memo_contact_middle_name,
+    dga_director_scripted_deal_memo_contact_last_name,
+    dga_director_scripted_deal_memo_contact_suffix,
+    dga_director_scripted_deal_memo_contact_full_name,
+    dga_director_scripted_deal_memo_contact_address,
+    dga_director_scripted_deal_memo_contact_city,
+    dga_director_scripted_deal_memo_contact_state_code,
+    dga_director_scripted_deal_memo_contact_state_name,
+    dga_director_scripted_deal_memo_contact_phone,
+    dga_director_scripted_deal_memo_contact_email,
+    dga_director_scripted_deal_memo_ssn,
+    dga_director_scripted_deal_memo_loanout,
+    dga_director_scripted_deal_memo_fid,
+    dga_director_scripted_deal_memo_salary,
+    dga_director_scripted_deal_memo_salary_period_id,
+    dga_director_scripted_deal_memo_salary_period_name,
+    dga_director_scripted_deal_memo_salary_period_period,
+    dga_director_scripted_deal_memo_salary_period_plural,
+    dga_director_scripted_deal_memo_aditional_time,
+    dga_director_scripted_deal_memo_aditional_time_period_id,
+    dga_director_scripted_deal_memo_aditional_time_period_name,
+    dga_director_scripted_deal_memo_aditional_time_period_period,
+    dga_director_scripted_deal_memo_aditional_time_period_plural,
+    dga_director_scripted_deal_memo_start_date,
+    dga_director_scripted_deal_memo_guaranteed,
+    dga_director_scripted_deal_memo_guaranteed_period_id,
+    dga_director_scripted_deal_memo_guaranteed_period_name,
+    dga_director_scripted_deal_memo_guaranteed_period_period,
+    dga_director_scripted_deal_memo_guaranteed_period_plural,
+    dga_director_scripted_deal_memo_dga_covered,
+    dga_director_scripted_deal_memo_addition_terms,
+    dga_director_scripted_deal_memo_production_id,
+    dga_director_scripted_deal_memo_production_title,
+    dga_director_scripted_deal_memo_project_number,
+    dga_director_scripted_deal_memo_episode_id,
+    dga_director_scripted_deal_memo_episode_title,
+    dga_director_scripted_deal_memo_episode_episode_number,
+    dga_director_scripted_deal_memo_episode_episode_abreviation,
+    dga_director_scripted_deal_memo_episode_specific_length,
+    dga_director_scripted_deal_memo_segment,
+    dga_director_scripted_deal_memo_segment_specific_length,
+    dga_director_scripted_deal_memo_length_30,
+    dga_director_scripted_deal_memo_length_60,
+    dga_director_scripted_deal_memo_length_90,
+    dga_director_scripted_deal_memo_length_120,
+    dga_director_scripted_deal_memo_length_other,
+    dga_director_scripted_deal_memo_pilot,
+    dga_director_scripted_deal_memo_dramatic_basic_cable_budget,
+    dga_director_scripted_deal_memo_type_production_multi_camera,
+    dga_director_scripted_deal_memo_type_production_single_camera,
+    dga_director_scripted_deal_memo_television_license_director,
+    dga_director_scripted_deal_memo_television_license_budget,
+    dga_director_scripted_deal_memo_produced_for_network,
+    dga_director_scripted_deal_memo_produced_for_non_network,
+    dga_director_scripted_deal_memo_produced_for_basic_cable,
+    dga_director_scripted_deal_memo_produced_for_pay_tv,
+    dga_director_scripted_deal_memo_produced_for_home_video,
+    dga_director_scripted_deal_memo_project_budget_more,
+    dga_director_scripted_deal_memo_project_budget_less,
+    dga_director_scripted_deal_memo_second_unit_director,
+    dga_director_scripted_deal_memo_segment_applicable,
+    dga_director_scripted_deal_memo_employer_name,
+    dga_director_scripted_deal_memo_employee_name,
+    dga_director_scripted_deal_memo_employee_date,
+    dga_director_scripted_deal_memo_signatory,
+    dga_director_scripted_deal_memo_signatory_by,
+    dga_director_scripted_deal_memo_signatory_date,
+    dga_director_scripted_deal_memo_created,
+    dga_director_scripted_deal_memo_created_by,
+    dga_director_scripted_deal_memo_updated,
+    dga_director_scripted_deal_memo_updated_by,
+    dga_director_scripted_deal_memo_status
+) AS
+    SELECT dga_director_scripted_deal_memo.id                                                                       AS dga_director_scripted_deal_memo_id,
+           dga_director_scripted_deal_memo.contact_id                                                               AS dga_director_scripted_deal_memo_contact_id,
+        --    contact.name                                                                                             AS dga_director_scripted_deal_memo_contact_name,
+           contact.first_name                                                                                       AS dga_director_scripted_deal_memo_contact_first_name,
+           contact.middle_name                                                                                      AS dga_director_scripted_deal_memo_contact_middle_name,
+           contact.last_name                                                                                        AS dga_director_scripted_deal_memo_contact_last_name,
+           contact.suffix                                                                                           AS dga_director_scripted_deal_memo_contact_suffix,
+           contact_get_full_name(contact.id)                                                                        AS dga_director_scripted_deal_memo_contact_full_name,
+           contact.address                                                                                          AS dga_director_scripted_deal_memo_contact_address,
+           contact.city                                                                                             AS dga_director_scripted_deal_memo_contact_city,
+           contact.state_code                                                                                       AS dga_director_scripted_deal_memo_contact_state_code,
+           state.name                                                                                               AS dga_director_scripted_deal_memo_contact_state_name,
+           contact.phone                                                                                            AS dga_director_scripted_deal_memo_contact_phone,
+           contact.email                                                                                            AS dga_director_scripted_deal_memo_contact_email,
+           dga_director_scripted_deal_memo.ssn                                                                      AS dga_director_scripted_deal_memo_ssn,
+           dga_director_scripted_deal_memo.loanout                                                                  AS dga_director_scripted_deal_memo_loanout,
+           dga_director_scripted_deal_memo.fid                                                                      AS dga_director_scripted_deal_memo_fid,
+           dga_director_scripted_deal_memo.salary                                                                   AS dga_director_scripted_deal_memo_salary,
+           dga_director_scripted_deal_memo.salary_period_id                                                         AS dga_director_scripted_deal_memo_salary_period_id,
+           salary_period.name                                                                                       AS dga_director_scripted_deal_memo_salary_period_name,
+           salary_period.period                                                                                     AS dga_director_scripted_deal_memo_salary_period_period,
+           salary_period.plural                                                                                     AS dga_director_scripted_deal_memo_salary_period_plural,
+           dga_director_scripted_deal_memo.aditional_time                                                           AS dga_director_scripted_deal_memo_aditional_time,
+           dga_director_scripted_deal_memo.aditional_time_period_id                                                 AS dga_director_scripted_deal_memo_aditional_time_period_id,
+           aditional_time_period.name                                                                               AS dga_director_scripted_deal_memo_aditional_time_period_name,
+           aditional_time_period.period                                                                             AS dga_director_scripted_deal_memo_aditional_time_period_period,
+           aditional_time_period.plural                                                                             AS dga_director_scripted_deal_memo_aditional_time_period_plural,
+           DATE_FORMAT(dga_director_scripted_deal_memo.start_date,'%m/%d/%Y')                                       AS dga_director_scripted_deal_memo_start_date,
+           dga_director_scripted_deal_memo.guaranteed                                                               AS dga_director_scripted_deal_memo_guaranteed,
+           dga_director_scripted_deal_memo.guaranteed_period_id                                                     AS dga_director_scripted_deal_memo_guaranteed_period_id,
+           guaranteed_period.name                                                                                   AS dga_director_scripted_deal_memo_guaranteed_period_name,
+           guaranteed_period.period                                                                                 AS dga_director_scripted_deal_memo_guaranteed_period_period,
+           guaranteed_period.plural                                                                                 AS dga_director_scripted_deal_memo_guaranteed_period_plural,
+           dga_director_scripted_deal_memo.dga_covered                                                              AS dga_director_scripted_deal_memo_dga_covered,
+           dga_director_scripted_deal_memo.addition_terms                                                           AS dga_director_scripted_deal_memo_addition_terms,
+           dga_director_scripted_deal_memo.production_id                                                            AS dga_director_scripted_deal_memo_production_id,
+           production.title                                                                                         AS dga_director_scripted_deal_memo_production_title,
+           dga_director_scripted_deal_memo.project_number                                                           AS dga_director_scripted_deal_memo_project_number,
+           dga_director_scripted_deal_memo.episode_id                                                               AS dga_director_scripted_deal_memo_episode_id,
+           episode.title                                                                                            AS dga_director_scripted_deal_memo_episode_title,
+           LPAD(episode.episode_number, 2, 0)                                                                       AS dga_director_scripted_deal_memo_episode_episode_number,
+           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))                   AS dga_director_scripted_deal_memo_episode_episode_abreviation,
+           dga_director_scripted_deal_memo.episode_specific_length                                                  AS dga_director_scripted_deal_memo_episode_specific_length,
+           dga_director_scripted_deal_memo.segment                                                                  AS dga_director_scripted_deal_memo_segment,
+           dga_director_scripted_deal_memo.segment_specific_length                                                  AS dga_director_scripted_deal_memo_segment_specific_length,
+           dga_director_scripted_deal_memo.length_30                                                                AS dga_director_scripted_deal_memo_length_30,
+           dga_director_scripted_deal_memo.length_60                                                                AS dga_director_scripted_deal_memo_length_60,
+           dga_director_scripted_deal_memo.length_90                                                                AS dga_director_scripted_deal_memo_length_90,
+           dga_director_scripted_deal_memo.length_120                                                               AS dga_director_scripted_deal_memo_length_120,
+           dga_director_scripted_deal_memo.length_other                                                             AS dga_director_scripted_deal_memo_length_other,
+           dga_director_scripted_deal_memo.pilot                                                                    AS dga_director_scripted_deal_memo_pilot,
+           dga_director_scripted_deal_memo.dramatic_basic_cable_budget                                              AS dga_director_scripted_deal_memo_dramatic_basic_cable_budget,
+           dga_director_scripted_deal_memo.type_production_multi_camera                                             AS dga_director_scripted_deal_memo_type_production_multi_camera,
+           dga_director_scripted_deal_memo.type_production_single_camera                                            AS dga_director_scripted_deal_memo_type_production_single_camera,
+           dga_director_scripted_deal_memo.television_license_director                                              AS dga_director_scripted_deal_memo_television_license_director,
+           dga_director_scripted_deal_memo.television_license_budget                                                AS dga_director_scripted_deal_memo_television_license_budget,
+           dga_director_scripted_deal_memo.produced_for_network                                                     AS dga_director_scripted_deal_memo_produced_for_network,
+           dga_director_scripted_deal_memo.produced_for_non_network                                                 AS dga_director_scripted_deal_memo_produced_for_non_network,
+           dga_director_scripted_deal_memo.produced_for_basic_cable                                                 AS dga_director_scripted_deal_memo_produced_for_basic_cable,
+           dga_director_scripted_deal_memo.produced_for_pay_tv                                                      AS dga_director_scripted_deal_memo_produced_for_pay_tv,
+           dga_director_scripted_deal_memo.produced_for_home_video                                                  AS dga_director_scripted_deal_memo_produced_for_home_video,
+           dga_director_scripted_deal_memo.project_budget_more                                                      AS dga_director_scripted_deal_memo_project_budget_more,
+           dga_director_scripted_deal_memo.project_budget_less                                                      AS dga_director_scripted_deal_memo_project_budget_less,
+           dga_director_scripted_deal_memo.second_unit_director                                                     AS dga_director_scripted_deal_memo_second_unit_director,
+           dga_director_scripted_deal_memo.segment_applicable                                                       AS dga_director_scripted_deal_memo_segment_applicable,
+           dga_director_scripted_deal_memo.employer_name                                                            AS dga_director_scripted_deal_memo_employer_name,
+           dga_director_scripted_deal_memo.employee_name                                                            AS dga_director_scripted_deal_memo_employee_name,
+           DATE_FORMAT(dga_director_scripted_deal_memo.employee_date,'%m/%d/%Y %H:%i:%S')                           AS dga_director_scripted_deal_memo_employee_date,
+           dga_director_scripted_deal_memo.signatory                                                                AS dga_director_scripted_deal_memo_signatory,
+           dga_director_scripted_deal_memo.signatory_by                                                             AS dga_director_scripted_deal_memo_signatory_by,
+           DATE_FORMAT(dga_director_scripted_deal_memo.signatory_date,'%m/%d/%Y %H:%i:%S')                          AS dga_director_scripted_deal_memo_signatory_date,
+           DATE_FORMAT(dga_director_scripted_deal_memo.created,'%m/%d/%Y %H:%i:%S')                                 AS dga_director_scripted_deal_memo_created,
+           dga_director_scripted_deal_memo.created_by                                                               AS dga_director_scripted_deal_memo_created_by,
+           DATE_FORMAT(dga_director_scripted_deal_memo.updated,'%m/%d/%Y %H:%i:%S')                                 AS dga_director_scripted_deal_memo_updated,
+           dga_director_scripted_deal_memo.updated_by                                                               AS dga_director_scripted_deal_memo_updated_by,
+           dga_director_scripted_deal_memo.status                                                                   AS dga_director_scripted_deal_memo_status
+      FROM dga_director_scripted_deal_memo AS dga_director_scripted_deal_memo INNER JOIN contact    AS contact               ON contact.id               = dga_director_scripted_deal_memo.contact_id
+                                                                              LEFT  JOIN state      AS state                 ON state.code               = contact.state_code
+                                                                              LEFT  JOIN period     AS salary_period         ON salary_period.id         = dga_director_scripted_deal_memo.salary_period_id
+                                                                              LEFT  JOIN period     AS aditional_time_period ON aditional_time_period.id = dga_director_scripted_deal_memo.aditional_time_period_id
+                                                                              LEFT  JOIN period     AS guaranteed_period     ON guaranteed_period.id     = dga_director_scripted_deal_memo.guaranteed_period_id
+                                                                              INNER JOIN production AS production            ON production.id            = dga_director_scripted_deal_memo.production_id
+                                                                              INNER JOIN episode    AS episode               ON episode.id               = dga_director_scripted_deal_memo.episode_id
+                                                                              INNER JOIN season     AS season                ON episode.season_id        = season.id;
+
+ CREATE OR REPLACE VIEW wga_work_list_get_list(
+    wga_work_list_id,
+    wga_work_list_company_id,
+    wga_work_list_company_number,
+    wga_work_list_company_name,
+    wga_work_list_company_address,
+    wga_work_list_company_city,
+    wga_work_list_company_state_code,
+    wga_work_list_company_state_name,
+    wga_work_list_company_phone,
+    wga_work_list_company_website,
+    wga_work_list_week_ending,
+    wga_work_list_contact_id,
+    -- wga_work_list_contact_name,
+    wga_work_list_contact_first_name,
+    wga_work_list_contact_middle_name,
+    wga_work_list_contact_last_name,
+    wga_work_list_contact_suffix,
+    wga_work_list_contact_full_name,
+    wga_work_list_contact_address,
+    wga_work_list_contact_city,
+    wga_work_list_contact_state_code,
+    wga_work_list_contact_state_name,
+    wga_work_list_contact_phone,
+    wga_work_list_contact_email,
+    wga_work_list_name,
+    wga_work_list_created,
+    wga_work_list_created_by,
+    wga_work_list_updated,
+    wga_work_list_updated_by,
+    wga_work_list_status
+) AS
+    SELECT wga_work_list.id                                              AS wga_work_list_id,
+           wga_work_list.company_id                                      AS wga_work_list_company_id,
+           wga_work_list.company_number                                  AS wga_work_list_company_number,
+           company.name                                                  AS wga_work_list_company_name,
+           company.address                                               AS wga_work_list_company_address,
+           company.city                                                  AS wga_work_list_company_city,
+           company.state_code                                            AS wga_work_list_company_state_code,
+           company_state.name                                            AS wga_work_list_company_state_name,
+           company.phone                                                 AS wga_work_list_company_phone,
+           company.website                                               AS wga_work_list_company_website,
+           wga_work_list.week_ending                                     AS wga_work_list_week_ending,
+           wga_work_list.contact_id                                      AS wga_work_list_contact_id,
+        --    contact.name                                                  AS wga_work_list_contact_name,
+           contact.first_name                                            AS wga_work_list_contact_first_name,
+           contact.middle_name                                           AS wga_work_list_contact_middle_name,
+           contact.last_name                                             AS wga_work_list_contact_last_name,
+           contact.suffix                                                AS wga_work_list_contact_suffix,
+           contact_get_full_name(contact.id)                             AS wga_work_list_contact_full_name,
+           contact.address                                               AS wga_work_list_contact_address,
+           contact.city                                                  AS wga_work_list_contact_city,
+           contact.state_code                                            AS wga_work_list_contact_state_code,
+           contact_state.name                                            AS wga_work_list_contact_state_name,
+           contact.phone                                                 AS wga_work_list_contact_phone,
+           contact.email                                                 AS wga_work_list_contact_email,
+           wga_work_list.name                                            AS wga_work_list_name,
+           DATE_FORMAT(wga_work_list.created,'%m/%d/%Y %H:%i:%S')        AS wga_work_list_created,
+           wga_work_list.created_by                                      AS wga_work_list_created_by,
+           DATE_FORMAT(wga_work_list.updated,'%m/%d/%Y %H:%i:%S')        AS wga_work_list_updated,
+           wga_work_list.updated_by                                      AS wga_work_list_updated_by,
+           wga_work_list.status                                          AS wga_work_list_status
+      FROM wga_work_list AS wga_work_list INNER JOIN company AS company       ON company.id         = wga_work_list.company_id
+                                          INNER JOIN state   AS company_state ON company_state.code = company.state_code
+                                          INNER JOIN contact AS contact       ON contact.id         = wga_work_list.contact_id
+                                          INNER JOIN state   AS contact_state ON contact_state.code = company.state_code;
+
+ CREATE OR REPLACE VIEW wga_deal_type_get_list(
+    wga_deal_type_id,
+    wga_deal_type_code,
+    wga_deal_type_title,
+    wga_deal_type_full_title,
+    wga_deal_type_created,
+    wga_deal_type_created_by,
+    wga_deal_type_updated,
+    wga_deal_type_updated_by,
+    wga_deal_type_status
+) AS
+    SELECT wga_deal_type.id                                              AS  wga_deal_type_id,
+           wga_deal_type.code                                            AS  wga_deal_type_code,
+           wga_deal_type.title                                           AS  wga_deal_type_title,
+           CASE WHEN TRIM(wga_deal_type.code) IS NULL
+                  OR TRIM(wga_deal_type.code) = '' THEN
+                wga_deal_type.title
+           ELSE
+                CONCAT(wga_deal_type.code, ' - ', wga_deal_type.title)
+           END                                                           AS  wga_deal_type_full_title,
+           DATE_FORMAT(wga_deal_type.created,'%m/%d/%Y %H:%i:%S')        AS  wga_deal_type_created,
+           wga_deal_type.created_by                                      AS  wga_deal_type_created_by,
+           DATE_FORMAT(wga_deal_type.updated,'%m/%d/%Y %H:%i:%S')        AS  wga_deal_type_updated,
+           wga_deal_type.updated_by                                      AS  wga_deal_type_updated_by,
+           wga_deal_type.status                                          AS  wga_deal_type_status
+      FROM wga_deal_type AS wga_deal_type;
+
+ CREATE OR REPLACE VIEW wga_field_of_work_get_list(
+    wga_field_of_work_id,
+    wga_field_of_work_code,
+    wga_field_of_work_title,
+    wga_field_of_work_full_title,
+    wga_field_of_work_created,
+    wga_field_of_work_created_by,
+    wga_field_of_work_updated,
+    wga_field_of_work_updated_by,
+    wga_field_of_work_status
+) AS
+    SELECT wga_field_of_work.id                                                             AS wga_field_of_work_id,
+           wga_field_of_work.code                                                           AS wga_field_of_work_code,
+           wga_field_of_work.title                                                          AS wga_field_of_work_title,
+           CASE WHEN TRIM(wga_field_of_work.code) IS NULL
+                  OR TRIM(wga_field_of_work.code) = '' THEN
+                wga_field_of_work.title
+           ELSE
+                CONCAT(wga_field_of_work.code, ' - ', wga_field_of_work.title)
+           END                                                                              AS wga_field_of_work_full_title,
+           DATE_FORMAT(wga_field_of_work.created,'%m/%d/%Y %H:%i:%S')                       AS wga_field_of_work_created,
+           wga_field_of_work.created_by                                                     AS wga_field_of_work_created_by,
+           DATE_FORMAT(wga_field_of_work.updated,'%m/%d/%Y %H:%i:%S')                       AS wga_field_of_work_updated,
+           wga_field_of_work.updated_by                                                     AS wga_field_of_work_updated_by,
+           wga_field_of_work.status                                                         AS wga_field_of_work_status
+      FROM wga_field_of_work AS wga_field_of_work;
+
  DELIMITER //
 CREATE PROCEDURE company_set_list(
-    INOUT company_id                   INTEGER,
-    IN    company_name                 VARCHAR(50),
-    IN    company_address              VARCHAR(100),
-    IN    company_city                 VARCHAR(100),
-    IN    company_state_code           CHAR(2),
-    IN    company_phone                VARCHAR(20),
-    IN    company_website              VARCHAR(100),
-    IN    company_logo_path            VARCHAR(120),
-    IN    company_media_company        CHAR(1),
-    IN    company_production_company   CHAR(1),
-    IN    company_payroll_company      CHAR(1),
-    IN    company_created_by           VARCHAR(30),
-    IN    company_updated_by           VARCHAR(30)
+    IN  company_id                   INTEGER,
+    IN  company_name                 VARCHAR(50),
+    IN  company_address              VARCHAR(100),
+    IN  company_city                 VARCHAR(100),
+    IN  company_state_code           CHAR(2),
+    IN  company_phone                VARCHAR(20),
+    IN  company_website              VARCHAR(100),
+    IN  company_logo_path            VARCHAR(120),
+    IN  company_media_company        CHAR(1),
+    IN  company_production_company   CHAR(1),
+    IN  company_payroll_company      CHAR(1),
+    IN  company_created_by           VARCHAR(30),
+    IN  company_updated_by           VARCHAR(30),
+    OUT return_value                 INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -1670,7 +2149,7 @@ BEGIN
             'CREATED'
         );
 
-        SET company_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -1688,6 +2167,8 @@ BEGIN
                updated_by         =    company_updated_by,
                status             =    'UPDATED'
          WHERE id                 =    company_id;
+
+         SET return_value = company_id;
      END IF;
 
      COMMIT;
@@ -1696,12 +2177,13 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE network_set_list(
-    INOUT network_id                 INTEGER,
-    IN    network_name               VARCHAR(50),
-    IN    network_media_company_id   INTEGER,
-    IN    network_logo_path          VARCHAR(120),
-    IN    network_created_by         VARCHAR(30),
-    IN    network_updated_by         VARCHAR(30)
+    IN  network_id                 INTEGER,
+    IN  network_name               VARCHAR(50),
+    IN  network_media_company_id   INTEGER,
+    IN  network_logo_path          VARCHAR(120),
+    IN  network_created_by         VARCHAR(30),
+    IN  network_updated_by         VARCHAR(30),
+    OUT return_value               INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -1731,7 +2213,7 @@ BEGIN
             'CREATED'
         );
 
-        SET network_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -1742,6 +2224,8 @@ BEGIN
                updated_by       = network_updated_by,
                status           = 'UPDATED'
          WHERE id               = network_id;
+
+         SET return_value = network_id;
      END IF;
 
      COMMIT;
@@ -1750,10 +2234,11 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE production_length_set_list(
-    INOUT production_length_id           INTEGER,
-    IN    production_length_name         VARCHAR(50),
-    IN    production_length_created_by   VARCHAR(30),
-    IN    production_length_updated_by   VARCHAR(30)
+    IN  production_length_id           INTEGER,
+    IN  production_length_name         VARCHAR(50),
+    IN  production_length_created_by   VARCHAR(30),
+    IN  production_length_updated_by   VARCHAR(30),
+    OUT return_value                   INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -1780,7 +2265,7 @@ BEGIN
             'CREATED'
         );
 
-        SET production_length_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -1789,6 +2274,8 @@ BEGIN
                updated_by = production_length_updated_by,
                status     = 'UPDATED'
          WHERE id         = production_length_id;
+
+         SET return_value = production_length_id;
      END IF;
 
      COMMIT;
@@ -1797,10 +2284,11 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE production_type_set_list(
-    INOUT production_type_id           INTEGER,
-    IN    production_type_name         VARCHAR(50),
-    IN    production_type_created_by   VARCHAR(30),
-    IN    production_type_updated_by   VARCHAR(30)
+    IN  production_type_id           INTEGER,
+    IN  production_type_name         VARCHAR(50),
+    IN  production_type_created_by   VARCHAR(30),
+    IN  production_type_updated_by   VARCHAR(30),
+    OUT return_value                 INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -1826,7 +2314,7 @@ BEGIN
             'CREATED'
         );
 
-        SET production_type_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -1835,6 +2323,8 @@ BEGIN
                updated_by = production_type_updated_by,
                status     = 'UPDATED'
          WHERE id         = production_type_id;
+
+         SET return_value = production_type_id;
      END IF;
 
      COMMIT;
@@ -1843,28 +2333,29 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE production_set_list(
-    INOUT production_id                               INTEGER,
-    IN    production_title                            VARCHAR(50),
-    IN    production_budget                           NUMERIC(15,2),
-    IN    production_writing_start_date               DATE,
-    IN    production_writing_end_date                 DATE,
-    IN    production_pre_production_start_date        DATE,
-    IN    production_pre_production_end_date          DATE,
-    IN    production_photography_start_date           DATE,
-    IN    production_photography_end_date             DATE,
-    IN    production_post_production_start_date       DATE,
-    IN    production_post_production_end_date         DATE,
-    IN    production_network_production_start_date    DATE,
-    IN    production_network_production_end_date      DATE,
-    IN    production_production_length_id             INTEGER,
-    IN    production_network_id                       INTEGER,
-    IN    production_production_type_id               INTEGER,
-    IN    production_production_company_id            INTEGER,
-    IN    production_payroll_company_id               INTEGER,
-    IN    production_logo_path                        VARCHAR(120),
-    IN    production_created_by                       VARCHAR(30),
-    IN    production_updated_by                       VARCHAR(30),
-    IN    production_status                           VARCHAR(30)
+    IN  production_id                               INTEGER,
+    IN  production_title                            VARCHAR(50),
+    IN  production_budget                           NUMERIC(15,2),
+    IN  production_writing_start_date               DATE,
+    IN  production_writing_end_date                 DATE,
+    IN  production_pre_production_start_date        DATE,
+    IN  production_pre_production_end_date          DATE,
+    IN  production_photography_start_date           DATE,
+    IN  production_photography_end_date             DATE,
+    IN  production_post_production_start_date       DATE,
+    IN  production_post_production_end_date         DATE,
+    IN  production_network_production_start_date    DATE,
+    IN  production_network_production_end_date      DATE,
+    IN  production_production_length_id             INTEGER,
+    IN  production_network_id                       INTEGER,
+    IN  production_production_type_id               INTEGER,
+    IN  production_production_company_id            INTEGER,
+    IN  production_payroll_company_id               INTEGER,
+    IN  production_logo_path                        VARCHAR(120),
+    IN  production_created_by                       VARCHAR(30),
+    IN  production_updated_by                       VARCHAR(30),
+    IN  production_status                           VARCHAR(30),
+    OUT return_value                                INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -1924,7 +2415,7 @@ BEGIN
             'CREATED'
         );
 
-        SET production_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -1950,6 +2441,8 @@ BEGIN
                updated_by                     =  production_updated_by,
                status                         =  'UPDATED'
          WHERE id                             =   production_id;
+
+         SET return_value = production_id;
      END IF;
 
      COMMIT;
@@ -1960,24 +2453,25 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE season_set_list(
-    INOUT  season_id                               INTEGER,
-    IN     season_title                            VARCHAR(50),
-    IN     season_season_number                    INTEGER,
-    IN     season_production_id                    INTEGER,
-    IN     season_budget                           NUMERIC(15,2),
-    IN     season_writing_start_date               DATE,
-    IN     season_writing_end_date                 DATE,
-    IN     season_pre_production_start_date        DATE,
-    IN     season_pre_production_end_date          DATE,
-    IN     season_photography_start_date           DATE,
-    IN     season_photography_end_date             DATE,
-    IN     season_post_production_start_date       DATE,
-    IN     season_post_production_end_date         DATE,
-    IN     season_network_production_start_date    DATE,
-    IN     season_network_production_end_date      DATE,
-    IN     season_logo_path                        VARCHAR(120),
-    IN     season_created_by                       VARCHAR(30),
-    IN     season_updated_by                       VARCHAR(30)
+    IN  season_id                               INTEGER,
+    IN  season_title                            VARCHAR(50),
+    IN  season_season_number                    INTEGER,
+    IN  season_production_id                    INTEGER,
+    IN  season_budget                           NUMERIC(15,2),
+    IN  season_writing_start_date               DATE,
+    IN  season_writing_end_date                 DATE,
+    IN  season_pre_production_start_date        DATE,
+    IN  season_pre_production_end_date          DATE,
+    IN  season_photography_start_date           DATE,
+    IN  season_photography_end_date             DATE,
+    IN  season_post_production_start_date       DATE,
+    IN  season_post_production_end_date         DATE,
+    IN  season_network_production_start_date    DATE,
+    IN  season_network_production_end_date      DATE,
+    IN  season_logo_path                        VARCHAR(120),
+    IN  season_created_by                       VARCHAR(30),
+    IN  season_updated_by                       VARCHAR(30),
+    OUT return_value                            INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2033,7 +2527,7 @@ BEGIN
             'CREATED'
         );
 
-        SET season_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2057,6 +2551,8 @@ BEGIN
                updated_by                     =  season_updated_by,
                status                         =  'UPDATED'
          WHERE id                             =  season_id;
+
+         SET return_value = season_id;
      END IF;
 
      COMMIT;
@@ -2065,23 +2561,24 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE episode_set_list(
-    INOUT  episode_id                               INTEGER,
-    IN     episode_title                            VARCHAR(50),
-    IN     episode_episode_number                   INTEGER,
-    IN     episode_season_id                        INTEGER,
-    IN     episode_budget                           NUMERIC(15,2),
-    IN     episode_writing_start_date               DATE,
-    IN     episode_writing_end_date                 DATE,
-    IN     episode_pre_production_start_date        DATE,
-    IN     episode_pre_production_end_date          DATE,
-    IN     episode_photography_start_date           DATE,
-    IN     episode_photography_end_date             DATE,
-    IN     episode_post_production_start_date       DATE,
-    IN     episode_post_production_end_date         DATE,
-    IN     episode_network_production_start_date    DATE,
-    IN     episode_network_production_end_date      DATE,
-    IN     episode_created_by                       VARCHAR(30),
-    IN     episode_updated_by                       VARCHAR(30)
+    IN  episode_id                               INTEGER,
+    IN  episode_title                            VARCHAR(50),
+    IN  episode_episode_number                   INTEGER,
+    IN  episode_season_id                        INTEGER,
+    IN  episode_budget                           NUMERIC(15,2),
+    IN  episode_writing_start_date               DATE,
+    IN  episode_writing_end_date                 DATE,
+    IN  episode_pre_production_start_date        DATE,
+    IN  episode_pre_production_end_date          DATE,
+    IN  episode_photography_start_date           DATE,
+    IN  episode_photography_end_date             DATE,
+    IN  episode_post_production_start_date       DATE,
+    IN  episode_post_production_end_date         DATE,
+    IN  episode_network_production_start_date    DATE,
+    IN  episode_network_production_end_date      DATE,
+    IN  episode_created_by                       VARCHAR(30),
+    IN  episode_updated_by                       VARCHAR(30),
+    OUT return_value                             INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2135,7 +2632,7 @@ BEGIN
             'CREATED'
         );
 
-        SET episode_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2158,6 +2655,8 @@ BEGIN
                updated_by                     =  episode_updated_by,
                status                         =  'UPDATED'
          WHERE id                             =  episode_id;
+
+         SET return_value = episode_id;
      END IF;
 
      COMMIT;
@@ -2166,18 +2665,19 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE contact_set_list(
-    INOUT  contact_id                   INTEGER,
-    IN     contact_name                 VARCHAR(100),
-    IN     contact_address              VARCHAR(100),
-    IN     contact_city                 VARCHAR(100),
-    IN     contact_state_code           CHAR(2),
-    IN     contact_phone                VARCHAR(20),
-    IN     contact_email                VARCHAR(100),
-    IN     contact_website              VARCHAR(100),
-    IN     contact_picture_path         VARCHAR(120),
-    IN     contact_created_by           VARCHAR(30),
-    IN     contact_updated_by           VARCHAR(30),
-    IN     contact_status               VARCHAR(30)
+    IN  contact_id                   INTEGER,
+    IN  contact_name                 VARCHAR(100),
+    IN  contact_address              VARCHAR(100),
+    IN  contact_city                 VARCHAR(100),
+    IN  contact_state_code           CHAR(2),
+    IN  contact_phone                VARCHAR(20),
+    IN  contact_email                VARCHAR(100),
+    IN  contact_website              VARCHAR(100),
+    IN  contact_picture_path         VARCHAR(120),
+    IN  contact_created_by           VARCHAR(30),
+    IN  contact_updated_by           VARCHAR(30),
+    IN  contact_status               VARCHAR(30),
+    OUT return_value                 INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2217,7 +2717,7 @@ BEGIN
             'CREATED'
         );
 
-        SET contact_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2234,6 +2734,8 @@ BEGIN
                updated_by   = updated_by,
                status       = 'UPDATED'
          WHERE id           = contact_id;
+
+         SET return_value = contact_id;
      END IF;
 
      COMMIT;
@@ -2242,11 +2744,11 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE company_contact_set_list(
-    INOUT company_contact_company_id  INTEGER,
-    IN    company_contact_contact_id  INTEGER,
-    IN    company_contact_created_by  VARCHAR(30),
-    IN    company_contact_updated_by  VARCHAR(30),
-    IN    company_contact_status      VARCHAR(30)
+    IN company_contact_company_id  INTEGER,
+    IN company_contact_contact_id  INTEGER,
+    IN company_contact_created_by  VARCHAR(30),
+    IN company_contact_updated_by  VARCHAR(30),
+    IN company_contact_status      VARCHAR(30)
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2291,16 +2793,17 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE dga_quarterly_earning_set_list(
-    INOUT dga_quarterly_earning_id                   INTEGER,
-    IN    dga_quarterly_earning_quarterly            VARCHAR(10),
-    IN    dga_quarterly_earning_year                 YEAR,
-    IN    dga_quarterly_earning_company_id           INTEGER,
-    IN    dga_quarterly_earning_contact_id           INTEGER,
-    IN    dga_quarterly_earning_prepared_by          VARCHAR(50),
-    IN    dga_quarterly_earning_phone                VARCHAR(20),
-    IN    dga_quarterly_earning_created_by           VARCHAR(30),
-    IN    dga_quarterly_earning_updated_by           VARCHAR(30),
-    IN    dga_quarterly_earning_status               VARCHAR(30)
+    IN  dga_quarterly_earning_id                   INTEGER,
+    IN  dga_quarterly_earning_quarterly            VARCHAR(10),
+    IN  dga_quarterly_earning_year                 YEAR,
+    IN  dga_quarterly_earning_company_id           INTEGER,
+    IN  dga_quarterly_earning_contact_id           INTEGER,
+    IN  dga_quarterly_earning_prepared_by          VARCHAR(50),
+    IN  dga_quarterly_earning_phone                VARCHAR(20),
+    IN  dga_quarterly_earning_created_by           VARCHAR(30),
+    IN  dga_quarterly_earning_updated_by           VARCHAR(30),
+    IN  dga_quarterly_earning_status               VARCHAR(30),
+    OUT return_value                               INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2336,7 +2839,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_quarterly_earning_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2351,6 +2854,8 @@ BEGIN
                updated_by  = dga_quarterly_earning_updated_by,
                status      = 'UPDATED'
          WHERE id          = dga_quarterly_earning_id;
+
+         SET return_value = dga_quarterly_earning_id;
      END IF;
 
      COMMIT;
@@ -2359,15 +2864,16 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE dga_quartely_earning_item_set_list(
-    INOUT dga_quartely_earning_item_id                          INTEGER,
-    IN    dga_quartely_earning_item_dga_quarterly_earning_id    INTEGER,
-    IN    dga_quartely_earning_item_name                        VARCHAR(50),
-    IN    dga_quartely_earning_item_ssn                         VARCHAR(11),
-    IN    dga_quartely_earning_item_category                    VARCHAR(30),
-    IN    dga_quartely_earning_item_production_id               INTEGER,
-    IN    dga_quartely_earning_item_earnings                    NUMERIC(15,2),
-    IN    dga_quartely_earning_item_created_by                  VARCHAR(30),
-    IN    dga_quartely_earning_item_updated_by                  VARCHAR(30)
+    IN  dga_quartely_earning_item_id                          INTEGER,
+    IN  dga_quartely_earning_item_dga_quarterly_earning_id    INTEGER,
+    IN  dga_quartely_earning_item_name                        VARCHAR(50),
+    IN  dga_quartely_earning_item_ssn                         VARCHAR(11),
+    IN  dga_quartely_earning_item_category                    VARCHAR(30),
+    IN  dga_quartely_earning_item_production_id               INTEGER,
+    IN  dga_quartely_earning_item_earnings                    NUMERIC(15,2),
+    IN  dga_quartely_earning_item_created_by                  VARCHAR(30),
+    IN  dga_quartely_earning_item_updated_by                  VARCHAR(30),
+    OUT return_value                                          INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2403,7 +2909,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_quartely_earning_item_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2418,6 +2924,8 @@ BEGIN
                status                   =   'UPDATED'
          WHERE id                       =   dga_quartely_earning_item_id;
      END IF;
+
+     SET return_value = dga_quartely_earning_item_id;
 
      COMMIT;
 END //
@@ -2448,15 +2956,16 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE dga_weekly_work_set_list(
-    INOUT dga_weekly_work_id                   INTEGER,
-    IN    dga_weekly_work_production_id        INT,
-    IN    dga_weekly_work_episode_id           INT,
-    IN    dga_weekly_work_company_id           INT,
-    IN    dga_weekly_work_contact_id           INT,
-    IN    dga_weekly_work_week_start_date      DATE,
-    IN    dga_weekly_work_week_end_date        DATE,
-    IN    dga_weekly_work_created_by           VARCHAR(30),
-    IN    dga_weekly_work_updated_by           VARCHAR(30)
+    IN  dga_weekly_work_id                   INTEGER,
+    IN  dga_weekly_work_production_id        INT,
+    IN  dga_weekly_work_episode_id           INT,
+    IN  dga_weekly_work_company_id           INT,
+    IN  dga_weekly_work_contact_id           INT,
+    IN  dga_weekly_work_week_start_date      DATE,
+    IN  dga_weekly_work_week_end_date        DATE,
+    IN  dga_weekly_work_created_by           VARCHAR(30),
+    IN  dga_weekly_work_updated_by           VARCHAR(30),
+    OUT return_value                         INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2492,7 +3001,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_weekly_work_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2506,6 +3015,8 @@ BEGIN
                updated_by         =    dga_weekly_work_updated_by,
                status             =    'UPDATED'
          WHERE id                 =    dga_weekly_work_id;
+
+         SET return_value = dga_weekly_work_id;
      END IF;
 
      COMMIT;
@@ -2514,13 +3025,14 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE dga_weekly_work_item_set_list(
-    INOUT dga_weekly_work_item_id                          INTEGER,
-    IN    dga_weekly_work_item_dga_weekly_work_id          INTEGER,
-    IN    dga_weekly_work_item_name                        VARCHAR(50),
-    IN    dga_weekly_work_item_ssn                         VARCHAR(11),
-    IN    dga_weekly_work_item_category                    VARCHAR(30),
-    IN    dga_weekly_work_item_created_by                  VARCHAR(30),
-    IN    dga_weekly_work_item_updated_by                  VARCHAR(30)
+    IN  dga_weekly_work_item_id                          INTEGER,
+    IN  dga_weekly_work_item_dga_weekly_work_id          INTEGER,
+    IN  dga_weekly_work_item_name                        VARCHAR(50),
+    IN  dga_weekly_work_item_ssn                         VARCHAR(11),
+    IN  dga_weekly_work_item_category                    VARCHAR(30),
+    IN  dga_weekly_work_item_created_by                  VARCHAR(30),
+    IN  dga_weekly_work_item_updated_by                  VARCHAR(30),
+    OUT return_value                                     INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2552,7 +3064,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_weekly_work_item_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2564,6 +3076,8 @@ BEGIN
                updated_by          =  dga_weekly_work_item_updated_by,
                status              =  'UPDATED'
          WHERE id                  =  dga_weekly_work_item_id;
+
+         SET return_value = dga_weekly_work_item_id;
      END IF;
 
      COMMIT;
@@ -2595,58 +3109,59 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE dga_director_deal_memo_set_list(
-    INOUT  dga_director_deal_memo_id                                 INT,
-    IN     dga_director_deal_memo_contact_id                         INT,
-    IN     dga_director_deal_memo_ssn                                VARCHAR(11),
-    IN     dga_director_deal_memo_loanout                            VARCHAR(30),
-    IN     dga_director_deal_memo_fid                                VARCHAR(30),
-    IN     dga_director_deal_memo_salary                             DECIMAL,
-    IN     dga_director_deal_memo_salary_period_id                   INT,
-    IN     dga_director_deal_memo_aditional_time                     DECIMAL,
-    IN     dga_director_deal_memo_aditional_time_period_id           INT,
-    IN     dga_director_deal_memo_start_date                         DATE,
-    IN     dga_director_deal_memo_guaranteed                         INT,
-    IN     dga_director_deal_memo_guaranteed_period_id               INT,
-    IN     dga_director_deal_memo_dga_covered                        CHAR(1),
-    IN     dga_director_deal_memo_addition_terms                     VARCHAR(1024),
-    IN     dga_director_deal_memo_production_id                      INT,
-    IN     dga_director_deal_memo_episode_id                         INT,
-    IN     dga_director_deal_memo_episode_specific_length            VARCHAR(50),
-    IN     dga_director_deal_memo_segment                            CHAR(1),
-    IN     dga_director_deal_memo_segment_specific_length            VARCHAR(50),
-    IN     dga_director_deal_memo_pilot                              CHAR(1),
-    IN     dga_director_deal_memo_dramatic_basic_cable_budget        DECIMAL,
-    IN     dga_director_deal_memo_television_license_director        CHAR(1),
-    IN     dga_director_deal_memo_television_license_budget          CHAR(1),
-    IN     dga_director_deal_memo_produced_for_network               CHAR(1),
-    IN     dga_director_deal_memo_produced_for_non_network           CHAR(1),
-    IN     dga_director_deal_memo_produced_for_basic_cable           CHAR(1),
-    IN     dga_director_deal_memo_produced_for_pay_tv                CHAR(1),
-    IN     dga_director_deal_memo_produced_for_home_video            CHAR(1),
-    IN     dga_director_deal_memo_show_type_dramatic                 CHAR(1),
-    IN     dga_director_deal_memo_show_type_quiz_game                CHAR(1),
-    IN     dga_director_deal_memo_show_type_variety                  CHAR(1),
-    IN     dga_director_deal_memo_show_type_sports_event             CHAR(1),
-    IN     dga_director_deal_memo_show_type_sports_event_name        VARCHAR(50),
-    IN     dga_director_deal_memo_show_type_series_after_02102002    CHAR(1),
-    IN     dga_director_deal_memo_show_type_series_prior_02102002    CHAR(1),
-    IN     dga_director_deal_memo_show_type_special                  CHAR(1),
-    IN     dga_director_deal_memo_show_type_movie_mini_series        CHAR(1),
-    IN     dga_director_deal_memo_show_type_strip                    CHAR(1),
-    IN     dga_director_deal_memo_show_type_high_budget              CHAR(1),
-    IN     dga_director_deal_memo_show_type_low_budget               CHAR(1),
-    IN     dga_director_deal_memo_show_type_prime_time               CHAR(1),
-    IN     dga_director_deal_memo_show_type_non_prime_time           CHAR(1),
-    IN     dga_director_deal_memo_show_type_live_broadcast           CHAR(1),
-    IN     dga_director_deal_memo_employer_name                      VARCHAR(50),
-    IN     dga_director_deal_memo_employee_name                      VARCHAR(50),
-    IN     dga_director_deal_memo_employee_date                      DATE,
-    IN     dga_director_deal_memo_signatory                          VARCHAR(50),
-    IN     dga_director_deal_memo_signatory_by                       VARCHAR(50),
-    IN     dga_director_deal_memo_signatory_date                     DATE,
-    IN     dga_director_deal_memo_created_by                         VARCHAR(30),
-    IN     dga_director_deal_memo_updated_by                         VARCHAR(30),
-    IN     dga_director_deal_memo_status                             VARCHAR(30)
+    IN  dga_director_deal_memo_id                                 INT,
+    IN  dga_director_deal_memo_contact_id                         INT,
+    IN  dga_director_deal_memo_ssn                                VARCHAR(11),
+    IN  dga_director_deal_memo_loanout                            VARCHAR(30),
+    IN  dga_director_deal_memo_fid                                VARCHAR(30),
+    IN  dga_director_deal_memo_salary                             DECIMAL,
+    IN  dga_director_deal_memo_salary_period_id                   INT,
+    IN  dga_director_deal_memo_aditional_time                     DECIMAL,
+    IN  dga_director_deal_memo_aditional_time_period_id           INT,
+    IN  dga_director_deal_memo_start_date                         DATE,
+    IN  dga_director_deal_memo_guaranteed                         INT,
+    IN  dga_director_deal_memo_guaranteed_period_id               INT,
+    IN  dga_director_deal_memo_dga_covered                        CHAR(1),
+    IN  dga_director_deal_memo_addition_terms                     VARCHAR(1024),
+    IN  dga_director_deal_memo_production_id                      INT,
+    IN  dga_director_deal_memo_episode_id                         INT,
+    IN  dga_director_deal_memo_episode_specific_length            VARCHAR(50),
+    IN  dga_director_deal_memo_segment                            CHAR(1),
+    IN  dga_director_deal_memo_segment_specific_length            VARCHAR(50),
+    IN  dga_director_deal_memo_pilot                              CHAR(1),
+    IN  dga_director_deal_memo_dramatic_basic_cable_budget        DECIMAL,
+    IN  dga_director_deal_memo_television_license_director        CHAR(1),
+    IN  dga_director_deal_memo_television_license_budget          CHAR(1),
+    IN  dga_director_deal_memo_produced_for_network               CHAR(1),
+    IN  dga_director_deal_memo_produced_for_non_network           CHAR(1),
+    IN  dga_director_deal_memo_produced_for_basic_cable           CHAR(1),
+    IN  dga_director_deal_memo_produced_for_pay_tv                CHAR(1),
+    IN  dga_director_deal_memo_produced_for_home_video            CHAR(1),
+    IN  dga_director_deal_memo_show_type_dramatic                 CHAR(1),
+    IN  dga_director_deal_memo_show_type_quiz_game                CHAR(1),
+    IN  dga_director_deal_memo_show_type_variety                  CHAR(1),
+    IN  dga_director_deal_memo_show_type_sports_event             CHAR(1),
+    IN  dga_director_deal_memo_show_type_sports_event_name        VARCHAR(50),
+    IN  dga_director_deal_memo_show_type_series_after_02102002    CHAR(1),
+    IN  dga_director_deal_memo_show_type_series_prior_02102002    CHAR(1),
+    IN  dga_director_deal_memo_show_type_special                  CHAR(1),
+    IN  dga_director_deal_memo_show_type_movie_mini_series        CHAR(1),
+    IN  dga_director_deal_memo_show_type_strip                    CHAR(1),
+    IN  dga_director_deal_memo_show_type_high_budget              CHAR(1),
+    IN  dga_director_deal_memo_show_type_low_budget               CHAR(1),
+    IN  dga_director_deal_memo_show_type_prime_time               CHAR(1),
+    IN  dga_director_deal_memo_show_type_non_prime_time           CHAR(1),
+    IN  dga_director_deal_memo_show_type_live_broadcast           CHAR(1),
+    IN  dga_director_deal_memo_employer_name                      VARCHAR(50),
+    IN  dga_director_deal_memo_employee_name                      VARCHAR(50),
+    IN  dga_director_deal_memo_employee_date                      DATE,
+    IN  dga_director_deal_memo_signatory                          VARCHAR(50),
+    IN  dga_director_deal_memo_signatory_by                       VARCHAR(50),
+    IN  dga_director_deal_memo_signatory_date                     DATE,
+    IN  dga_director_deal_memo_created_by                         VARCHAR(30),
+    IN  dga_director_deal_memo_updated_by                         VARCHAR(30),
+    IN  dga_director_deal_memo_status                             VARCHAR(30),
+    OUT return_value                                              INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -2766,7 +3281,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_director_deal_memo_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -2823,6 +3338,8 @@ BEGIN
                updated_by                      = dga_director_deal_memo_updated_by,
                status                          = dga_director_deal_memo_status
          WHERE id                              = dga_director_deal_memo_id;
+
+         SET return_value = dga_director_deal_memo_id;
      END IF;
 
      COMMIT;
@@ -2847,58 +3364,59 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE dga_employment_data_set_list(
-    INOUT dga_employment_data_id                                  INT,
-    IN    dga_employment_data_report_date                         DATE,
-    IN    dga_employment_data_prepared_by                         VARCHAR(50),
-    IN    dga_employment_data_quarter                             VARCHAR(10),
-    IN    dga_employment_data_year                                YEAR,
-    IN    dga_employment_data_company_id                          INT,
-    IN    dga_employment_data_production_id                       INT,
-    IN    dga_employment_data_director_name                       VARCHAR(50),
-    IN    dga_employment_data_director_first_number               INT,
-    IN    dga_employment_data_director_gender                     CHAR(1),
-    IN    dga_employment_data_director_caucasion                  CHAR(1),
-    IN    dga_employment_data_director_afro_american              CHAR(1),
-    IN    dga_employment_data_director_latino                     CHAR(1),
-    IN    dga_employment_data_director_native                     CHAR(1),
-    IN    dga_employment_data_director_unknown                    CHAR(1),
-    IN    dga_employment_data_unit_production_name                VARCHAR(50),
-    IN    dga_employment_data_unit_production_gender              CHAR(1),
-    IN    dga_employment_data_unit_production_caucasion           CHAR(1),
-    IN    dga_employment_data_unit_production_afro_american       CHAR(1),
-    IN    dga_employment_data_unit_production_latino              CHAR(1),
-    IN    dga_employment_data_unit_production_native              CHAR(1),
-    IN    dga_employment_data_unit_production_unknown             CHAR(1),
-    IN    dga_employment_data_first_assistant_name                VARCHAR(50),
-    IN    dga_employment_data_first_assistant_gender              CHAR(1),
-    IN    dga_employment_data_first_assistant_caucasion           CHAR(1),
-    IN    dga_employment_data_first_assistant_afro_american       CHAR(1),
-    IN    dga_employment_data_first_assistant_latino              CHAR(1),
-    IN    dga_employment_data_first_assistant_native              CHAR(1),
-    IN    dga_employment_data_first_assistant_unknown             CHAR(1),
-    IN    dga_employment_data_second_assistant_name               VARCHAR(50),
-    IN    dga_employment_data_second_assistant_gender             CHAR(1),
-    IN    dga_employment_data_second_assistant_caucasion          CHAR(1),
-    IN    dga_employment_data_second_assistant_afro_american      CHAR(1),
-    IN    dga_employment_data_second_assistant_latino             CHAR(1),
-    IN    dga_employment_data_second_assistant_native             CHAR(1),
-    IN    dga_employment_data_second_assistant_unknown            CHAR(1),
-    IN    dga_employment_data_associate_assistant_name            VARCHAR(50),
-    IN    dga_employment_data_associate_assistant_gender          CHAR(1),
-    IN    dga_employment_data_associate_assistant_caucasion       CHAR(1),
-    IN    dga_employment_data_associate_assistant_afro_american   CHAR(1),
-    IN    dga_employment_data_associate_assistant_latino          CHAR(1),
-    IN    dga_employment_data_associate_assistant_native          CHAR(1),
-    IN    dga_employment_data_associate_assistant_unknown         CHAR(1),
-    IN    dga_employment_data_stage_assistant_name                VARCHAR(50),
-    IN    dga_employment_data_stage_assistant_gender              CHAR(1),
-    IN    dga_employment_data_stage_assistant_caucasion           CHAR(1),
-    IN    dga_employment_data_stage_assistant_afro_american       CHAR(1),
-    IN    dga_employment_data_stage_assistant_latino              CHAR(1),
-    IN    dga_employment_data_stage_assistant_native              CHAR(1),
-    IN    dga_employment_data_stage_assistant_unknown             CHAR(1),
-    IN    dga_employment_data_created_by                          VARCHAR(30),
-    IN    dga_employment_data_updated_by                          VARCHAR(30)
+    IN  dga_employment_data_id                                  INT,
+    IN  dga_employment_data_report_date                         DATE,
+    IN  dga_employment_data_prepared_by                         VARCHAR(50),
+    IN  dga_employment_data_quarter                             VARCHAR(10),
+    IN  dga_employment_data_year                                YEAR,
+    IN  dga_employment_data_company_id                          INT,
+    IN  dga_employment_data_production_id                       INT,
+    IN  dga_employment_data_director_name                       VARCHAR(50),
+    IN  dga_employment_data_director_first_number               INT,
+    IN  dga_employment_data_director_gender                     CHAR(1),
+    IN  dga_employment_data_director_caucasion                  CHAR(1),
+    IN  dga_employment_data_director_afro_american              CHAR(1),
+    IN  dga_employment_data_director_latino                     CHAR(1),
+    IN  dga_employment_data_director_native                     CHAR(1),
+    IN  dga_employment_data_director_unknown                    CHAR(1),
+    IN  dga_employment_data_unit_production_name                VARCHAR(50),
+    IN  dga_employment_data_unit_production_gender              CHAR(1),
+    IN  dga_employment_data_unit_production_caucasion           CHAR(1),
+    IN  dga_employment_data_unit_production_afro_american       CHAR(1),
+    IN  dga_employment_data_unit_production_latino              CHAR(1),
+    IN  dga_employment_data_unit_production_native              CHAR(1),
+    IN  dga_employment_data_unit_production_unknown             CHAR(1),
+    IN  dga_employment_data_first_assistant_name                VARCHAR(50),
+    IN  dga_employment_data_first_assistant_gender              CHAR(1),
+    IN  dga_employment_data_first_assistant_caucasion           CHAR(1),
+    IN  dga_employment_data_first_assistant_afro_american       CHAR(1),
+    IN  dga_employment_data_first_assistant_latino              CHAR(1),
+    IN  dga_employment_data_first_assistant_native              CHAR(1),
+    IN  dga_employment_data_first_assistant_unknown             CHAR(1),
+    IN  dga_employment_data_second_assistant_name               VARCHAR(50),
+    IN  dga_employment_data_second_assistant_gender             CHAR(1),
+    IN  dga_employment_data_second_assistant_caucasion          CHAR(1),
+    IN  dga_employment_data_second_assistant_afro_american      CHAR(1),
+    IN  dga_employment_data_second_assistant_latino             CHAR(1),
+    IN  dga_employment_data_second_assistant_native             CHAR(1),
+    IN  dga_employment_data_second_assistant_unknown            CHAR(1),
+    IN  dga_employment_data_associate_assistant_name            VARCHAR(50),
+    IN  dga_employment_data_associate_assistant_gender          CHAR(1),
+    IN  dga_employment_data_associate_assistant_caucasion       CHAR(1),
+    IN  dga_employment_data_associate_assistant_afro_american   CHAR(1),
+    IN  dga_employment_data_associate_assistant_latino          CHAR(1),
+    IN  dga_employment_data_associate_assistant_native          CHAR(1),
+    IN  dga_employment_data_associate_assistant_unknown         CHAR(1),
+    IN  dga_employment_data_stage_assistant_name                VARCHAR(50),
+    IN  dga_employment_data_stage_assistant_gender              CHAR(1),
+    IN  dga_employment_data_stage_assistant_caucasion           CHAR(1),
+    IN  dga_employment_data_stage_assistant_afro_american       CHAR(1),
+    IN  dga_employment_data_stage_assistant_latino              CHAR(1),
+    IN  dga_employment_data_stage_assistant_native              CHAR(1),
+    IN  dga_employment_data_stage_assistant_unknown             CHAR(1),
+    IN  dga_employment_data_created_by                          VARCHAR(30),
+    IN  dga_employment_data_updated_by                          VARCHAR(30),
+    OUT return_value                                            INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -3021,7 +3539,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_employment_data_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -3078,6 +3596,8 @@ BEGIN
                updated_by                        = dga_employment_data_updated_by,
                status                            = 'UPDATED'
          WHERE id =    dga_employment_data_id;
+
+         SET return_value = dga_employment_data_id;
      END IF;
 
      COMMIT;
@@ -3102,50 +3622,51 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE dga_stage_manager_deal_memo_set_list(
-    IN dga_stage_manager_deal_memo_id                                  INT,
-    IN dga_stage_manager_deal_memo_contact_id                          INT,
-    IN dga_stage_manager_deal_memo_ssn                                 VARCHAR(11),
-    IN dga_stage_manager_deal_memo_loanout                             VARCHAR(30),
-    IN dga_stage_manager_deal_memo_fid                                 VARCHAR(30),
-    IN dga_stage_manager_deal_memo_salary                              DECIMAL,
-    IN dga_stage_manager_deal_memo_salary_period_id                    INT,
-    IN dga_stage_manager_deal_memo_aditional_time                      DECIMAL,
-    IN dga_stage_manager_deal_memo_aditional_time_period_id            INT,
-    IN dga_stage_manager_deal_memo_start_date                          DATE,
-    IN dga_stage_manager_deal_memo_guaranteed                          INT,
-    IN dga_stage_manager_deal_memo_guaranteed_period_id                INT,
-    IN dga_stage_manager_deal_memo_production_id                       INT,
-    IN dga_stage_manager_deal_memo_episode_id                          INT,
-    IN dga_stage_manager_deal_memo_category_associate_director         CHAR(1),
-    IN dga_stage_manager_deal_memo_category_stage_manager              CHAR(1),
-    IN dga_stage_manager_deal_memo_category_aditional_stage_manager    CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_week_studio          CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_week_location        CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_day_studio           CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_day_location         CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_week_40                   CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_week_flat_60              CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_day_8                     CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_day_flat_12               CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_30_lower               CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_30_between             CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_30_higher              CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_60_lower               CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_60_between             CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_60_higher              CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_120_lower              CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_120_between            CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_120_higher             CHAR(1),
-    IN dga_stage_manager_deal_memo_other_conditions                    VARCHAR(255),
-    IN dga_stage_manager_deal_memo_employer_name                       VARCHAR(50),
-    IN dga_stage_manager_deal_memo_employee_name                       VARCHAR(50),
-    IN dga_stage_manager_deal_memo_employee_date                       DATE,
-    IN dga_stage_manager_deal_memo_signatory                           VARCHAR(50),
-    IN dga_stage_manager_deal_memo_signatory_by                        VARCHAR(50),
-    IN dga_stage_manager_deal_memo_signatory_date                      DATE,
-    IN dga_stage_manager_deal_memo_created_by                          VARCHAR(30),
-    IN dga_stage_manager_deal_memo_updated_by                          VARCHAR(30),
-    IN dga_stage_manager_deal_memo_status                              VARCHAR(30)
+    IN  dga_stage_manager_deal_memo_id                                  INT,
+    IN  dga_stage_manager_deal_memo_contact_id                          INT,
+    IN  dga_stage_manager_deal_memo_ssn                                 VARCHAR(11),
+    IN  dga_stage_manager_deal_memo_loanout                             VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_fid                                 VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_salary                              DECIMAL,
+    IN  dga_stage_manager_deal_memo_salary_period_id                    INT,
+    IN  dga_stage_manager_deal_memo_aditional_time                      DECIMAL,
+    IN  dga_stage_manager_deal_memo_aditional_time_period_id            INT,
+    IN  dga_stage_manager_deal_memo_start_date                          DATE,
+    IN  dga_stage_manager_deal_memo_guaranteed                          INT,
+    IN  dga_stage_manager_deal_memo_guaranteed_period_id                INT,
+    IN  dga_stage_manager_deal_memo_production_id                       INT,
+    IN  dga_stage_manager_deal_memo_episode_id                          INT,
+    IN  dga_stage_manager_deal_memo_category_associate_director         CHAR(1),
+    IN  dga_stage_manager_deal_memo_category_stage_manager              CHAR(1),
+    IN  dga_stage_manager_deal_memo_category_aditional_stage_manager    CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_week_studio          CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_week_location        CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_day_studio           CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_day_location         CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_week_40                   CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_week_flat_60              CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_day_8                     CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_day_flat_12               CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_30_lower               CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_30_between             CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_30_higher              CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_60_lower               CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_60_between             CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_60_higher              CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_120_lower              CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_120_between            CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_120_higher             CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_conditions                    VARCHAR(255),
+    IN  dga_stage_manager_deal_memo_employer_name                       VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_employee_name                       VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_employee_date                       DATE,
+    IN  dga_stage_manager_deal_memo_signatory                           VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_signatory_by                        VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_signatory_date                      DATE,
+    IN  dga_stage_manager_deal_memo_created_by                          VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_updated_by                          VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_status                              VARCHAR(30),
+    OUT return_value                                                   INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -3249,7 +3770,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_stage_manager_deal_memo_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -3299,6 +3820,8 @@ BEGIN
                updated_by                       = dga_stage_manager_deal_memo_updated_by,
                status = 'UPDATED'
          WHERE id                 =    dga_stage_manager_deal_memo_id;
+
+         SET return_value = dga_stage_manager_deal_memo_id;
      END IF;
 
      COMMIT;
@@ -3318,6 +3841,336 @@ BEGIN
      WHERE id         = dga_stage_manager_deal_memo_id;
      COMMIT;
 
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_director_scripted_deal_memo_set_list(
+    IN  dga_director_scripted_deal_memo_id                             INT,
+    IN  dga_director_scripted_deal_memo_contact_id                     INT,
+    IN  dga_director_scripted_deal_memo_ssn                            VARCHAR(11),
+    IN  dga_director_scripted_deal_memo_loanout                        VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_fid                            VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_salary                         DECIMAL,
+    IN  dga_director_scripted_deal_memo_salary_period_id               INT,
+    IN  dga_director_scripted_deal_memo_aditional_time                 DECIMAL,
+    IN  dga_director_scripted_deal_memo_aditional_time_period_id       INT,
+    IN  dga_director_scripted_deal_memo_start_date                     DATE,
+    IN  dga_director_scripted_deal_memo_guaranteed                     INT,
+    IN  dga_director_scripted_deal_memo_guaranteed_period_id           INT,
+    IN  dga_director_scripted_deal_memo_dga_covered                    CHAR(1),
+    IN  dga_director_scripted_deal_memo_addition_terms                 VARCHAR(1024),
+    IN  dga_director_scripted_deal_memo_production_id                  INT,
+    IN  dga_director_scripted_deal_memo_project_number                 VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_episode_id                     INT,
+    IN  dga_director_scripted_deal_memo_episode_specific_length        VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_segment                        CHAR(1),
+    IN  dga_director_scripted_deal_memo_segment_specific_length        VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_length_30                      CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_60                      CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_90                      CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_120                     CHAR(1),
+    IN  dga_director_scripted_deal_memo_length_other                   CHAR(1),
+    IN  dga_director_scripted_deal_memo_pilot                          CHAR(1),
+    IN  dga_director_scripted_deal_memo_dramatic_basic_cable_budget    DECIMAL,
+    IN  dga_director_scripted_deal_memo_type_production_multi_camera   CHAR(1),
+    IN  dga_director_scripted_deal_memo_type_production_single_camera  CHAR(1),
+    IN  dga_director_scripted_deal_memo_television_license_director    CHAR(1),
+    IN  dga_director_scripted_deal_memo_television_license_budget      CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_network           CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_non_network       CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_basic_cable       CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_pay_tv            CHAR(1),
+    IN  dga_director_scripted_deal_memo_produced_for_home_video        CHAR(1),
+    IN  dga_director_scripted_deal_memo_project_budget_more            CHAR(1),
+    IN  dga_director_scripted_deal_memo_project_budget_less            CHAR(1),
+    IN  dga_director_scripted_deal_memo_second_unit_director           CHAR(1),
+    IN  dga_director_scripted_deal_memo_segment_applicable             CHAR(1),
+    IN  dga_director_scripted_deal_memo_employer_name                  VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_employee_name                  VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_employee_date                  DATE,
+    IN  dga_director_scripted_deal_memo_signatory                      VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_signatory_by                   VARCHAR(50),
+    IN  dga_director_scripted_deal_memo_signatory_date                 DATE,
+    IN  dga_director_scripted_deal_memo_created_by                     VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_updated_by                     VARCHAR(30),
+    IN  dga_director_scripted_deal_memo_status                         VARCHAR(30),
+    OUT return_value                                                   INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM dga_director_scripted_deal_memo
+     WHERE id = dga_director_scripted_deal_memo_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO dga_director_scripted_deal_memo
+        (
+            contact_id,
+            ssn,
+            loanout,
+            fid,
+            salary,
+            salary_period_id,
+            aditional_time,
+            aditional_time_period_id,
+            start_date,
+            guaranteed,
+            guaranteed_period_id,
+            dga_covered,
+            addition_terms,
+            production_id,
+            project_number,
+            episode_id,
+            episode_specific_length,
+            segment,
+            segment_specific_length,
+            length_30,
+            length_60,
+            length_90,
+            length_120,
+            length_other,
+            pilot,
+            dramatic_basic_cable_budget,
+            type_production_multi_camera,
+            type_production_single_camera,
+            television_license_director,
+            television_license_budget,
+            produced_for_network,
+            produced_for_non_network,
+            produced_for_basic_cable,
+            produced_for_pay_tv,
+            produced_for_home_video,
+            project_budget_more,
+            project_budget_less,
+            second_unit_director,
+            segment_applicable,
+            employer_name,
+            employee_name,
+            employee_date,
+            signatory,
+            signatory_by,
+            signatory_date,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            dga_director_scripted_deal_memo_contact_id,
+            dga_director_scripted_deal_memo_ssn,
+            dga_director_scripted_deal_memo_loanout,
+            dga_director_scripted_deal_memo_fid,
+            dga_director_scripted_deal_memo_salary,
+            dga_director_scripted_deal_memo_salary_period_id,
+            dga_director_scripted_deal_memo_aditional_time,
+            dga_director_scripted_deal_memo_aditional_time_period_id,
+            dga_director_scripted_deal_memo_start_date,
+            dga_director_scripted_deal_memo_guaranteed,
+            dga_director_scripted_deal_memo_guaranteed_period_id,
+            dga_director_scripted_deal_memo_dga_covered,
+            dga_director_scripted_deal_memo_addition_terms,
+            dga_director_scripted_deal_memo_production_id,
+            dga_director_scripted_deal_memo_project_number,
+            dga_director_scripted_deal_memo_episode_id,
+            dga_director_scripted_deal_memo_episode_specific_length,
+            dga_director_scripted_deal_memo_segment,
+            dga_director_scripted_deal_memo_segment_specific_length,
+            dga_director_scripted_deal_memo_length_30,
+            dga_director_scripted_deal_memo_length_60,
+            dga_director_scripted_deal_memo_length_90,
+            dga_director_scripted_deal_memo_length_120,
+            dga_director_scripted_deal_memo_length_other,
+            dga_director_scripted_deal_memo_pilot,
+            dga_director_scripted_deal_memo_dramatic_basic_cable_budget,
+            dga_director_scripted_deal_memo_type_production_multi_camera,
+            dga_director_scripted_deal_memo_type_production_single_camera,
+            dga_director_scripted_deal_memo_television_license_director,
+            dga_director_scripted_deal_memo_television_license_budget,
+            dga_director_scripted_deal_memo_produced_for_network,
+            dga_director_scripted_deal_memo_produced_for_non_network,
+            dga_director_scripted_deal_memo_produced_for_basic_cable,
+            dga_director_scripted_deal_memo_produced_for_pay_tv,
+            dga_director_scripted_deal_memo_produced_for_home_video,
+            dga_director_scripted_deal_memo_project_budget_more,
+            dga_director_scripted_deal_memo_project_budget_less,
+            dga_director_scripted_deal_memo_second_unit_director,
+            dga_director_scripted_deal_memo_segment_applicable,
+            dga_director_scripted_deal_memo_employer_name,
+            dga_director_scripted_deal_memo_employee_name,
+            dga_director_scripted_deal_memo_employee_date,
+            dga_director_scripted_deal_memo_signatory,
+            dga_director_scripted_deal_memo_signatory_by,
+            dga_director_scripted_deal_memo_signatory_date,
+            dga_director_scripted_deal_memo_created_by,
+            dga_director_scripted_deal_memo_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE dga_director_scripted_deal_memo
+           SET contact_id                    = dga_director_scripted_deal_memo_contact_id,
+               ssn                           = dga_director_scripted_deal_memo_ssn,
+               loanout                       = dga_director_scripted_deal_memo_loanout,
+               fid                           = dga_director_scripted_deal_memo_fid,
+               salary                        = dga_director_scripted_deal_memo_salary,
+               salary_period_id              = dga_director_scripted_deal_memo_salary_period_id,
+               aditional_time                = dga_director_scripted_deal_memo_aditional_time,
+               aditional_time_period_id      = dga_director_scripted_deal_memo_aditional_time_period_id,
+               start_date                    = dga_director_scripted_deal_memo_start_date,
+               guaranteed                    = dga_director_scripted_deal_memo_guaranteed,
+               guaranteed_period_id          = dga_director_scripted_deal_memo_guaranteed_period_id,
+               dga_covered                   = dga_director_scripted_deal_memo_dga_covered,
+               addition_terms                = dga_director_scripted_deal_memo_addition_terms,
+               production_id                 = dga_director_scripted_deal_memo_production_id,
+               project_number                = dga_director_scripted_deal_memo_project_number,
+               episode_id                    = dga_director_scripted_deal_memo_episode_id,
+               episode_specific_length       = dga_director_scripted_deal_memo_episode_specific_length,
+               segment                       = dga_director_scripted_deal_memo_segment,
+               segment_specific_length       = dga_director_scripted_deal_memo_segment_specific_length,
+               length_30                     = dga_director_scripted_deal_memo_length_30,
+               length_60                     = dga_director_scripted_deal_memo_length_60,
+               length_90                     = dga_director_scripted_deal_memo_length_90,
+               length_120                    = dga_director_scripted_deal_memo_length_120,
+               length_other                  = dga_director_scripted_deal_memo_length_other,
+               pilot                         = dga_director_scripted_deal_memo_pilot,
+               dramatic_basic_cable_budget   = dga_director_scripted_deal_memo_dramatic_basic_cable_budget,
+               type_production_multi_camera  = dga_director_scripted_deal_memo_type_production_multi_camera,
+               type_production_single_camera = dga_director_scripted_deal_memo_type_production_single_camera,
+               television_license_director   = dga_director_scripted_deal_memo_television_license_director,
+               television_license_budget     = dga_director_scripted_deal_memo_television_license_budget,
+               produced_for_network          = dga_director_scripted_deal_memo_produced_for_network,
+               produced_for_non_network      = dga_director_scripted_deal_memo_produced_for_non_network,
+               produced_for_basic_cable      = dga_director_scripted_deal_memo_produced_for_basic_cable,
+               produced_for_pay_tv           = dga_director_scripted_deal_memo_produced_for_pay_tv,
+               produced_for_home_video       = dga_director_scripted_deal_memo_produced_for_home_video,
+               project_budget_more           = dga_director_scripted_deal_memo_project_budget_more,
+               project_budget_less           = dga_director_scripted_deal_memo_project_budget_less,
+               second_unit_director          = dga_director_scripted_deal_memo_second_unit_director,
+               segment_applicable            = dga_director_scripted_deal_memo_segment_applicable,
+               employer_name                 = dga_director_scripted_deal_memo_employer_name,
+               employee_name                 = dga_director_scripted_deal_memo_employee_name,
+               employee_date                 = dga_director_scripted_deal_memo_employee_date,
+               signatory                     = dga_director_scripted_deal_memo_signatory,
+               signatory_by                  = dga_director_scripted_deal_memo_signatory_by,
+               signatory_date                = dga_director_scripted_deal_memo_signatory_date,
+               created                       = dga_director_scripted_deal_memo_created,
+               created_by                    = dga_director_scripted_deal_memo_created_by,
+               updated                       = dga_director_scripted_deal_memo_updated,
+               updated_by                    = dga_director_scripted_deal_memo_updated_by,
+               status                        = 'UPDATED'
+         WHERE id                            = dga_director_scripted_deal_memo_id;
+
+         SET return_value = dga_director_scripted_deal_memo_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE dga_director_scripteddeal_memo_set_closed(
+    IN dga_director_scripteddeal_memo_id                   INTEGER,
+    IN dga_director_scripteddeal_memo_updated_by           VARCHAR(30)
+)
+BEGIN
+
+    UPDATE dga_director_scripteddeal_memo
+       SET status     = 'CLOSED',
+           updated_by = dga_director_scripteddeal_memo_updated_by
+     WHERE id         = dga_director_scripteddeal_memo_id;
+     COMMIT;
+
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_work_list_set_list(
+    IN  wga_work_list_id                INT,
+    IN  wga_work_list_company_id        INT,
+    IN  wga_work_list_company_number    INT,
+    IN  wga_work_list_week_ending       INT,
+    IN  wga_work_list_contact_id        INT,
+    IN  wga_work_list_name              VARCHAR(50),
+    IN  wga_work_list_created_by        VARCHAR(30),
+    IN  wga_work_list_updated_by        VARCHAR(30),
+    OUT return_value                    INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM wga_work_list
+     WHERE id = wga_work_list_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO wga_work_list
+        (
+            company_id,
+            company_number,
+            week_ending,
+            contact_id,
+            name,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            wga_work_list_company_id,
+            wga_work_list_company_number,
+            wga_work_list_week_ending,
+            wga_work_list_contact_id,
+            wga_work_list_name,
+            wga_work_list_created_by,
+            wga_work_list_updated_by,
+            wga_work_list_status,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE wga_work_list
+           SET company_id     = wga_work_list_company_id,
+               company_number = wga_work_list_company_number,
+               week_ending    = wga_work_list_week_ending,
+               contact_id     = wga_work_list_contact_id,
+               name           = wga_work_list_name,
+               created        = wga_work_list_created,
+               created_by     = wga_work_list_created_by,
+               updated        = wga_work_list_updated,
+               updated_by     = wga_work_list_updated_by,
+               status         = 'UPDATED'
+         WHERE id             = wga_work_list_id;
+
+         SET return_value = wga_work_list_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_work_list_set_closed(
+    IN wga_work_list_id                INT,
+    IN wga_work_list_updated_by        VARCHAR(30)
+)
+BEGIN
+
+    UPDATE wga_work_list
+       SET updated_by     = wga_work_list_updated_by,
+           status         = 'CLOSED'
+     WHERE id             = wga_work_list_id;
+
+     COMMIT;
 END //
 DELIMITER ;
 
@@ -3437,12 +4290,12 @@ VALUES
 -- ('4st', 'Fourth Quarter',  'RKAMMER', 'RKAMMER', 'CREATED');
 
 INSERT INTO contact
-(name, address, city, state_code, phone, email, website, picture_path, created_by, updated_by, status)
+(first_name, middle_name, last_name, suffix, address, city, state_code, phone, email, website, picture_path, created_by, updated_by, status)
 VALUES
-('Person Number One',   '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
-('Person Number Two',   '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_two@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
-('Person Number Three', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_three@level.com', NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
-('Person Number Four',  '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_for@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+('James',     'J.', 'Zavala',    '',    '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Lois',      'L.', 'Mera',      'Jr.', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_two@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Nina',      '',   'Blanchard', '',    '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_three@level.com', NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Blanchard', 'J.', 'Layman',    'Sr.', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_for@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
 
 INSERT INTO company_contact
 (company_id, contact_id, created_by, updated_by, status)
@@ -3472,3 +4325,28 @@ VALUES
 ('Basic Cable',    'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Pay TV',         'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Videodisc/Videocassete', 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO wga_deal_type
+(code, title, created_by, updated_by, status)
+VALUES
+('FD', 'Flat Deal',                 'RKAMMER', 'RKAMMER', 'CREATED'),
+('ST', 'Staff',                     'RKAMMER', 'RKAMMER', 'CREATED'),
+('SL', 'Sale of Literary Material', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('OP', 'Option',                    'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL, 'Unknown',                   'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO wga_field_of_work
+(code, title, created_by, updated_by, status)
+VALUES
+('S',  'Screen',                'RKAMMER', 'RKAMMER', 'CREATED'),
+('T',  'Television',            'RKAMMER', 'RKAMMER', 'CREATED'),
+('R',  'Radio',                 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Z',  'TV News/Promo',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('P',  'Pay TV/VD/VC',          'RKAMMER', 'RKAMMER', 'CREATED'),
+('W',  'New Media',             'RKAMMER', 'RKAMMER', 'CREATED'),
+('A',  'Animation Television',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('B',  'Animation Screen',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('I',  'Informational',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('N',  'Interactive',           'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL, 'Unknown',               'RKAMMER', 'RKAMMER', 'CREATED');

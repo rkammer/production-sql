@@ -1,57 +1,58 @@
 DELIMITER //
 CREATE PROCEDURE dga_employment_data_set_list(
-    INOUT dga_employment_data_id                                  INT,
-    IN    dga_employment_data_report_date                         DATE,
-    IN    dga_employment_data_prepared_by                         VARCHAR(50),
-    IN    dga_employment_data_quarter                             VARCHAR(10),
-    IN    dga_employment_data_year                                YEAR,
-    IN    dga_employment_data_company_id                          INT,
-    IN    dga_employment_data_production_id                       INT,
-    IN    dga_employment_data_director_name                       VARCHAR(50),
-    IN    dga_employment_data_director_first_number               INT,
-    IN    dga_employment_data_director_gender                     CHAR(1),
-    IN    dga_employment_data_director_caucasion                  CHAR(1),
-    IN    dga_employment_data_director_afro_american              CHAR(1),
-    IN    dga_employment_data_director_latino                     CHAR(1),
-    IN    dga_employment_data_director_native                     CHAR(1),
-    IN    dga_employment_data_director_unknown                    CHAR(1),
-    IN    dga_employment_data_unit_production_name                VARCHAR(50),
-    IN    dga_employment_data_unit_production_gender              CHAR(1),
-    IN    dga_employment_data_unit_production_caucasion           CHAR(1),
-    IN    dga_employment_data_unit_production_afro_american       CHAR(1),
-    IN    dga_employment_data_unit_production_latino              CHAR(1),
-    IN    dga_employment_data_unit_production_native              CHAR(1),
-    IN    dga_employment_data_unit_production_unknown             CHAR(1),
-    IN    dga_employment_data_first_assistant_name                VARCHAR(50),
-    IN    dga_employment_data_first_assistant_gender              CHAR(1),
-    IN    dga_employment_data_first_assistant_caucasion           CHAR(1),
-    IN    dga_employment_data_first_assistant_afro_american       CHAR(1),
-    IN    dga_employment_data_first_assistant_latino              CHAR(1),
-    IN    dga_employment_data_first_assistant_native              CHAR(1),
-    IN    dga_employment_data_first_assistant_unknown             CHAR(1),
-    IN    dga_employment_data_second_assistant_name               VARCHAR(50),
-    IN    dga_employment_data_second_assistant_gender             CHAR(1),
-    IN    dga_employment_data_second_assistant_caucasion          CHAR(1),
-    IN    dga_employment_data_second_assistant_afro_american      CHAR(1),
-    IN    dga_employment_data_second_assistant_latino             CHAR(1),
-    IN    dga_employment_data_second_assistant_native             CHAR(1),
-    IN    dga_employment_data_second_assistant_unknown            CHAR(1),
-    IN    dga_employment_data_associate_assistant_name            VARCHAR(50),
-    IN    dga_employment_data_associate_assistant_gender          CHAR(1),
-    IN    dga_employment_data_associate_assistant_caucasion       CHAR(1),
-    IN    dga_employment_data_associate_assistant_afro_american   CHAR(1),
-    IN    dga_employment_data_associate_assistant_latino          CHAR(1),
-    IN    dga_employment_data_associate_assistant_native          CHAR(1),
-    IN    dga_employment_data_associate_assistant_unknown         CHAR(1),
-    IN    dga_employment_data_stage_assistant_name                VARCHAR(50),
-    IN    dga_employment_data_stage_assistant_gender              CHAR(1),
-    IN    dga_employment_data_stage_assistant_caucasion           CHAR(1),
-    IN    dga_employment_data_stage_assistant_afro_american       CHAR(1),
-    IN    dga_employment_data_stage_assistant_latino              CHAR(1),
-    IN    dga_employment_data_stage_assistant_native              CHAR(1),
-    IN    dga_employment_data_stage_assistant_unknown             CHAR(1),
-    IN    dga_employment_data_created_by                          VARCHAR(30),
-    IN    dga_employment_data_updated_by                          VARCHAR(30)
+    IN  dga_employment_data_id                                  INT,
+    IN  dga_employment_data_report_date                         DATE,
+    IN  dga_employment_data_prepared_by                         VARCHAR(50),
+    IN  dga_employment_data_quarter                             VARCHAR(10),
+    IN  dga_employment_data_year                                YEAR,
+    IN  dga_employment_data_company_id                          INT,
+    IN  dga_employment_data_production_id                       INT,
+    IN  dga_employment_data_director_name                       VARCHAR(50),
+    IN  dga_employment_data_director_first_number               INT,
+    IN  dga_employment_data_director_gender                     CHAR(1),
+    IN  dga_employment_data_director_caucasion                  CHAR(1),
+    IN  dga_employment_data_director_afro_american              CHAR(1),
+    IN  dga_employment_data_director_latino                     CHAR(1),
+    IN  dga_employment_data_director_native                     CHAR(1),
+    IN  dga_employment_data_director_unknown                    CHAR(1),
+    IN  dga_employment_data_unit_production_name                VARCHAR(50),
+    IN  dga_employment_data_unit_production_gender              CHAR(1),
+    IN  dga_employment_data_unit_production_caucasion           CHAR(1),
+    IN  dga_employment_data_unit_production_afro_american       CHAR(1),
+    IN  dga_employment_data_unit_production_latino              CHAR(1),
+    IN  dga_employment_data_unit_production_native              CHAR(1),
+    IN  dga_employment_data_unit_production_unknown             CHAR(1),
+    IN  dga_employment_data_first_assistant_name                VARCHAR(50),
+    IN  dga_employment_data_first_assistant_gender              CHAR(1),
+    IN  dga_employment_data_first_assistant_caucasion           CHAR(1),
+    IN  dga_employment_data_first_assistant_afro_american       CHAR(1),
+    IN  dga_employment_data_first_assistant_latino              CHAR(1),
+    IN  dga_employment_data_first_assistant_native              CHAR(1),
+    IN  dga_employment_data_first_assistant_unknown             CHAR(1),
+    IN  dga_employment_data_second_assistant_name               VARCHAR(50),
+    IN  dga_employment_data_second_assistant_gender             CHAR(1),
+    IN  dga_employment_data_second_assistant_caucasion          CHAR(1),
+    IN  dga_employment_data_second_assistant_afro_american      CHAR(1),
+    IN  dga_employment_data_second_assistant_latino             CHAR(1),
+    IN  dga_employment_data_second_assistant_native             CHAR(1),
+    IN  dga_employment_data_second_assistant_unknown            CHAR(1),
+    IN  dga_employment_data_associate_assistant_name            VARCHAR(50),
+    IN  dga_employment_data_associate_assistant_gender          CHAR(1),
+    IN  dga_employment_data_associate_assistant_caucasion       CHAR(1),
+    IN  dga_employment_data_associate_assistant_afro_american   CHAR(1),
+    IN  dga_employment_data_associate_assistant_latino          CHAR(1),
+    IN  dga_employment_data_associate_assistant_native          CHAR(1),
+    IN  dga_employment_data_associate_assistant_unknown         CHAR(1),
+    IN  dga_employment_data_stage_assistant_name                VARCHAR(50),
+    IN  dga_employment_data_stage_assistant_gender              CHAR(1),
+    IN  dga_employment_data_stage_assistant_caucasion           CHAR(1),
+    IN  dga_employment_data_stage_assistant_afro_american       CHAR(1),
+    IN  dga_employment_data_stage_assistant_latino              CHAR(1),
+    IN  dga_employment_data_stage_assistant_native              CHAR(1),
+    IN  dga_employment_data_stage_assistant_unknown             CHAR(1),
+    IN  dga_employment_data_created_by                          VARCHAR(30),
+    IN  dga_employment_data_updated_by                          VARCHAR(30),
+    OUT return_value                                            INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -174,7 +175,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_employment_data_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -231,6 +232,8 @@ BEGIN
                updated_by                        = dga_employment_data_updated_by,
                status                            = 'UPDATED'
          WHERE id =    dga_employment_data_id;
+
+         SET return_value = dga_employment_data_id;
      END IF;
 
      COMMIT;

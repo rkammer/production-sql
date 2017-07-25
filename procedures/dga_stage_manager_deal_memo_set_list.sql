@@ -1,49 +1,50 @@
 DELIMITER //
 CREATE PROCEDURE dga_stage_manager_deal_memo_set_list(
-    IN dga_stage_manager_deal_memo_id                                  INT,
-    IN dga_stage_manager_deal_memo_contact_id                          INT,
-    IN dga_stage_manager_deal_memo_ssn                                 VARCHAR(11),
-    IN dga_stage_manager_deal_memo_loanout                             VARCHAR(30),
-    IN dga_stage_manager_deal_memo_fid                                 VARCHAR(30),
-    IN dga_stage_manager_deal_memo_salary                              DECIMAL,
-    IN dga_stage_manager_deal_memo_salary_period_id                    INT,
-    IN dga_stage_manager_deal_memo_aditional_time                      DECIMAL,
-    IN dga_stage_manager_deal_memo_aditional_time_period_id            INT,
-    IN dga_stage_manager_deal_memo_start_date                          DATE,
-    IN dga_stage_manager_deal_memo_guaranteed                          INT,
-    IN dga_stage_manager_deal_memo_guaranteed_period_id                INT,
-    IN dga_stage_manager_deal_memo_production_id                       INT,
-    IN dga_stage_manager_deal_memo_episode_id                          INT,
-    IN dga_stage_manager_deal_memo_category_associate_director         CHAR(1),
-    IN dga_stage_manager_deal_memo_category_stage_manager              CHAR(1),
-    IN dga_stage_manager_deal_memo_category_aditional_stage_manager    CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_week_studio          CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_week_location        CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_day_studio           CHAR(1),
-    IN dga_stage_manager_deal_memo_prime_time_per_day_location         CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_week_40                   CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_week_flat_60              CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_day_8                     CHAR(1),
-    IN dga_stage_manager_deal_memo_other_per_day_flat_12               CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_30_lower               CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_30_between             CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_30_higher              CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_60_lower               CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_60_between             CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_60_higher              CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_120_lower              CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_120_between            CHAR(1),
-    IN dga_stage_manager_deal_memo_project_info_120_higher             CHAR(1),
-    IN dga_stage_manager_deal_memo_other_conditions                    VARCHAR(255),
-    IN dga_stage_manager_deal_memo_employer_name                       VARCHAR(50),
-    IN dga_stage_manager_deal_memo_employee_name                       VARCHAR(50),
-    IN dga_stage_manager_deal_memo_employee_date                       DATE,
-    IN dga_stage_manager_deal_memo_signatory                           VARCHAR(50),
-    IN dga_stage_manager_deal_memo_signatory_by                        VARCHAR(50),
-    IN dga_stage_manager_deal_memo_signatory_date                      DATE,
-    IN dga_stage_manager_deal_memo_created_by                          VARCHAR(30),
-    IN dga_stage_manager_deal_memo_updated_by                          VARCHAR(30),
-    IN dga_stage_manager_deal_memo_status                              VARCHAR(30)
+    IN  dga_stage_manager_deal_memo_id                                  INT,
+    IN  dga_stage_manager_deal_memo_contact_id                          INT,
+    IN  dga_stage_manager_deal_memo_ssn                                 VARCHAR(11),
+    IN  dga_stage_manager_deal_memo_loanout                             VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_fid                                 VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_salary                              DECIMAL,
+    IN  dga_stage_manager_deal_memo_salary_period_id                    INT,
+    IN  dga_stage_manager_deal_memo_aditional_time                      DECIMAL,
+    IN  dga_stage_manager_deal_memo_aditional_time_period_id            INT,
+    IN  dga_stage_manager_deal_memo_start_date                          DATE,
+    IN  dga_stage_manager_deal_memo_guaranteed                          INT,
+    IN  dga_stage_manager_deal_memo_guaranteed_period_id                INT,
+    IN  dga_stage_manager_deal_memo_production_id                       INT,
+    IN  dga_stage_manager_deal_memo_episode_id                          INT,
+    IN  dga_stage_manager_deal_memo_category_associate_director         CHAR(1),
+    IN  dga_stage_manager_deal_memo_category_stage_manager              CHAR(1),
+    IN  dga_stage_manager_deal_memo_category_aditional_stage_manager    CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_week_studio          CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_week_location        CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_day_studio           CHAR(1),
+    IN  dga_stage_manager_deal_memo_prime_time_per_day_location         CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_week_40                   CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_week_flat_60              CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_day_8                     CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_per_day_flat_12               CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_30_lower               CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_30_between             CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_30_higher              CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_60_lower               CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_60_between             CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_60_higher              CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_120_lower              CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_120_between            CHAR(1),
+    IN  dga_stage_manager_deal_memo_project_info_120_higher             CHAR(1),
+    IN  dga_stage_manager_deal_memo_other_conditions                    VARCHAR(255),
+    IN  dga_stage_manager_deal_memo_employer_name                       VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_employee_name                       VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_employee_date                       DATE,
+    IN  dga_stage_manager_deal_memo_signatory                           VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_signatory_by                        VARCHAR(50),
+    IN  dga_stage_manager_deal_memo_signatory_date                      DATE,
+    IN  dga_stage_manager_deal_memo_created_by                          VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_updated_by                          VARCHAR(30),
+    IN  dga_stage_manager_deal_memo_status                              VARCHAR(30),
+    OUT return_value                                                   INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -147,7 +148,7 @@ BEGIN
             'CREATED'
         );
 
-        SET dga_stage_manager_deal_memo_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -197,6 +198,8 @@ BEGIN
                updated_by                       = dga_stage_manager_deal_memo_updated_by,
                status = 'UPDATED'
          WHERE id                 =    dga_stage_manager_deal_memo_id;
+
+         SET return_value = dga_stage_manager_deal_memo_id;
      END IF;
 
      COMMIT;

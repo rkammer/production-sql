@@ -1,23 +1,24 @@
 DELIMITER //
 CREATE PROCEDURE season_set_list(
-    INOUT  season_id                               INTEGER,
-    IN     season_title                            VARCHAR(50),
-    IN     season_season_number                    INTEGER,
-    IN     season_production_id                    INTEGER,
-    IN     season_budget                           NUMERIC(15,2),
-    IN     season_writing_start_date               DATE,
-    IN     season_writing_end_date                 DATE,
-    IN     season_pre_production_start_date        DATE,
-    IN     season_pre_production_end_date          DATE,
-    IN     season_photography_start_date           DATE,
-    IN     season_photography_end_date             DATE,
-    IN     season_post_production_start_date       DATE,
-    IN     season_post_production_end_date         DATE,
-    IN     season_network_production_start_date    DATE,
-    IN     season_network_production_end_date      DATE,
-    IN     season_logo_path                        VARCHAR(120),
-    IN     season_created_by                       VARCHAR(30),
-    IN     season_updated_by                       VARCHAR(30)
+    IN  season_id                               INTEGER,
+    IN  season_title                            VARCHAR(50),
+    IN  season_season_number                    INTEGER,
+    IN  season_production_id                    INTEGER,
+    IN  season_budget                           NUMERIC(15,2),
+    IN  season_writing_start_date               DATE,
+    IN  season_writing_end_date                 DATE,
+    IN  season_pre_production_start_date        DATE,
+    IN  season_pre_production_end_date          DATE,
+    IN  season_photography_start_date           DATE,
+    IN  season_photography_end_date             DATE,
+    IN  season_post_production_start_date       DATE,
+    IN  season_post_production_end_date         DATE,
+    IN  season_network_production_start_date    DATE,
+    IN  season_network_production_end_date      DATE,
+    IN  season_logo_path                        VARCHAR(120),
+    IN  season_created_by                       VARCHAR(30),
+    IN  season_updated_by                       VARCHAR(30),
+    OUT return_value                            INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -73,7 +74,7 @@ BEGIN
             'CREATED'
         );
 
-        SET season_id = LAST_INSERT_ID();
+        SET return_value = LAST_INSERT_ID();
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
@@ -97,6 +98,8 @@ BEGIN
                updated_by                     =  season_updated_by,
                status                         =  'UPDATED'
          WHERE id                             =  season_id;
+
+         SET return_value = season_id;
      END IF;
 
      COMMIT;
