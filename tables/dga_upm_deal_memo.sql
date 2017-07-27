@@ -9,8 +9,8 @@ CREATE TABLE dga_upm_deal_memo(
     category_first_assistant_director                   CHAR(1)        NOT NULL DEFAULT 'F',
     category_associate_director                         CHAR(1)        NOT NULL DEFAULT 'F',
     category_key_second_assistant_director              CHAR(1)        NOT NULL DEFAULT 'F',
-    category_associate_director                         CHAR(1)        NOT NULL DEFAULR 'F',
-    category_second_assistant_director                  CHAR(1)        NOT NULL DEFAULR 'F',
+    category_associate_director_line_cut                CHAR(1)        NOT NULL DEFAULT 'F',
+    category_second_assistant_director                  CHAR(1)        NOT NULL DEFAULT 'F',
     salary_studio                                       NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
     salary_studio_period_id                             INT,
     salary_location                                     NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
@@ -19,6 +19,7 @@ CREATE TABLE dga_upm_deal_memo(
     guaranteed_period_1                                 CHAR(1)        NOT NULL DEFAULT 'F',
     guaranteed_period_3                                 CHAR(1)        NOT NULL DEFAULT 'F',
     guaranteed_period_7                                 CHAR(1)        NOT NULL DEFAULT 'F',
+    production_id                                       INT            NOT NULL,
     episode_id                                          INT            NOT NULL,
     type_production_feature                             CHAR(1)        NOT NULL DEFAULT 'F',
     type_production_multi_camera_prime_time             CHAR(1)        NOT NULL DEFAULT 'F',
@@ -49,11 +50,11 @@ CREATE TABLE dga_upm_deal_memo(
     created_by                                          VARCHAR(30),
     updated                                             TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by                                          VARCHAR(30),
-    status                                              VARCHAR(30)
-    CONSTRAINT pk_dga_director_scripted_deal_memo_id                     PRIMARY KEY (id),
-    CONSTRAINT fk_dga_director_scripted_deal_memo_contact                FOREIGN KEY (contact_id)                 REFERENCES contact    (id),
-    CONSTRAINT fk_dga_director_scripted_deal_memo_salary_studio_period   FOREIGN KEY (salary_studio_period_id)    REFERENCES period     (id),
-    CONSTRAINT fk_dga_director_scripted_deal_memo_salary_studio_period   FOREIGN KEY (salary_location_period_id)  REFERENCES period     (id),
-    CONSTRAINT fk_dga_director_scripted_deal_memo_production             FOREIGN KEY (production_id)              REFERENCES production (id),
-    CONSTRAINT fk_dga_director_scripted_deal_memo_episode                FOREIGN KEY (episode_id)                 REFERENCES episode    (id)
+    status                                              VARCHAR(30),
+    CONSTRAINT pk_dga_upm_deal_memo_id                     PRIMARY KEY (id),
+    CONSTRAINT fk_dga_upm_deal_memo_contact                FOREIGN KEY (contact_id)                 REFERENCES contact    (id),
+    CONSTRAINT fk_dga_upm_deal_memo_salary_studio_period   FOREIGN KEY (salary_studio_period_id)    REFERENCES period     (id),
+    CONSTRAINT fk_dga_upm_deal_memo_salary_location_period FOREIGN KEY (salary_location_period_id)  REFERENCES period     (id),
+    CONSTRAINT fk_dga_upm_deal_memo_production             FOREIGN KEY (production_id)              REFERENCES production (id),
+    CONSTRAINT fk_dga_upm_deal_memo_episode                FOREIGN KEY (episode_id)                 REFERENCES episode    (id)
 ) ENGINE = InnoDB;

@@ -66,6 +66,8 @@ gulp.task('script', function(){
         'tables/dga_employment_data.sql',
         'tables/dga_stage_manager_deal_memo.sql',
         'tables/dga_director_scripted_deal_memo.sql',
+        'tables/dga_upm_deal_memo.sql',
+
 
         //wga tables
         'tables/wga_work_list.sql',
@@ -104,6 +106,7 @@ gulp.task('script', function(){
         'views/dga_employment_data_get_list.sql',
         'views/dga_stage_manager_deal_memo_get_list.sql',
         'views/dga_director_scripted_deal_memo_get_list.sql',
+        'views/dga_upm_deal_memo_get_list.sql',
 
         //wga views
         'views/wga_work_list_get_list.sql',
@@ -139,6 +142,8 @@ gulp.task('script', function(){
         'procedures/dga_stage_manager_deal_memo_set_closed.sql',
         'procedures/dga_director_scripted_deal_memo_set_list.sql',
         'procedures/dga_director_scripted_deal_memo_set_closed.sql',
+        'procedures/dga_upm_deal_memo_set_list.sql',
+        'procedures/dga_upm_deal_memo_set_closed.sql',
 
         //wga procedures
         'procedures/wga_work_list_set_list.sql',
