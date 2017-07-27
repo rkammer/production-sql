@@ -27,16 +27,6 @@ gulp.task('mysql', function() {
 
 gulp.task('script', function(){
 
-    // let date = new Date();
-    // let currentDate =
-    //                   date.getMonth().toString()    + '-' +
-    //                   date.getDay().toString()      + '-' +
-    //                   date.getFullYear().toString() + '-' +
-    //                   date.getHours().toString()    +
-    //                   date.getMinutes().toString()  +
-    //                   date.getMinutes().toString()  + '-' +
-    //                   date.getSeconds().toString();
-
     gulp.src([
 
         // 'scripts/00-drop-objects.sql',
