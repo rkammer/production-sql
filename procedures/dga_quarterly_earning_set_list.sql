@@ -1,7 +1,7 @@
 DELIMITER //
 CREATE PROCEDURE dga_quarterly_earning_set_list(
     IN  dga_quarterly_earning_id                   INTEGER,
-    IN  dga_quarterly_earning_quarterly            VARCHAR(10),
+    IN  dga_quarterly_earning_quarter              VARCHAR(10),
     IN  dga_quarterly_earning_year                 YEAR,
     IN  dga_quarterly_earning_company_id           INTEGER,
     IN  dga_quarterly_earning_contact_id           INTEGER,
@@ -9,7 +9,7 @@ CREATE PROCEDURE dga_quarterly_earning_set_list(
     IN  dga_quarterly_earning_phone                VARCHAR(20),
     IN  dga_quarterly_earning_created_by           VARCHAR(30),
     IN  dga_quarterly_earning_updated_by           VARCHAR(30),
-    IN  dga_quarterly_earning_status               VARCHAR(30),
+    -- IN  dga_quarterly_earning_status               VARCHAR(30),
     OUT return_value                               INTEGER
 )
 BEGIN
