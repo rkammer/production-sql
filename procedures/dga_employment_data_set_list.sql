@@ -189,7 +189,6 @@ BEGIN
             dga_employment_data_stage_assistant_unknown,
             dga_employment_data_created_by,
             dga_employment_data_updated_by,
-            dga_employment_data_status,
             'CREATED'
         );
 
