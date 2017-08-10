@@ -59,7 +59,7 @@ CREATE OR REPLACE VIEW dga_stage_manager_deal_memo_get_list(
     dga_stage_manager_deal_memo_project_info_120_between,
     dga_stage_manager_deal_memo_project_info_120_higher,
     dga_stage_manager_deal_memo_other_conditions,
-    dga_stage_manager_deal_memo_employer_name,
+    -- dga_stage_manager_deal_memo_employer_name,
     dga_stage_manager_deal_memo_employee_name,
     dga_stage_manager_deal_memo_employee_date,
     dga_stage_manager_deal_memo_signatory,
@@ -131,7 +131,7 @@ CREATE OR REPLACE VIEW dga_stage_manager_deal_memo_get_list(
            dga_stage_manager_deal_memo.project_info_120_between                                      AS dga_stage_manager_deal_memo_project_info_120_between,
            dga_stage_manager_deal_memo.project_info_120_higher                                       AS dga_stage_manager_deal_memo_project_info_120_higher,
            dga_stage_manager_deal_memo.other_conditions                                              AS dga_stage_manager_deal_memo_other_conditions,
-           dga_stage_manager_deal_memo.employer_name                                                 AS dga_stage_manager_deal_memo_employer_name,
+        --    dga_stage_manager_deal_memo.employer_name                                                 AS dga_stage_manager_deal_memo_employer_name,
            dga_stage_manager_deal_memo.employee_name                                                 AS dga_stage_manager_deal_memo_employee_name,
            dga_stage_manager_deal_memo.employee_date                                                 AS dga_stage_manager_deal_memo_employee_date,
            dga_stage_manager_deal_memo.signatory                                                     AS dga_stage_manager_deal_memo_signatory,
@@ -149,4 +149,4 @@ CREATE OR REPLACE VIEW dga_stage_manager_deal_memo_get_list(
                                                                       LEFT  JOIN period     AS guaranteed_period     ON guaranteed_period.id     = dga_stage_manager_deal_memo.guaranteed_period_id
                                                                       INNER JOIN production AS production            ON production.id            = dga_stage_manager_deal_memo.production_id
                                                                       INNER JOIN episode    AS episode               ON episode.id               = dga_stage_manager_deal_memo.episode_id
-                                                                      INNER JOIN season     AS season                ON episode.season_id        = season.id;;
+                                                                      INNER JOIN season     AS season                ON episode.season_id        = season.id;
