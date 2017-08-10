@@ -41,7 +41,7 @@ CREATE TABLE dga_director_deal_memo(
     show_type_movie_mini_series               CHAR(1) DEFAULT 'F',
     show_type_strip                           CHAR(1) DEFAULT 'F',
     show_type_other                           CHAR(1) DEFAULT 'F',
-    show_type_name                            VARCHAR(50),
+    show_type_other_name                      VARCHAR(50),
     show_type_high_budget                     CHAR(1) DEFAULT 'F',
     show_type_low_budget                      CHAR(1) DEFAULT 'F',
     show_type_prime_time                      CHAR(1) DEFAULT 'F',
