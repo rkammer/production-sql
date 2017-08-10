@@ -69,7 +69,7 @@ CREATE OR REPLACE VIEW dga_employment_data_get_list(
     dga_employment_data_status
 ) AS
     SELECT dga_employment_data.id                                                             AS dga_employment_data_id,
-           dga_employment_data.report_date                                                    AS dga_employment_data_report_date,
+           DATE_FORMAT(dga_employment_data.report_date,'%m/%d/%Y')                            AS dga_employment_data_report_date,
            dga_employment_data.prepared_by                                                    AS dga_employment_data_prepared_by,
            dga_employment_data.quarter                                                        AS dga_employment_data_quarter,
            dga_employment_data.year                                                           AS dga_employment_data_year,
