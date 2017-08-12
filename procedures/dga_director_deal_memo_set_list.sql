@@ -42,7 +42,7 @@ CREATE PROCEDURE dga_director_deal_memo_set_list(
     IN  dga_director_deal_memo_show_type_movie_mini_series        CHAR(1),
     IN  dga_director_deal_memo_show_type_strip                    CHAR(1),
     IN  dga_director_deal_memo_show_type_other                    CHAR(1),
-    IN  dga_director_deal_memo_show_type_other_name               CHAR(1),
+    IN  dga_director_deal_memo_show_type_other_name               VARCHAR(50),
     IN  dga_director_deal_memo_show_type_high_budget              CHAR(1),
     IN  dga_director_deal_memo_show_type_low_budget               CHAR(1),
     IN  dga_director_deal_memo_show_type_prime_time               CHAR(1),
