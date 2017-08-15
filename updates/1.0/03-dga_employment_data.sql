@@ -1,0 +1,1 @@
+ALTER TABLE dga_employment_data ADD COLUMN phone VARCHAR(20)  NOT NULL AFTER year;

@@ -4,6 +4,7 @@ CREATE TABLE dga_employment_data(
     prepared_by                            VARCHAR(50)  NOT NULL,
     quarter                                VARCHAR(10)  NOT NULL,
     year                                   YEAR         NOT NULL,
+    phone                                  VARCHAR(20)  NOT NULL,
     company_id                             INTEGER      NOT NULL,
     production_id                          INTEGER      NOT NULL,
     director_name                          VARCHAR(50),
