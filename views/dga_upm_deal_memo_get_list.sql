@@ -36,6 +36,8 @@ CREATE OR REPLACE VIEW dga_upm_deal_memo_get_list(
     dga_upm_deal_memo_production_title,
     dga_upm_deal_memo_episode_id,
     dga_upm_deal_memo_episode_title,
+    dga_upm_deal_memo_episode_number,
+    dga_upm_deal_memo_episode_abbreviation,
     dga_upm_deal_memo_type_production_feature,
     dga_upm_deal_memo_type_production_multi_camera_prime_time,
     dga_upm_deal_memo_type_production_single_camera,
@@ -104,6 +106,8 @@ CREATE OR REPLACE VIEW dga_upm_deal_memo_get_list(
            production.title                                                                        AS dga_upm_deal_memo_production_title,
            dga_upm_deal_memo.episode_id                                                            AS dga_upm_deal_memo_episode_id,
            episode.title                                                                           AS dga_upm_deal_memo_episode_title,
+           LPAD(episode.episode_number, 2, 0)                                                      AS dga_upm_deal_memo_episode_number,
+           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))  AS dga_upm_deal_memo_episode_abbreviation,
            dga_upm_deal_memo.type_production_feature                                               AS dga_upm_deal_memo_type_production_feature,
            dga_upm_deal_memo.type_production_multi_camera_prime_time                               AS dga_upm_deal_memo_type_production_multi_camera_prime_time,
            dga_upm_deal_memo.type_production_single_camera                                         AS dga_upm_deal_memo_type_production_single_camera,
@@ -134,7 +138,8 @@ CREATE OR REPLACE VIEW dga_upm_deal_memo_get_list(
            DATE_FORMAT(dga_upm_deal_memo.updated,'%m/%d/%Y %H:%i:%S')                              AS dga_upm_deal_memo_updated,
            dga_upm_deal_memo.updated_by                                                            AS dga_upm_deal_memo_updated_by,
            dga_upm_deal_memo.status                                                                AS dga_upm_deal_memo_status
-      FROM dga_upm_deal_memo AS dga_upm_deal_memo INNER JOIN contact    AS contact    ON contact.id    = dga_upm_deal_memo.contact_id
-                                                  INNER JOIN state      AS state      ON state.code    = contact.state_code
-                                                  INNER JOIN production AS production ON production.id = dga_upm_deal_memo.production_id
-                                                  INNER JOIN episode    AS episode    ON episode.id    = dga_upm_deal_memo.episode_id;
+      FROM dga_upm_deal_memo AS dga_upm_deal_memo INNER JOIN contact    AS contact    ON contact.id         = dga_upm_deal_memo.contact_id
+                                                  INNER JOIN state      AS state      ON state.code         = contact.state_code
+                                                  INNER JOIN production AS production ON production.id      = dga_upm_deal_memo.production_id
+                                                  INNER JOIN episode    AS episode    ON episode.id         = dga_upm_deal_memo.episode_id
+                                                  INNER JOIN season     AS season     ON episode.season_id  = season.id;
