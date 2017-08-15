@@ -185,3 +185,8 @@ VALUES
 ('AFM',       'American Federations of Musicians',                                       'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Teamsters', 'Teamsters',                                                               'RKAMMER', 'RKAMMER', 'CREATED'),
 ('DGA',       'Directors Guild of America',                                              'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO user
+(user_id, email, first_name, middle_name, last_name, suffix, address, city, state_code, phone, website, picture_path, created_by, updated_by, status)
+VALUES
+('RKAMMER', 'rodrigo@ccsitconsultants.com', 'Rodrigo', NULL, 'Kammer', NULL, '821, Paseo Camarillo', 'Camarillo', 'CA', '805 405 8071', NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
