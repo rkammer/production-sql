@@ -1,5 +1,5 @@
 CREATE OR REPLACE VIEW user_get_list(
-    user_id,
+    user_name,
     user_email,
     user_first_name,
     user_middle_name,
@@ -17,7 +17,7 @@ CREATE OR REPLACE VIEW user_get_list(
     user_updated_by,
     user_status
 ) AS
-    SELECT user.user_id                                       AS user_id,
+    SELECT user.user_name                                     AS user_name,
            user.email                                         AS user_email,
            user.first_name                                    AS user_first_name,
            user.middle_name                                   AS user_middle_name,

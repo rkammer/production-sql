@@ -1,6 +1,6 @@
 DELIMITER //
 CREATE PROCEDURE user_set_list(
-    IN user_id              VARCHAR(50),
+    IN user_name            VARCHAR(50),
     IN user_email           VARCHAR(100),
     IN user_first_name      VARCHAR(50),
     IN user_middle_name     VARCHAR(50),
@@ -23,12 +23,12 @@ BEGIN
     SELECT COUNT(*)
       INTO ROW_EXISTS
       FROM user
-     WHERE user_id = user_id;
+     WHERE user_name = user_name;
 
      IF (ROW_EXISTS = 0) THEN
         INSERT INTO user
         (
-            user_id,
+            user_name,
             email,
             first_name,
             middle_name,
@@ -46,7 +46,7 @@ BEGIN
         )
         VALUES
         (
-            user_id,
+            user_name,
             user_email,
             user_first_name,
             user_middle_name,
@@ -82,7 +82,7 @@ BEGIN
                created_by         =    user_created_by,
                updated_by         =    user_updated_by,
                status             =    'UPDATED'
-         WHERE user_id            =    user_id;
+         WHERE user_name          =    user_name;
         SET return_value = user_id;
      END IF;
 
