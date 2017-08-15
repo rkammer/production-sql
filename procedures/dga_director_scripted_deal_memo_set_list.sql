@@ -229,9 +229,9 @@ BEGIN
                signatory                             = dga_director_scripted_deal_memo_signatory,
                signatory_by                          = dga_director_scripted_deal_memo_signatory_by,
                signatory_date                        = dga_director_scripted_deal_memo_signatory_date,
-               created                               = dga_director_scripted_deal_memo_created,
+            --    created                               = dga_director_scripted_deal_memo_created,
                created_by                            = dga_director_scripted_deal_memo_created_by,
-               updated                               = dga_director_scripted_deal_memo_updated,
+            --    updated                               = dga_director_scripted_deal_memo_updated,
                updated_by                            = dga_director_scripted_deal_memo_updated_by,
                status                                = 'UPDATED'
          WHERE id                                    = dga_director_scripted_deal_memo_id;

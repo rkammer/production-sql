@@ -46,6 +46,7 @@ gulp.task('script', function(){
         'tables/company_contact.sql',
         'tables/media_type.sql',
         'tables/period.sql',
+        'tables/guild.sql',
 
         //dga tables
         'tables/dga_quarterly_earning.sql',
@@ -88,6 +89,7 @@ gulp.task('script', function(){
         'views/company_contact_get_list.sql',
         'views/media_type_get_list.sql',
         'views/period_get_list.sql',
+        'views/guild_get_list.sql',
 
         //dga views
         'views/dga_quarterly_earning_get_list.sql',
@@ -120,6 +122,7 @@ gulp.task('script', function(){
         'procedures/episode_set_list.sql',
         'procedures/contact_set_list.sql',
         'procedures/company_contact_set_list.sql',
+        'procedures/guild_set_list.sql',
 
         //dga procedures
         'procedures/dga_quarterly_earning_set_list.sql',

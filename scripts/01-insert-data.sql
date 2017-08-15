@@ -174,3 +174,14 @@ VALUES
 ('I',  'Informational',         'RKAMMER', 'RKAMMER', 'CREATED'),
 ('N',  'Interactive',           'RKAMMER', 'RKAMMER', 'CREATED'),
 (NULL, 'Unknown',               'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO guild
+(acronym, name, created_by, updated_by, status)
+VALUES
+('SAG-AFTRA', 'Screen Actors Guild‐American Federation of Television and Radio Artists', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('WGA',       'Writers Guild of America',                                                'RKAMMER', 'RKAMMER', 'CREATED'),
+('IATSE',     'The International Alliance of Theatrical Stage Employees',                'RKAMMER', 'RKAMMER', 'CREATED'),
+('AFM',       'American Federations of Musicians',                                       'RKAMMER', 'RKAMMER', 'CREATED'),
+('Teamsters', 'Teamsters',                                                               'RKAMMER', 'RKAMMER', 'CREATED'),
+('DGA',       'Directors Guild of America',                                              'RKAMMER', 'RKAMMER', 'CREATED');

@@ -63,7 +63,6 @@ BEGIN
      IF (ROW_EXISTS = 0) THEN
         INSERT INTO dga_upm_deal_memo
         (
-            id,
             contact_id,
             ssn,
             loanout,
