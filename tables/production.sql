@@ -1,6 +1,10 @@
 CREATE TABLE production(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
     title                            VARCHAR(50)    NOT NULL,
+    pilot                            CHAR(1) NOT NULL DEFAULT 'F',
+    production_stage_id              INT NOT NULL,
+    season_number                    INT,
+    episodes_number                  INT,
     budget                           NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
     writing_start_date               DATE,
     writing_end_date                 DATE,
@@ -28,5 +32,6 @@ CREATE TABLE production(
     CONSTRAINT fk_production_production_length   FOREIGN KEY (production_length_id)       REFERENCES production_length (id),
     CONSTRAINT fk_production_production_type     FOREIGN KEY (production_type_id)         REFERENCES production_type   (id),
     CONSTRAINT fk_production_production_company  FOREIGN KEY (production_company_id)      REFERENCES company           (id),
-    CONSTRAINT fk_production_payroll_company     FOREIGN KEY (payroll_company_id)         REFERENCES company           (id)
+    CONSTRAINT fk_production_payroll_company     FOREIGN KEY (payroll_company_id)         REFERENCES company           (id),
+    CONSTRAINT fk_production_production_stage    FOREIGN KEY (production_stage_id)        REFERENCES production_stage  (id)
 ) ENGINE = InnoDB;

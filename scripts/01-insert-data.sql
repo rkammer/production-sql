@@ -201,3 +201,11 @@ VALUES
 ('Labor',          'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Residuals',      'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Third Party',    'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO production_stage
+(name, created_by, updated_by, status)
+VALUES
+('Pre-Production',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('Production',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('Post-Production', 'RKAMMER', 'RKAMMER', 'CREATED');

@@ -1,6 +1,8 @@
 CREATE OR REPLACE VIEW production_get_list(
     production_id,
     production_title,
+    production_season_number,
+    production_episodes_number,
     production_budget,
     production_writing_start_date,
     production_writing_end_date,
@@ -31,6 +33,8 @@ CREATE OR REPLACE VIEW production_get_list(
 ) AS
     SELECT production.id                                                       AS production_id,
            production.title                                                    AS production_title,
+           production.season_number                                            AS production_season_number,
+           production.episodes_number                                          AS production_episodes_number,
            production.budget                                                   AS production_budget,
            production.writing_start_date                                       AS production_writing_start_date,
            production.writing_end_date                                         AS production_writing_end_date,

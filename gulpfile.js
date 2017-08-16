@@ -49,6 +49,8 @@ gulp.task('script', function(){
         'tables/guild.sql',
         'tables/contact_role.sql',
         'tables/production_contact.sql',
+        'tables/production_stage.sql',
+        'tables/production_guild.sql',
 
         //dga tables
         'tables/dga_quarterly_earning.sql',
@@ -94,6 +96,8 @@ gulp.task('script', function(){
         'views/guild_get_list.sql',
         'views/contact_role_get_list.sql',
         'views/production_contact_get_list.sql',
+        'views/production_stage_get_list.sql',
+        'views/production_guild_get_list.sql',
 
         //dga views
         'views/dga_quarterly_earning_get_list.sql',
@@ -129,6 +133,8 @@ gulp.task('script', function(){
         'procedures/guild_set_list.sql',
         'procedures/contact_set_list.sql',
         'procedures/production_contact_set_list.sql',
+        'procedures/production_stage_set_list.sql',
+        'procedures/production_guild_set_list.sql',
 
         //dga procedures
         'procedures/dga_quarterly_earning_set_list.sql',

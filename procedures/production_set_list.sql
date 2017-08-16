@@ -1,6 +1,8 @@
 DELIMITER //
 CREATE PROCEDURE production_set_list(
     IN  production_id                               INTEGER,
+    IN  production_season_number                    INTEGER,
+    IN  production_episodes_number                  INTEGER,
     IN  production_title                            VARCHAR(50),
     IN  production_budget                           NUMERIC(15,2),
     IN  production_writing_start_date               DATE,
@@ -36,6 +38,8 @@ BEGIN
         INSERT INTO production
         (
             title,
+            season_number,
+            episodes_number,
             budget,
             writing_start_date,
             writing_end_date,
@@ -60,6 +64,8 @@ BEGIN
         VALUES
         (
             production_title,
+            production_season_number,
+            production_episodes_number,
             production_budget,
             production_writing_start_date,
             production_writing_end_date,
@@ -88,6 +94,8 @@ BEGIN
      IF (ROW_EXISTS >= 1) THEN
         UPDATE production
            SET title                          =  production_title,
+               season_number                  =  production_season_number,
+               episodes_number                =  production_episodes_number,
                budget                         =  production_budget,
                writing_start_date             =  production_writing_start_date,
                writing_end_date               =  production_writing_end_date,
