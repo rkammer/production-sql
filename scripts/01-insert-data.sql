@@ -190,3 +190,14 @@ INSERT INTO user
 (user_name, email, first_name, middle_name, last_name, suffix, address, city, state_code, phone, website, picture_path, created_by, updated_by, status)
 VALUES
 ('RKAMMER', 'rodrigo@ccsitconsultants.com', 'Rodrigo', NULL, 'Kammer', NULL, '821, Paseo Camarillo', 'Camarillo', 'CA', '805 405 8071', NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO contact_role
+(name, created_by, updated_by, status)
+VALUES
+('Finance',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('Business Legal', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Production',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('Labor',          'RKAMMER', 'RKAMMER', 'CREATED'),
+('Residuals',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('Third Party',    'RKAMMER', 'RKAMMER', 'CREATED');
