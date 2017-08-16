@@ -1,8 +1,10 @@
 CREATE OR REPLACE VIEW dga_pif_tv_get_list(
     dga_pif_tv_id,
     dga_pif_tv_company_id,
+    dga_pif_tv_company_name,
     dga_pif_tv_contact_id,
     dga_pif_tv_production_id,
+    dga_pif_tv_production_title,
     dga_pif_tv_copyright_holder,
     dga_pif_tv_copyright_holder_name,
     dga_pif_tv_copyright_holder_phone,
@@ -125,8 +127,10 @@ CREATE OR REPLACE VIEW dga_pif_tv_get_list(
 ) AS
     SELECT dga_pif_tv.id                                                 AS dga_pif_tv_id,
            dga_pif_tv.company_id                                         AS dga_pif_tv_company_id,
+           company.name                                                  AS dga_pif_tv_company_name,
            dga_pif_tv.contact_id                                         AS dga_pif_tv_contact_id,
            dga_pif_tv.production_id                                      AS dga_pif_tv_production_id,
+           production.title                                              AS dga_pif_tv_production_title,
            dga_pif_tv.copyright_holder                                   AS dga_pif_tv_copyright_holder,
            dga_pif_tv.copyright_holder_name                              AS dga_pif_tv_copyright_holder_name,
            dga_pif_tv.copyright_holder_phone                             AS dga_pif_tv_copyright_holder_phone,
@@ -246,4 +250,5 @@ CREATE OR REPLACE VIEW dga_pif_tv_get_list(
            DATE_FORMAT(dga_pif_tv.updated,'%m/%d/%Y %H:%i:%S')           AS dga_pif_tv_updated,
            dga_pif_tv.updated_by                                         AS dga_pif_tv_updated_by,
            dga_pif_tv.status                                             AS dga_pif_tv_status
-      FROM dga_pif_tv AS dga_pif_tv;
+      FROM dga_pif_tv AS dga_pif_tv INNER JOIN company    AS company    ON company.id    = dga_pif_tv.company_id
+                                    INNER JOIN production AS production ON production.id = dga_pif_tv.production_id;
