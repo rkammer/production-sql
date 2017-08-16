@@ -107,7 +107,7 @@ BEGIN
                logo_path                      =  production_logo_path,
                updated_by                     =  production_updated_by,
                status                         =  'UPDATED'
-         WHERE id                             =   production_id;
+         WHERE id                             =  production_id;
 
          SET return_value = production_id;
      END IF;
