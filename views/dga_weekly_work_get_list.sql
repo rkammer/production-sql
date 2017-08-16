@@ -1,3 +1,4 @@
+
 CREATE OR REPLACE VIEW dga_weekly_work_get_list(
     dga_weekly_work_id,
     dga_weekly_work_production_id,
@@ -10,7 +11,10 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
     dga_weekly_work_company_city,
     dga_weekly_work_company_state_code,
     dga_weekly_work_company_state_name,
+    dga_weekly_work_company_zipcode,
     dga_weekly_work_company_phone,
+    dga_weekly_work_company_faxnumber,
+    dga_weekly_work_company_email,
     dga_weekly_work_company_website,
     dga_weekly_work_company_logo_path,
     dga_weekly_work_contact_id,
@@ -39,7 +43,10 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
            company.city                                                           AS dga_weekly_work_company_city,
            company.state_code                                                     AS dga_weekly_work_company_state_code,
            state.name                                                             AS dga_weekly_work_company_state_name,
+           company.zipcode                                                        AS dga_weekly_work_company_zipcode,
            company.phone                                                          AS dga_weekly_work_company_phone,
+           company.faxnumber                                                      AS dga_weekly_work_company_faxnumber,
+           company.email                                                          AS dga_weekly_work_company_email,
            company.website                                                        AS dga_weekly_work_company_website,
            company.logo_path                                                      AS dga_weekly_work_company_logo_path,
            dga_weekly_work.contact_id                                             AS dga_weekly_work_contact_id,
