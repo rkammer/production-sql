@@ -209,3 +209,10 @@ VALUES
 ('Pre-Production',  'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Production',      'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Post-Production', 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO business_group
+(name, company_id, created_by, updated_by, status)
+VALUES
+('Global Enterteniment Group', 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Business Unit One',          1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Business Unit Two',          1, 'RKAMMER', 'RKAMMER', 'CREATED');

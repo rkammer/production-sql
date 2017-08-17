@@ -1,0 +1,2 @@
+ALTER TABLE network ADD COLUMN business_group_id INTEGER NOT NULL AFTER media_company_id;
+ALTER TABLE network ADD CONSTRAINT fk_network_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id);

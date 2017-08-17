@@ -33,6 +33,7 @@ gulp.task('script', function(){
 
         'tables/state.sql',
         'tables/company.sql',
+        'tables/business_group.sql',
         'tables/network.sql',
         'tables/production_length.sql',
         'tables/production_type.sql',
@@ -76,6 +77,7 @@ gulp.task('script', function(){
         'functions/contact_get_full_name.sql',
 
         'views/company_get_list.sql',
+        'views/business_group_get_list.sql',
         'views/company_media_get_list.sql',
         'views/company_production_get_list.sql',
         'views/company_payroll_get_list.sql',
@@ -118,6 +120,7 @@ gulp.task('script', function(){
         'views/wga_field_of_work_get_list.sql',
 
         'procedures/company_set_list.sql',
+        'procedures/business_group_set_list.sql',
         'procedures/network_set_list.sql',
         // 'procedures/state_set_list.sql',
         'procedures/production_length_set_list.sql',
