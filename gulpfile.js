@@ -52,6 +52,10 @@ gulp.task('script', function(){
         'tables/production_contact.sql',
         'tables/production_stage.sql',
         'tables/production_guild.sql',
+        'tables/ledger.sql',
+        'tables/account.sql',
+        'tables/subaccount.sql',
+        'tables/transaction.sql',
 
         //dga tables
         'tables/dga_quarterly_earning.sql',
@@ -100,6 +104,10 @@ gulp.task('script', function(){
         'views/production_contact_get_list.sql',
         'views/production_stage_get_list.sql',
         'views/production_guild_get_list.sql',
+        'views/ledger_get_list.sql',
+        'views/account_get_list.sql',
+        'views/subaccount_get_list.sql',
+        'views/transaction_get_list.sql',
 
         //dga views
         'views/dga_quarterly_earning_get_list.sql',
@@ -138,6 +146,10 @@ gulp.task('script', function(){
         'procedures/production_contact_set_list.sql',
         'procedures/production_stage_set_list.sql',
         'procedures/production_guild_set_list.sql',
+        'procedures/ledger_set_list.sql',
+        'procedures/account_set_list.sql',
+        'procedures/subaccount_set_list.sql',
+        'procedures/transaction_set_list.sql',
 
         //dga procedures
         'procedures/dga_quarterly_earning_set_list.sql',

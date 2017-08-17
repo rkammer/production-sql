@@ -1,0 +1,31 @@
+CREATE OR REPLACE VIEW ledger_get_list(
+    ledger_id,
+    ledger_code,
+    ledger_title,
+    ledger_media_company_id,
+    ledger_business_group_id,
+    ledger_network_id,
+    ledger_production_id,
+    ledger_season_id,
+    ledger_episode_id,
+    ledger_created,
+    ledger_created_by,
+    ledger_updated,
+    ledger_updated_by,
+    ledger_status
+) AS
+    SELECT ledger.id                                            AS ledger_id,
+           ledger.code                                          AS ledger_code,
+           ledger.title                                         AS ledger_title,
+           ledger.media_company_id                              AS ledger_media_company_id,
+           ledger.business_group_id                             AS ledger_business_group_id,
+           ledger.network_id                                    AS ledger_network_id,
+           ledger.production_id                                 AS ledger_production_id,
+           ledger.season_id                                     AS ledger_season_id,
+           ledger.episode_id                                    AS ledger_episode_id,
+           DATE_FORMAT(ledger.created,'%m/%d/%Y %H:%i:%S')      AS ledger_created,
+           ledger.created_by                                    AS ledger_created_by,
+           DATE_FORMAT(ledger.updated,'%m/%d/%Y %H:%i:%S')      AS ledger_updated,
+           ledger.updated_by                                    AS ledger_updated_by,
+           ledger.status                                        AS ledger_status
+      FROM ledger AS ledger;

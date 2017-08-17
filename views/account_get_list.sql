@@ -1,0 +1,33 @@
+CREATE OR REPLACE VIEW account_get_list(
+    account_id,
+    account_code,
+    account_title,
+    account_media_company_id,
+    account_business_group_id,
+    account_network_id,
+    account_production_id,
+    account_season_id,
+    account_episode_id,
+    account_ledger_id,
+    account_created,
+    account_created_by,
+    account_updated,
+    account_updated_by,
+    account_status
+) AS
+    SELECT account.id                                       AS account_id,
+           account.code                                     AS account_code,
+           account.title                                    AS account_title,
+           account.media_company_id                         AS account_media_company_id,
+           account.business_group_id                        AS account_business_group_id,
+           account.network_id                               AS account_network_id,
+           account.production_id                            AS account_production_id,
+           account.season_id                                AS account_season_id,
+           account.episode_id                               AS account_episode_id,
+           account.ledger_id                                AS account_ledger_id,
+           DATE_FORMAT(account.created,'%m/%d/%Y %H:%i:%S') AS account_created,
+           account.created_by                               AS account_created_by,
+           DATE_FORMAT(account.updated,'%m/%d/%Y %H:%i:%S') AS account_updated,
+           account.updated_by                               AS account_updated_by,
+           account.status                                   AS account_status
+      FROM account AS account;

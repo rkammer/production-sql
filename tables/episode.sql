@@ -1,6 +1,10 @@
 CREATE TABLE episode(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
     title                            VARCHAR(50)    NOT NULL,
+    media_company_id                 INTEGER        NOT NULL,
+    business_group_id                INTEGER        NOT NULL,
+    network_id                       INTEGER        NOT NULL,
+    production_id                    INTEGER        NOT NULL,
     season_id                        INTEGER        NOT NULL,
     episode_number                   INTEGER        NOT NULL,
     budget                           NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
@@ -19,6 +23,10 @@ CREATE TABLE episode(
     updated                          TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by                       VARCHAR(30),
     status                           VARCHAR(30),
-    CONSTRAINT pk_episode_id         PRIMARY KEY (id),
-    CONSTRAINT fk_episode_season     FOREIGN KEY (season_id) REFERENCES season (id)
+    CONSTRAINT pk_episode_id             PRIMARY KEY (id),
+    CONSTRAINT fk_episode_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_episode_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id),
+    CONSTRAINT fk_episode_network        FOREIGN KEY (network_id)        REFERENCES network        (id),
+    CONSTRAINT fk_episode_production     FOREIGN KEY (production_id)     REFERENCES production     (id),
+    CONSTRAINT fk_episode_season         FOREIGN KEY (season_id)         REFERENCES season         (id)
 ) ENGINE = InnoDB;
