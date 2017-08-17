@@ -1,0 +1,2 @@
+ALTER TABLE dga_pif_tv ADD COLUMN writers                          VARCHAR(255)  NOT NULL AFTER copyright_holder_phone;
+ALTER TABLE dga_pif_tv ADD COLUMN network_syndication_description  VARCHAR(50)            AFTER network_syndication;

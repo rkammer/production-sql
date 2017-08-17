@@ -47,7 +47,7 @@ BEGIN
                created_by    = dga_pif_tv_company_created_by,
                updated_by    = dga_pif_tv_company_updated_by,
                status        = 'UPDATED'
-         WHERE id            =    dga_pif_tv_company_id;
+         WHERE id            =  dga_pif_tv_company_id;
 
         SET return_value = dga_pif_tv_company_id;
      END IF;
