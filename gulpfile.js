@@ -75,6 +75,7 @@ gulp.task('script', function(){
         'tables/wga_work_list.sql',
         'tables/wga_deal_type.sql',
         'tables/wga_field_of_work.sql',
+        'tables/wga_work_list_item.sql',
 
 
         //functions
@@ -126,6 +127,7 @@ gulp.task('script', function(){
         'views/wga_work_list_get_list.sql',
         'views/wga_deal_type_get_list.sql',
         'views/wga_field_of_work_get_list.sql',
+        'views/wga_work_list_item_get_list.sql',
 
         'procedures/company_set_list.sql',
         'procedures/business_group_set_list.sql',
@@ -174,7 +176,10 @@ gulp.task('script', function(){
 
         //wga procedures
         'procedures/wga_work_list_set_list.sql',
+        'procedures/wga_deal_type_set_list.sql',
+        'procedures/wga_work_list_set_list.sql',
         'procedures/wga_work_list_set_closed.sql',
+        'procedures/wga_work_list_item_set_list.sql',
 
         'scripts/01-insert-data.sql'
 
