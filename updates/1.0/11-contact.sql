@@ -1,0 +1,1 @@
+ALTER TABLE contact ADD COLUMN ssn VARCHAR(11) AFTER email;

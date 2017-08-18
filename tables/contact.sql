@@ -9,6 +9,7 @@ CREATE TABLE contact(
     state_code           CHAR(2),
     phone                VARCHAR(20),
     email                VARCHAR(100),
+    ssn                  VARCHAR(11),
     website              VARCHAR(100),
     picture_path         VARCHAR(120),
     created              TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
