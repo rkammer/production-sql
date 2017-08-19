@@ -10,35 +10,24 @@ CREATE PROCEDURE production_state_set_list(
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
 
-    SELECT COUNT(*)
-      INTO ROW_EXISTS
-      FROM production_state
-     WHERE id = production_state_id;
+    INSERT INTO production_state
+    (
+        production_id,
+        state_code,
+        created_by,
+        updated_by,
+        status
+    )
+    VALUES
+    (
+        production_state_production_id,
+        production_state_state_code,
+        production_state_created_by,
+        production_state_updated_by,
+        'CREATED'
+    );
 
-     IF (ROW_EXISTS = 0) THEN
-        INSERT INTO production_state
-        (
-            production_id,
-            state_code,
-            created,
-            created_by,
-            updated,
-            updated_by,
-            status
-        )
-        VALUES
-        (
-            production_state_production_id,
-            production_state_state_code,
-            production_state_created,
-            production_state_created_by,
-            production_state_updated,
-            production_state_updated_by,
-            'CREATED'
-        );
-
-        SET return_value = 0;
-     END IF;
+    SET return_value = 0;
 
      COMMIT;
 END //
