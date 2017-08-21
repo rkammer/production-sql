@@ -76,6 +76,11 @@ gulp.task('script', function(){
         'tables/wga_deal_type.sql',
         'tables/wga_field_of_work.sql',
         'tables/wga_work_list_item.sql',
+        'tables/wga_ntwc.sql',
+        'tables/wga_ntwc_participant_writer.sql',
+        'tables/wga_ntwc_writing_credit.sql',
+        'tables/wga_ntwc_source_material_episode.sql',
+        'tables/wga_ntwc_source_material_production.sql',
 
 
         //functions
@@ -128,6 +133,11 @@ gulp.task('script', function(){
         'views/wga_deal_type_get_list.sql',
         'views/wga_field_of_work_get_list.sql',
         'views/wga_work_list_item_get_list.sql',
+        'views/wga_ntwc_get_list.sql',
+        'views/wga_ntwc_participant_writer_get_list.sql',
+        'views/wga_ntwc_writing_credit_get_list.sql',
+        'views/wga_ntwc_source_material_episode_get_list.sql',
+        'views/wga_ntwc_source_material_production_get_list.sql',
 
         'procedures/company_set_list.sql',
         'procedures/business_group_set_list.sql',
@@ -180,6 +190,15 @@ gulp.task('script', function(){
         'procedures/wga_work_list_set_list.sql',
         'procedures/wga_work_list_set_closed.sql',
         'procedures/wga_work_list_item_set_list.sql',
+        'procedures/wga_ntwc_set_list.sql',
+        'procedures/wga_ntwc_participant_writer_set_list.sql',
+        'procedures/wga_ntwc_participant_writer_delete.sql',
+        'procedures/wga_ntwc_writing_credit_set_list.sql',
+        'procedures/wga_ntwc_writing_credit_delete.sql',
+        'procedures/wga_ntwc_source_material_episode_set_list.sql',
+        'procedures/wga_ntwc_source_material_episode_delete.sql',
+        'procedures/wga_ntwc_source_material_production_set_list.sql',
+        'procedures/wga_ntwc_source_material_production_delete.sql',
 
         'scripts/01-insert-data.sql'
 
