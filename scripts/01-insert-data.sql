@@ -216,3 +216,21 @@ VALUES
 ('Global Enterteniment Group', 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Business Unit One',          1, 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Business Unit Two',          1, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO sav_performer_type
+(code, title, created_by, updated_by, status)
+VALUES
+('A',   'Actor',                          'RKAMMER', 'RKAMMER', 'CREATED'),
+('ST',  'Stunt',                          'RKAMMER', 'RKAMMER', 'CREATED'),
+('P',   'Pilot',                          'RKAMMER', 'RKAMMER', 'CREATED'),
+('SG',  'Singer',                         'RKAMMER', 'RKAMMER', 'CREATED'),
+('ADR', 'Automated Dialogue Replacement', 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO sav_production_type
+(code, title, created_by, updated_by, status)
+VALUES
+('MP',  'Motion Picture',    'RKAMMER', 'RKAMMER', 'CREATED'),
+('TV',  'Television',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('MOW', 'Movie of the Week', 'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL,  'Industrial',        'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL,  'Other',             'RKAMMER', 'RKAMMER', 'CREATED');

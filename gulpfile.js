@@ -82,6 +82,8 @@ gulp.task('script', function(){
         'tables/wga_ntwc_source_material_episode.sql',
         'tables/wga_ntwc_source_material_production.sql',
 
+        //sav-aftra tables
+        'tables/sav_performer_type.sql',
 
         //functions
         'functions/contact_get_full_name.sql',
@@ -138,6 +140,9 @@ gulp.task('script', function(){
         'views/wga_ntwc_writing_credit_get_list.sql',
         'views/wga_ntwc_source_material_episode_get_list.sql',
         'views/wga_ntwc_source_material_production_get_list.sql',
+
+        //sav-aftra views
+        'views/sav_performer_type_get_list.sql',
 
         'procedures/company_set_list.sql',
         'procedures/business_group_set_list.sql',
@@ -199,6 +204,9 @@ gulp.task('script', function(){
         'procedures/wga_ntwc_source_material_episode_delete.sql',
         'procedures/wga_ntwc_source_material_production_set_list.sql',
         'procedures/wga_ntwc_source_material_production_delete.sql',
+
+        //sav-aftra procedures
+        'procedures/sav_performer_type_set_list.sql',
 
         'scripts/01-insert-data.sql'
 
