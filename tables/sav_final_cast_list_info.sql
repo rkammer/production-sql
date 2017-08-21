@@ -1,0 +1,23 @@
+CREATE TABLE sav_final_cast_list_info(
+    id                      INTEGER      NOT NULL AUTO_INCREMENT,
+    date_filled             date         NOT NULL,
+    production_id           INT          NOT NULL,
+    shooting_location       VARCHAR(400) NOT NULL,
+    production_company_id   INT          NOT NULL,
+    start_date              DATE         NOT NULL,
+    end_date                DATE         NOT NULL,
+    federal_id              VARCHAR(50)  NOT NULL,
+    state_id                VARCHAR(50)  NOT NULL,
+    picture_id              VARCHAR(50)  NOT NULL,
+    distribuitor_id         VARCHAR(50)  NOT NULL,
+    sav_production_type_id  INT          NOT NULL,
+    created                 TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by              VARCHAR(30),
+    updated                 TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by              VARCHAR(30),
+    status                  VARCHAR(30),
+    CONSTRAINT pk_sav_final_cast_list_info_id                  PRIMARY KEY (id),
+    CONSTRAINT fk_sav_final_cast_list_info_production          FOREIGN KEY (production_id)          REFERENCES production          (id),
+    CONSTRAINT fk_sav_final_cast_list_info_production_company  FOREIGN KEY (production_company_id)  REFERENCES company             (id),
+    CONSTRAINT fk_sav_final_cast_list_info_sav_production_type FOREIGN KEY (sav_production_type_id) REFERENCES sav_production_type (id)
+) ENGINE = InnoDB;

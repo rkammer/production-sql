@@ -84,6 +84,7 @@ gulp.task('script', function(){
 
         //sav-aftra tables
         'tables/sav_performer_type.sql',
+        'tables/sav_final_cast_list_info.sql',
 
         //functions
         'functions/contact_get_full_name.sql',
@@ -143,6 +144,7 @@ gulp.task('script', function(){
 
         //sav-aftra views
         'views/sav_performer_type_get_list.sql',
+        'views/sav_final_cast_list_info_get_list.sql',
 
         'procedures/company_set_list.sql',
         'procedures/business_group_set_list.sql',
@@ -207,6 +209,7 @@ gulp.task('script', function(){
 
         //sav-aftra procedures
         'procedures/sav_performer_type_set_list.sql',
+        'procedures/sav_final_cast_list_info_set_list.sql',
 
         'scripts/01-insert-data.sql'
 
