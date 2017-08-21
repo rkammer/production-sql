@@ -2,6 +2,8 @@ CREATE TABLE production_guild(
     production_id        INTEGER NOT NULL,
     guild_id             INTEGER NOT NULL,
     document_name        VARCHAR(100)  NOT NULL,
+    dga_sideletter_six   CHAR(1) NOT NULL DEFAULT 'F',
+    dga_all_rights_media CHAR(1) NOT NULL DEFAULT 'F',
     created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     created_by           VARCHAR(30),
     updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

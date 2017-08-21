@@ -1,12 +1,14 @@
 DELIMITER //
 CREATE PROCEDURE production_guild_set_list(
-    IN production_guild_production_id    INT,
-    IN production_guild_guild_id         INT,
-    IN production_guild_document_name    VARCHAR(100),
-    IN production_guild_created_by       VARCHAR(30),
-    IN production_guild_updated_by       VARCHAR(30),
-    IN production_guild_status           VARCHAR(30),
-    OUT return_value                     INTEGER
+    IN production_guild_production_id        INT,
+    IN production_guild_guild_id             INT,
+    IN production_guild_document_name        VARCHAR(100),
+    IN production_guild_dga_sideletter_six   CHAR(1),
+    IN production_guild_dga_all_rights_media CHAR(1),
+    IN production_guild_created_by           VARCHAR(30),
+    IN production_guild_updated_by           VARCHAR(30),
+    IN production_guild_status               VARCHAR(30),
+    OUT return_value                         INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -23,6 +25,8 @@ BEGIN
             production_id,
             guild_id,
             document_name,
+            dga_sideletter_six,
+            dga_all_rights_media,
             created_by,
             updated_by,
             status
@@ -32,6 +36,8 @@ BEGIN
             production_guild_production_id,
             production_guild_guild_id,
             production_guild_document_name,
+            production_guild_dga_sideletter_six,
+            production_guild_dga_all_rights_media,
             production_guild_created_by,
             production_guild_updated_by,
             'CREATED'
@@ -42,10 +48,11 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE production_guild
-           SET document_name = production_guild_document_name,
-               created_by    = production_guild_created_by,
-               updated_by    = production_guild_updated_by,
-               status        = 'UPDATED'
+           SET document_name        = production_guild_document_name,
+               dga_sideletter_six   = production_guild_dga_sideletter_six,
+               dga_all_rights_media = production_guild_dga_all_rights_media,
+               updated_by           = production_guild_updated_by,
+               status               = 'UPDATED'
          WHERE production_id = production_guild_production_id
            AND guild_id      = production_guild_guild_id;
 
