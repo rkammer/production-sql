@@ -1,5 +1,6 @@
 CREATE OR REPLACE VIEW wga_ntwc_get_list(
     wga_ntwc_id,
+    wga_ntwc_date,
     wga_ntwc_production_id,
     wga_ntwc_production_title,
     wga_ntwc_production_number,
@@ -28,6 +29,7 @@ CREATE OR REPLACE VIEW wga_ntwc_get_list(
     wga_ntwc_status
 ) AS
     SELECT wga_ntwc.id                                                                              AS wga_ntwc_id,
+           DATE_FORMAT(wga_ntwc.date,'%m/%d/%Y')                                                    AS wga_ntwc_date,
            wga_ntwc.production_id                                                                   AS wga_ntwc_production_id,
            production.title                                                                         AS wga_ntwc_production_title,
            wga_ntwc.production_number                                                               AS wga_ntwc_production_number,
@@ -39,7 +41,7 @@ CREATE OR REPLACE VIEW wga_ntwc_get_list(
            wga_ntwc.pilot_network_id                                                                AS wga_ntwc_pilot_network_id,
            network.name                                                                             AS wga_ntwc_pilot_network_name,
            wga_ntwc.pilot_production_lenght_id                                                      AS wga_ntwc_pilot_production_lenght_id,
-           production_lenght.name                                                                   AS wga_ntwc_pilot_production_lenght_name,
+           production_length.name                                                                   AS wga_ntwc_pilot_production_lenght_name,
            wga_ntwc.executive_producer_contact_id                                                   AS wga_ntwc_executive_producer_contact_id,
            wga_ntwc.director_contact_id                                                             AS wga_ntwc_director_contact_id,
            wga_ntwc.story_editor_contact_id                                                         AS wga_ntwc_story_editor_contact_id,

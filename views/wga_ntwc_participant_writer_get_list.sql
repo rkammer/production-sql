@@ -1,0 +1,33 @@
+CREATE OR REPLACE VIEW wga_ntwc_participant_writer_get_list(
+    wga_ntwc_participant_writer_wga_ntwc_id,
+    wga_ntwc_participant_writer_contact_id,
+    wga_ntwc_participant_writer_contact_first_name,
+    wga_ntwc_participant_writer_contact_middle_name,
+    wga_ntwc_participant_writer_contact_last_name,
+    wga_ntwc_participant_writer_contact_suffix,
+    wga_ntwc_participant_writer_contact_full_name,
+    wga_ntwc_participant_writer_contact_address,
+    wga_ntwc_participant_writer_contact_city,
+    wga_ntwc_participant_writer_contact_state_code,
+    wga_ntwc_participant_writer_created,
+    wga_ntwc_participant_writer_created_by,
+    wga_ntwc_participant_writer_updated,
+    wga_ntwc_participant_writer_updated_by,
+    wga_ntwc_participant_writer_status
+) AS
+    SELECT wga_ntwc_participant_writer.wga_ntwc_id                                   AS wga_ntwc_participant_writer_wga_ntwc_id,
+           wga_ntwc_participant_writer.contact_id                                    AS wga_ntwc_participant_writer_contact_id,
+           contact.first_name                                                        AS wga_ntwc_participant_writer_contact_first_name,
+           contact.middle_name                                                       AS wga_ntwc_participant_writer_contact_middle_name,
+           contact.last_name                                                         AS wga_ntwc_participant_writer_contact_last_name,
+           contact.suffix                                                            AS wga_ntwc_participant_writer_contact_suffix,
+           contact_get_full_name(contact.id)                                         AS wga_ntwc_participant_writer_contact_full_name,
+           contact.address                                                           AS wga_ntwc_participant_writer_contact_address,
+           contact.city                                                              AS wga_ntwc_participant_writer_contact_city,
+           contact.state_code                                                        AS wga_ntwc_participant_writer_contact_state_code,
+           DATE_FORMAT(wga_ntwc_participant_writer.created,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_participant_writer_created,
+           wga_ntwc_participant_writer.created_by                                    AS wga_ntwc_participant_writer_created_by,
+           DATE_FORMAT(wga_ntwc_participant_writer.updated,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_participant_writer_updated,
+           wga_ntwc_participant_writer.updated_by                                    AS wga_ntwc_participant_writer_updated_by,
+           wga_ntwc_participant_writer.status                                        AS wga_ntwc_participant_writer_status
+      FROM wga_ntwc_participant_writer AS wga_ntwc_participant_writer INNER JOIN contact AS contact ON contact.id = wga_ntwc_participant_writer.contact_id;

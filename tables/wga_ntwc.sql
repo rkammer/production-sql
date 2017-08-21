@@ -1,5 +1,6 @@
 CREATE TABLE wga_ntwc(
     id                                      INTEGER     NOT NULL AUTO_INCREMENT,
+    date                                    DATE        NOT NULL,
     production_id                           INTEGER     NOT NULL,
     production_number                       VARCHAR(30) NOT NULL,
     episode_id                              INTEGER     NOT NULL,
