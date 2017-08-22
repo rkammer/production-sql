@@ -10,6 +10,7 @@ CREATE TABLE company(
     email                VARCHAR(100),
     website              VARCHAR(100),
     logo_path            VARCHAR(120),
+    wga_company_number   VARCHAR(50),
     media_company        CHAR(1) NOT NULL DEFAULT 'F',
     production_company   CHAR(1) NOT NULL DEFAULT 'F',
     payroll_company      CHAR(1) NOT NULL DEFAULT 'F',

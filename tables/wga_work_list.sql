@@ -1,10 +1,8 @@
 CREATE TABLE wga_work_list(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
     company_id           INTEGER      NOT NULL,
-    company_number       INTEGER      NOT NULL,
     week_ending          INT          NOT NULL,
     contact_id           INTEGER      NOT NULL,
-    name                 VARCHAR(50)  NOT NULL,
     created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     created_by           VARCHAR(30),
     updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

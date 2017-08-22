@@ -11,6 +11,7 @@ CREATE PROCEDURE company_set_list(
     IN  company_email                VARCHAR(100),
     IN  company_website              VARCHAR(100),
     IN  company_logo_path            VARCHAR(120),
+    IN  company_wga_company_number   VARCHAR(50),
     IN  company_media_company        CHAR(1),
     IN  company_production_company   CHAR(1),
     IN  company_payroll_company      CHAR(1),
@@ -39,6 +40,7 @@ BEGIN
             email,
             website,
             logo_path,
+            wga_company_number,
             media_company,
             production_company,
             payroll_company,
@@ -58,6 +60,7 @@ BEGIN
             company_email,
             company_website,
             company_logo_path,
+            company_wga_company_number,
             company_media_company,
             company_production_company,
             company_payroll_company,
@@ -71,22 +74,23 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE company
-           SET name               =    company_name,
-               address            =    company_address,
-               city               =    company_city,
-               state_code         =    company_state_code,
-               zipcode            =    company_zipcode,
-               phone              =    company_phone,
-               faxnumber          =    company_faxnumber,
-               email              =    company_email,
-               website            =    company_website,
-               logo_path          =    company_logo_path,
-               media_company      =    company_media_company,
-               production_company =    company_production_company,
-               payroll_company    =    company_payroll_company,
-               updated_by         =    company_updated_by,
-               status             =    'UPDATED'
-         WHERE id                 =    company_id;
+           SET name               =  company_name,
+               address            =  company_address,
+               city               =  company_city,
+               state_code         =  company_state_code,
+               zipcode            =  company_zipcode,
+               phone              =  company_phone,
+               faxnumber          =  company_faxnumber,
+               email              =  company_email,
+               website            =  company_website,
+               logo_path          =  company_logo_path,
+               wga_company_number =  company_wga_company_number,
+               media_company      =  company_media_company,
+               production_company =  company_production_company,
+               payroll_company    =  company_payroll_company,
+               updated_by         =  company_updated_by,
+               status             =  'UPDATED'
+         WHERE id                 =  company_id;
 
          SET return_value = company_id;
      END IF;
