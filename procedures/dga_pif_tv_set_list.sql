@@ -142,7 +142,7 @@ BEGIN
             copyright_holder,
             copyright_holder_name,
             copyright_holder_phone,
-            writters,
+            writers,
             budget,
             locations,
             date_pre_production,
