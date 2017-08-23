@@ -24,6 +24,7 @@ CREATE TABLE sav_final_cast_list_info_item(
     CONSTRAINT pk_sav_final_cast_list_info_item_id                       PRIMARY KEY (id),
     CONSTRAINT fk_sav_final_cast_list_info_item_sav_final_cast_list_info FOREIGN KEY (sav_final_cast_list_info_id) REFERENCES sav_final_cast_list_info (id),
     CONSTRAINT fk_sav_final_cast_list_contact                            FOREIGN KEY (contact_id)                  REFERENCES contact                  (id),
+    CONSTRAINT fk_sav_final_cast_list_production                         FOREIGN KEY (production_id)               REFERENCES production               (id),
     CONSTRAINT fk_sav_final_cast_list_production_contact                 FOREIGN KEY (production_id, contact_id)   REFERENCES production_contact       (production_id, contact_id),
     CONSTRAINT fk_sav_final_cast_list_sav_performer_type                 FOREIGN KEY (sav_performer_type_id)       REFERENCES sav_performer_type       (id)
 ) ENGINE = InnoDB;
