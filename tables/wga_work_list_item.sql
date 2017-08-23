@@ -7,6 +7,7 @@ CREATE TABLE wga_work_list_item(
     field_of_work_id     INTEGER      NOT NULL,
     date_start           DATE,
     date_end             DATE,
+    additional_data      VARCHAR(100),
     created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     created_by           VARCHAR(30),
     updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

@@ -1,5 +1,5 @@
 DELIMITER //
-CREATE PROCEDURE wga_work_item_set_list_set_list(
+CREATE PROCEDURE wga_work_item_set_list(
     IN wga_work_list_item_id                  INT,
     IN wga_work_list_item_wga_work_list_id    INT,
     IN wga_work_list_item_contact_id          INT,
@@ -8,6 +8,7 @@ CREATE PROCEDURE wga_work_item_set_list_set_list(
     IN wga_work_list_item_field_of_work_id    INT,
     IN wga_work_list_item_date_start          DATE,
     IN wga_work_list_item_date_end            DATE,
+    IN wga_work_list_item_additional_data     VARCHAR(100),
     IN wga_work_list_item_created_by          VARCHAR(30),
     IN wga_work_list_item_updated_by          VARCHAR(30),
     IN wga_work_list_item_status              VARCHAR(30),
@@ -18,11 +19,11 @@ BEGIN
 
     SELECT COUNT(*)
       INTO ROW_EXISTS
-      FROM wga_work_item_set_list
-     WHERE id = wga_work_item_set_list_id;
+      FROM wga_work_item
+     WHERE id = wga_work_item_id;
 
      IF (ROW_EXISTS = 0) THEN
-        INSERT INTO wga_work_item_set_list
+        INSERT INTO wga_work_item
         (
             wga_work_list_id,
             contact_id,
@@ -31,6 +32,7 @@ BEGIN
             field_of_work_id,
             date_start,
             date_end,
+            additional_data,
             created_by,
             updated_by,
             status
@@ -44,6 +46,7 @@ BEGIN
             wga_work_list_item_field_of_work_id,
             wga_work_list_item_date_start,
             wga_work_list_item_date_end,
+            wga_work_list_item_additional_data,
             wga_work_list_item_created_by,
             wga_work_list_item_updated_by,
             'CREATED'
@@ -53,7 +56,7 @@ BEGIN
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
-        UPDATE wga_work_item_set_list
+        UPDATE wga_work_item
            SET wga_work_list_id   = wga_work_list_item_wga_work_list_id,
                contact_id         = wga_work_list_item_contact_id,
                episode_id         = wga_work_list_item_episode_id,
@@ -61,12 +64,13 @@ BEGIN
                field_of_work_id   = wga_work_list_item_field_of_work_id,
                date_start         = wga_work_list_item_date_start,
                date_end           = wga_work_list_item_date_end,
+               additional_data    = wga_work_list_item_additional_data,
                created_by         = wga_work_list_item_created_by,
                updated_by         = wga_work_list_item_updated_by,
                status             = 'UPDATED'
-         WHERE id                 = wga_work_item_set_list_id;
+         WHERE id                 = wga_work_item_id;
 
-        SET return_value = wga_work_item_set_list_id;
+        SET return_value = wga_work_item_id;
      END IF;
 
      COMMIT;

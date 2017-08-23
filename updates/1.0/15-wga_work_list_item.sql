@@ -1,0 +1,1 @@
+ALTER TABLE wga_work_list_item ADD COLUMN additional_data VARCHAR(100) AFTER date_end;
