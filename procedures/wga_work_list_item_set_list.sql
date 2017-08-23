@@ -1,5 +1,5 @@
 DELIMITER //
-CREATE PROCEDURE wga_work_item_set_list(
+CREATE PROCEDURE wga_work_list_item_set_list(
     IN wga_work_list_item_id                  INT,
     IN wga_work_list_item_wga_work_list_id    INT,
     IN wga_work_list_item_contact_id          INT,
@@ -19,11 +19,11 @@ BEGIN
 
     SELECT COUNT(*)
       INTO ROW_EXISTS
-      FROM wga_work_item
-     WHERE id = wga_work_item_id;
+      FROM wga_work_list_item
+     WHERE id = wga_work_list_item_id;
 
      IF (ROW_EXISTS = 0) THEN
-        INSERT INTO wga_work_item
+        INSERT INTO wga_work_list_item
         (
             wga_work_list_id,
             contact_id,
@@ -56,7 +56,7 @@ BEGIN
      END IF;
 
      IF (ROW_EXISTS >= 1) THEN
-        UPDATE wga_work_item
+        UPDATE wga_work_list_item
            SET wga_work_list_id   = wga_work_list_item_wga_work_list_id,
                contact_id         = wga_work_list_item_contact_id,
                episode_id         = wga_work_list_item_episode_id,
@@ -68,9 +68,9 @@ BEGIN
                created_by         = wga_work_list_item_created_by,
                updated_by         = wga_work_list_item_updated_by,
                status             = 'UPDATED'
-         WHERE id                 = wga_work_item_id;
+         WHERE id                 = wga_work_list_item_id;
 
-        SET return_value = wga_work_item_id;
+        SET return_value = wga_work_list_item_id;
      END IF;
 
      COMMIT;

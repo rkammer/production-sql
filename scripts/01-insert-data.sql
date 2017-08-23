@@ -234,3 +234,22 @@ VALUES
 ('MOW', 'Movie of the Week', 'RKAMMER', 'RKAMMER', 'CREATED'),
 (NULL,  'Industrial',        'RKAMMER', 'RKAMMER', 'CREATED'),
 (NULL,  'Other',             'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO sav_role
+(code, title, created_by, updated_by, status)
+VALUES
+('B',  'Background',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('DA', 'Dancer',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('D',  'Dubbing',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('G',  'Guest Star',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('L',  'Looping',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('P',  'Principal',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('SR', 'Series Regular', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('S',  'Singer',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('ST', 'Stunt',          'RKAMMER', 'RKAMMER', 'CREATED'),
+('V',  'Voice-Over',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('A',  'Announcer',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('GD', 'Group Dancer',   'RKAMMER', 'RKAMMER', 'CREATED'),
+('GS', 'Group Singer',   'RKAMMER', 'RKAMMER', 'CREATED'),
+('SA', 'Specialty Act',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('SI', 'Stand-In',       'RKAMMER', 'RKAMMER', 'CREATED');

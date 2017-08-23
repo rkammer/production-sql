@@ -84,7 +84,10 @@ gulp.task('script', function(){
 
         //sav-aftra tables
         'tables/sav_performer_type.sql',
+        'tables/sav_production_type.sql',
         'tables/sav_final_cast_list_info.sql',
+        'tables/sav_final_cast_list_info_item.sql',
+        'tables/sav_role.sql',
 
         //functions
         'functions/contact_get_full_name.sql',
@@ -144,7 +147,10 @@ gulp.task('script', function(){
 
         //sav-aftra views
         'views/sav_performer_type_get_list.sql',
+        'views/sav_production_type_get_list.sql',
         'views/sav_final_cast_list_info_get_list.sql',
+        'views/sav_final_cast_list_info_item_get_list.sql',
+        'views/sav_role_get_list.sql',
 
         'procedures/company_set_list.sql',
         'procedures/business_group_set_list.sql',
@@ -153,6 +159,7 @@ gulp.task('script', function(){
         'procedures/production_length_set_list.sql',
         'procedures/production_type_set_list.sql',
         'procedures/production_set_list.sql',
+        'procedures/production_set_closed.sql',
         'procedures/production_state_set_list.sql',
         // 'procedures/deal_type_set_list.sql',
         // 'procedures/field_work_set_list.sql',
@@ -209,7 +216,10 @@ gulp.task('script', function(){
 
         //sav-aftra procedures
         'procedures/sav_performer_type_set_list.sql',
+        'procedures/sav_production_type_set_list.sql',
         'procedures/sav_final_cast_list_info_set_list.sql',
+        'procedures/sav_final_cast_list_info_item_set_list.sql',
+        'procedures/sav_role_set_list.sql',
 
         'scripts/01-insert-data.sql'
 
