@@ -33,7 +33,6 @@ BEGIN
             wga_work_list_contact_id,
             wga_work_list_created_by,
             wga_work_list_updated_by,
-            wga_work_list_status,
             'CREATED'
         );
 
@@ -45,9 +44,7 @@ BEGIN
            SET company_id     = wga_work_list_company_id,
                week_ending    = wga_work_list_week_ending,
                contact_id     = wga_work_list_contact_id,
-               created        = wga_work_list_created,
                created_by     = wga_work_list_created_by,
-               updated        = wga_work_list_updated,
                updated_by     = wga_work_list_updated_by,
                status         = 'UPDATED'
          WHERE id             = wga_work_list_id;

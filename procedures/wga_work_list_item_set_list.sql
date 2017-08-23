@@ -8,9 +8,7 @@ CREATE PROCEDURE wga_work_item_set_list_set_list(
     IN wga_work_list_item_field_of_work_id    INT,
     IN wga_work_list_item_date_start          DATE,
     IN wga_work_list_item_date_end            DATE,
-    IN wga_work_list_item_created             TIMESTAMP,
     IN wga_work_list_item_created_by          VARCHAR(30),
-    IN wga_work_list_item_updated             TIMESTAMP,
     IN wga_work_list_item_updated_by          VARCHAR(30),
     IN wga_work_list_item_status              VARCHAR(30),
     OUT return_value                          INTEGER
@@ -33,15 +31,12 @@ BEGIN
             field_of_work_id,
             date_start,
             date_end,
-            created,
             created_by,
-            updated,
             updated_by,
             status
         )
         VALUES
         (
-            wga_work_list_item_id,
             wga_work_list_item_wga_work_list_id,
             wga_work_list_item_contact_id,
             wga_work_list_item_episode_id,
@@ -49,9 +44,7 @@ BEGIN
             wga_work_list_item_field_of_work_id,
             wga_work_list_item_date_start,
             wga_work_list_item_date_end,
-            wga_work_list_item_created,
             wga_work_list_item_created_by,
-            wga_work_list_item_updated,
             wga_work_list_item_updated_by,
             'CREATED'
         );
@@ -68,9 +61,7 @@ BEGIN
                field_of_work_id   = wga_work_list_item_field_of_work_id,
                date_start         = wga_work_list_item_date_start,
                date_end           = wga_work_list_item_date_end,
-               created            = wga_work_list_item_created,
                created_by         = wga_work_list_item_created_by,
-               updated            = wga_work_list_item_updated,
                updated_by         = wga_work_list_item_updated_by,
                status             = 'UPDATED'
          WHERE id                 = wga_work_item_set_list_id;
