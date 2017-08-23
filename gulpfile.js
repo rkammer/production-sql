@@ -91,6 +91,7 @@ gulp.task('script', function(){
 
         //functions
         'functions/contact_get_full_name.sql',
+        'functions/production_get_states.sql',
 
         'views/company_get_list.sql',
         'views/business_group_get_list.sql',
