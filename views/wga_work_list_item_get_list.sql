@@ -5,6 +5,7 @@ CREATE OR REPLACE VIEW wga_work_list_item_get_list(
     wga_work_list_item_contact_first_name,
     wga_work_list_item_contact_middle_name,
     wga_work_list_item_contact_last_name,
+    wga_work_list_item_contact_full_name,
     wga_work_list_item_contact_suffix,
     wga_work_list_item_contact_address,
     wga_work_list_item_contact_city,
@@ -12,6 +13,8 @@ CREATE OR REPLACE VIEW wga_work_list_item_get_list(
     wga_work_list_item_contact_phone,
     wga_work_list_item_contact_email,
     wga_work_list_item_contact_ssn,
+    wga_work_list_production_id,
+    wga_work_list_production_title,
     wga_work_list_item_episode_id,
     wga_work_list_item_episode_title,
     wga_work_list_item_episode_episode_number,
@@ -39,6 +42,7 @@ CREATE OR REPLACE VIEW wga_work_list_item_get_list(
            contact.first_name                                                                       AS wga_work_list_item_contact_first_name,
            contact.middle_name                                                                      AS wga_work_list_item_contact_middle_name,
            contact.last_name                                                                        AS wga_work_list_item_contact_last_name,
+           contact_get_full_name(contact.id)                                                        AS wga_work_list_item_contact_full_name,
            contact.suffix                                                                           AS wga_work_list_item_contact_suffix,
            contact.address                                                                          AS wga_work_list_item_contact_address,
            contact.city                                                                             AS wga_work_list_item_contact_city,
@@ -46,6 +50,8 @@ CREATE OR REPLACE VIEW wga_work_list_item_get_list(
            contact.phone                                                                            AS wga_work_list_item_contact_phone,
            contact.email                                                                            AS wga_work_list_item_contact_email,
            contact.ssn                                                                              AS wga_work_list_item_contact_ssn,
+           production.id                                                                            AS wga_work_list_production_id,
+           production.title                                                                         AS wga_work_list_production_title,
            wga_work_list_item.episode_id                                                            AS wga_work_list_item_episode_id,
            episode.title                                                                            AS wga_work_list_item_episode_title,
            LPAD(episode.episode_number, 2, 0)                                                       AS wga_work_list_item_episode_episode_number,
@@ -79,5 +85,6 @@ CREATE OR REPLACE VIEW wga_work_list_item_get_list(
       FROM wga_work_list_item AS wga_work_list_item INNER JOIN contact           AS contact           ON contact.id           = wga_work_list_item.contact_id
                                                     INNER JOIN episode           AS episode           ON episode.id           = wga_work_list_item.episode_id
                                                     INNER JOIN season            AS season            ON episode.season_id    = season.id
+                                                    INNER JOIN production        AS production        ON production.id        = season.production_id
                                                     INNER JOIN wga_deal_type     AS wga_deal_type     ON wga_deal_type.id     = wga_work_list_item.deal_type_id
                                                     INNER JOIN wga_field_of_work AS wga_field_of_work ON wga_field_of_work.id = wga_work_list_item.field_of_work_id;
