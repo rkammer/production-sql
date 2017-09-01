@@ -21,6 +21,7 @@ CREATE TABLE state(
     email                VARCHAR(100),
     website              VARCHAR(100),
     logo_path            VARCHAR(120),
+    wga_company_number   VARCHAR(50),
     media_company        CHAR(1) NOT NULL DEFAULT 'F',
     production_company   CHAR(1) NOT NULL DEFAULT 'F',
     payroll_company      CHAR(1) NOT NULL DEFAULT 'F',
@@ -33,18 +34,33 @@ CREATE TABLE state(
     CONSTRAINT fk_company_state FOREIGN KEY (state_code) REFERENCES state (code)
 ) ENGINE = InnoDB;
 
+ CREATE TABLE business_group(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50)  NOT NULL,
+    company_id           INTEGER      NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_business_group_id    PRIMARY KEY (id),
+    CONSTRAINT fk_business_group_company FOREIGN KEY (company_id) REFERENCES company (id)
+) ENGINE = InnoDB;
+
  CREATE TABLE network(
-    id               INTEGER     NOT NULL AUTO_INCREMENT,
-    name             VARCHAR(50) NOT NULL,
-    media_company_id INTEGER     NOT NULL,
-    logo_path        VARCHAR(120),
-    created          TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-    created_by       VARCHAR(30),
-    updated          TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by       VARCHAR(30),
-    status           VARCHAR(30),
-    CONSTRAINT       pk_network_id            PRIMARY KEY (id),
-    CONSTRAINT       fk_network_media_company FOREIGN KEY (media_company_id) REFERENCES company (id)
+    id                   INTEGER     NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50) NOT NULL,
+    media_company_id     INTEGER     NOT NULL,
+    business_group_id    INTEGER     NOT NULL,
+    logo_path            VARCHAR(120),
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_network_id             PRIMARY KEY (id),
+    CONSTRAINT fk_network_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_network_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id)
 ) ENGINE = InnoDB;
 
  CREATE TABLE production_length(
@@ -72,6 +88,13 @@ CREATE TABLE state(
  CREATE TABLE production(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
     title                            VARCHAR(50)    NOT NULL,
+    media_company_id                 INTEGER        NOT NULL,
+    business_group_id                INTEGER        NOT NULL,
+    network_id                       INTEGER        NOT NULL,
+    pilot                            CHAR(1) NOT NULL DEFAULT 'F',
+    production_stage_id              INT NOT NULL,
+    season_number                    INT,
+    episodes_number                  INT,
     budget                           NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
     writing_start_date               DATE,
     writing_end_date                 DATE,
@@ -84,7 +107,6 @@ CREATE TABLE state(
     network_production_start_date    DATE,
     network_production_end_date      DATE,
     production_length_id             INTEGER        NOT NULL,
-    network_id                       INTEGER        NOT NULL,
     production_type_id               INTEGER        NOT NULL,
     production_company_id            INTEGER        NOT NULL,
     payroll_company_id               INTEGER        NOT NULL,
@@ -99,7 +121,10 @@ CREATE TABLE state(
     CONSTRAINT fk_production_production_length   FOREIGN KEY (production_length_id)       REFERENCES production_length (id),
     CONSTRAINT fk_production_production_type     FOREIGN KEY (production_type_id)         REFERENCES production_type   (id),
     CONSTRAINT fk_production_production_company  FOREIGN KEY (production_company_id)      REFERENCES company           (id),
-    CONSTRAINT fk_production_payroll_company     FOREIGN KEY (payroll_company_id)         REFERENCES company           (id)
+    CONSTRAINT fk_production_payroll_company     FOREIGN KEY (payroll_company_id)         REFERENCES company           (id),
+    CONSTRAINT fk_production_media_company       FOREIGN KEY (media_company_id)           REFERENCES company           (id),
+    CONSTRAINT fk_production_business_group      FOREIGN KEY (business_group_id)          REFERENCES business_group    (id),
+    CONSTRAINT fk_production_production_stage    FOREIGN KEY (production_stage_id)        REFERENCES production_stage  (id)
 ) ENGINE = InnoDB;
 
  CREATE TABLE production_state(
@@ -119,6 +144,9 @@ CREATE TABLE state(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
     title                            VARCHAR(50)    NOT NULL,
     season_number                    INTEGER        NOT NULL,
+    media_company_id                 INTEGER        NOT NULL,
+    business_group_id                INTEGER        NOT NULL,
+    network_id                       INTEGER        NOT NULL,
     production_id                    INTEGER        NOT NULL,
     budget                           NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
     writing_start_date               DATE,
@@ -137,13 +165,20 @@ CREATE TABLE state(
     updated                          TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by                       VARCHAR(30),
     status                           VARCHAR(30),
-    CONSTRAINT pk_season_id          PRIMARY KEY (id),
-    CONSTRAINT fk_season_production  FOREIGN KEY (production_id) REFERENCES production (id)
+    CONSTRAINT pk_season_id             PRIMARY KEY (id),
+    CONSTRAINT fk_season_production     FOREIGN KEY (production_id)     REFERENCES production     (id),
+    CONSTRAINT fk_season_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_season_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id),
+    CONSTRAINT fk_network_id            FOREIGN KEY (network_id)        REFERENCES network        (id)
 ) ENGINE = InnoDB;
 
  CREATE TABLE episode(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
     title                            VARCHAR(50)    NOT NULL,
+    media_company_id                 INTEGER        NOT NULL,
+    business_group_id                INTEGER        NOT NULL,
+    network_id                       INTEGER        NOT NULL,
+    production_id                    INTEGER        NOT NULL,
     season_id                        INTEGER        NOT NULL,
     episode_number                   INTEGER        NOT NULL,
     budget                           NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
@@ -162,8 +197,12 @@ CREATE TABLE state(
     updated                          TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by                       VARCHAR(30),
     status                           VARCHAR(30),
-    CONSTRAINT pk_episode_id         PRIMARY KEY (id),
-    CONSTRAINT fk_episode_season     FOREIGN KEY (season_id) REFERENCES season (id)
+    CONSTRAINT pk_episode_id             PRIMARY KEY (id),
+    CONSTRAINT fk_episode_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_episode_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id),
+    CONSTRAINT fk_episode_network        FOREIGN KEY (network_id)        REFERENCES network        (id),
+    CONSTRAINT fk_episode_production     FOREIGN KEY (production_id)     REFERENCES production     (id),
+    CONSTRAINT fk_episode_season         FOREIGN KEY (season_id)         REFERENCES season         (id)
 ) ENGINE = InnoDB;
 
  CREATE TABLE contact(
@@ -177,6 +216,7 @@ CREATE TABLE state(
     state_code           CHAR(2),
     phone                VARCHAR(20),
     email                VARCHAR(100),
+    ssn                  VARCHAR(11),
     website              VARCHAR(100),
     picture_path         VARCHAR(120),
     created              TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
@@ -262,6 +302,159 @@ CREATE TABLE state(
     CONSTRAINT fk_production_contact_production FOREIGN KEY (production_id)   REFERENCES production   (id),
     CONSTRAINT fk_production_contact_contact    FOREIGN KEY (contact_id)      REFERENCES contact      (id),
     CONSTRAINT fk_production_contact_role       FOREIGN KEY (contact_role_id) REFERENCES contact_role (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE production_stage(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_production_stage_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE production_guild(
+    production_id        INTEGER NOT NULL,
+    guild_id             INTEGER NOT NULL,
+    document_name        VARCHAR(100)  NOT NULL,
+    dga_sideletter_six   CHAR(1) NOT NULL DEFAULT 'F',
+    dga_all_rights_media CHAR(1) NOT NULL DEFAULT 'F',
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_production_guild PRIMARY KEY (production_id, guild_id),
+    CONSTRAINT fk_production_guild_production FOREIGN KEY (production_id) REFERENCES production (id),
+    CONSTRAINT fk_production_guild_guild      FOREIGN KEY (guild_id)      REFERENCES guild      (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE ledger(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    code                 CHAR(10)     NOT NULL,
+    title                VARCHAR(50)  NOT NULL,
+    media_company_id     INTEGER      NOT NULL,
+    business_group_id    INTEGER      NOT NULL,
+    network_id           INTEGER      NOT NULL,
+    production_id        INTEGER      NOT NULL,
+    season_id            INTEGER,
+    episode_id           INTEGER,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_ledger_id             PRIMARY KEY (id),
+    CONSTRAINT fk_ledger_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_ledger_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id),
+    CONSTRAINT fk_ledger_network        FOREIGN KEY (network_id)        REFERENCES network        (id),
+    CONSTRAINT fk_ledger_production     FOREIGN KEY (production_id)     REFERENCES production     (id),
+    CONSTRAINT fk_ledger_season         FOREIGN KEY (season_id)         REFERENCES season         (id),
+    CONSTRAINT fk_ledger_episode        FOREIGN KEY (episode_id)        REFERENCES episode        (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE account(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    code                 CHAR(10)     NOT NULL,
+    title                VARCHAR(50)  NOT NULL,
+    media_company_id     INTEGER      NOT NULL,
+    business_group_id    INTEGER      NOT NULL,
+    network_id           INTEGER      NOT NULL,
+    production_id        INTEGER      NOT NULL,
+    season_id            INTEGER,
+    episode_id           INTEGER,
+    ledger_id            INTEGER      NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_account_id             PRIMARY KEY (id),
+    CONSTRAINT fk_account_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_account_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id),
+    CONSTRAINT fk_account_network        FOREIGN KEY (network_id)        REFERENCES network        (id),
+    CONSTRAINT fk_account_production     FOREIGN KEY (production_id)     REFERENCES production     (id),
+    CONSTRAINT fk_account_season         FOREIGN KEY (season_id)         REFERENCES season         (id),
+    CONSTRAINT fk_account_episode        FOREIGN KEY (episode_id)        REFERENCES episode        (id),
+    CONSTRAINT fk_account_ledger         FOREIGN KEY (ledger_id)         REFERENCES ledger         (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE subaccount(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    code                 CHAR(10)     NOT NULL,
+    title                VARCHAR(50)  NOT NULL,
+    media_company_id     INTEGER      NOT NULL,
+    business_group_id    INTEGER      NOT NULL,
+    network_id           INTEGER      NOT NULL,
+    production_id        INTEGER      NOT NULL,
+    season_id            INTEGER,
+    episode_id           INTEGER,
+    ledger_id            INTEGER      NOT NULL,
+    account_id           INTEGER      NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_subaccount_id             PRIMARY KEY (id),
+    CONSTRAINT fk_subaccount_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_subaccount_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id),
+    CONSTRAINT fk_subaccount_network        FOREIGN KEY (network_id)        REFERENCES network        (id),
+    CONSTRAINT fk_subaccount_production     FOREIGN KEY (production_id)     REFERENCES production     (id),
+    CONSTRAINT fk_subaccount_season         FOREIGN KEY (season_id)         REFERENCES season         (id),
+    CONSTRAINT fk_subaccount_episode        FOREIGN KEY (episode_id)        REFERENCES episode        (id),
+    CONSTRAINT fk_subaccount_ledger         FOREIGN KEY (ledger_id)         REFERENCES ledger         (id),
+    CONSTRAINT fk_subaccount_account        FOREIGN KEY (account_id)        REFERENCES account        (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE transaction(
+    id                   INTEGER        NOT NULL AUTO_INCREMENT,
+    media_company_id     INTEGER        NOT NULL,
+    business_group_id    INTEGER        NOT NULL,
+    network_id           INTEGER        NOT NULL,
+    production_id        INTEGER        NOT NULL,
+    season_id            INTEGER,
+    episode_id           INTEGER,
+    ledger_id            INTEGER        NOT NULL,
+    account_id           INTEGER        NOT NULL,
+    subaccount_id        INTEGER        NOT NULL,
+    description          VARCHAR(50)    NOT NULL,
+    budget               NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    total_budget         NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    guarantee            INTEGER        NOT NULL DEFAULT 0,
+    period_id            INTEGER        NOT NULL,
+    actual               NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    total_actual         NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    comment              VARCHAR(255),
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_transaction_id             PRIMARY KEY (id),
+    CONSTRAINT fk_transaction_media_company  FOREIGN KEY (media_company_id)  REFERENCES company        (id),
+    CONSTRAINT fk_transaction_business_group FOREIGN KEY (business_group_id) REFERENCES business_group (id),
+    CONSTRAINT fk_transaction_network        FOREIGN KEY (network_id)        REFERENCES network        (id),
+    CONSTRAINT fk_transaction_production     FOREIGN KEY (production_id)     REFERENCES production     (id),
+    CONSTRAINT fk_transaction_season         FOREIGN KEY (season_id)         REFERENCES season         (id),
+    CONSTRAINT fk_transaction_episode        FOREIGN KEY (episode_id)        REFERENCES episode        (id),
+    CONSTRAINT fk_transaction_ledger         FOREIGN KEY (ledger_id)         REFERENCES ledger         (id),
+    CONSTRAINT fk_transaction_account        FOREIGN KEY (account_id)        REFERENCES account        (id),
+    CONSTRAINT fk_transaction_subaccount     FOREIGN KEY (subaccount_id)     REFERENCES subaccount     (id),
+    CONSTRAINT fk_transaction_period         FOREIGN KEY (period_id)         REFERENCES period         (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE production_show_type(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_production_show_type_id    PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
  CREATE TABLE dga_quarterly_earning(
@@ -672,6 +865,7 @@ CREATE TABLE state(
     copyright_holder                                           VARCHAR(50)   NOT NULL,
     copyright_holder_name                                      VARCHAR(50)   NOT NULL,
     copyright_holder_phone                                     VARCHAR(20)   NOT NULL,
+    writers                                                    VARCHAR(255)  NOT NULL,
     budget                                                     NUMERIC(15,2) NOT NULL,
     locations                                                  VARCHAR(255)  NOT NULL,
     date_pre_production                                        DATE          NOT NULL,
@@ -706,6 +900,7 @@ CREATE TABLE state(
     network_upn                                                CHAR(1)       NOT NULL DEFAULT 'F',
     network_wb                                                 CHAR(1)       NOT NULL DEFAULT 'F',
     network_syndication                                        CHAR(1)       NOT NULL DEFAULT 'F',
+    network_syndication_description                            VARCHAR(50),
     basic_cable                                                CHAR(1)       NOT NULL DEFAULT 'F',
     basic_cable_a_and_e                                        CHAR(1)       NOT NULL DEFAULT 'F',
     basic_cable_disney                                         CHAR(1)       NOT NULL DEFAULT 'F',
@@ -812,10 +1007,8 @@ CREATE TABLE state(
  CREATE TABLE wga_work_list(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
     company_id           INTEGER      NOT NULL,
-    company_number       INTEGER      NOT NULL,
     week_ending          INT          NOT NULL,
     contact_id           INTEGER      NOT NULL,
-    name                 VARCHAR(50)  NOT NULL,
     created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     created_by           VARCHAR(30),
     updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -842,13 +1035,224 @@ CREATE TABLE state(
  CREATE TABLE wga_field_of_work(
     id                   INTEGER      NOT NULL AUTO_INCREMENT,
     code                 CHAR(1),
+    title                VARCHAR(50),
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_field_of_work_id      PRIMARY KEY (id),
+    CONSTRAINT pk_wga_field_of_work_contact FOREIGN KEY contact_id REFERENCES contact (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_work_list_item(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    wga_work_list_id     INTEGER      NOT NULL,
+    contact_id           INTEGER      NOT NULL,
+    episode_id           INTEGER      NOT NULL,
+    deal_type_id         INTEGER      NOT NULL,
+    field_of_work_id     INTEGER      NOT NULL,
+    date_start           DATE,
+    date_end             DATE,
+    additional_data      VARCHAR(100),
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_work_list_item_id                 PRIMARY KEY (id),
+    CONSTRAINT fk_wga_work_list_item_wga_work_list_item FOREIGN KEY (wga_work_list_id) REFERENCES wga_work_list     (id),
+    CONSTRAINT fk_wga_work_list_item_contact            FOREIGN KEY (contact_id)       REFERENCES contact           (id),
+    CONSTRAINT fk_wga_work_list_item_episode            FOREIGN KEy (episode_id)       REFERENCES episode           (id),
+    CONSTRAINT fk_wga_work_list_item_wga_deal_type      FOREIGN KEY (deal_type_id)     REFERENCES wga_deal_type     (id),
+    CONSTRAINT fk_wga_work_list_item_wga_field_of_work  FOREIGN KEY (field_of_work_id) REFERENCES wga_field_of_work (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_ntwc(
+    id                                      INTEGER     NOT NULL AUTO_INCREMENT,
+    date                                    DATE        NOT NULL,
+    production_id                           INTEGER     NOT NULL,
+    production_number                       VARCHAR(30) NOT NULL,
+    episode_id                              INTEGER     NOT NULL,
+    pilot                                   CHAR(1)  DEFAULT 'F',
+    pilot_network_id                        INTEGER,
+    pilot_production_lenght_id              INTEGER,
+    executive_producer_contact_id           INTEGER NOT NULL,
+    director_contact_id                     INTEGER NOT NULL,
+    story_editor_contact_id                 INTEGER NOT NULL,
+    other_executive_producer_contact_id     INTEGER,
+    producer_contact_id                     INTEGER,
+    supervising_producer_contact_id         INTEGER,
+    sent_to_writers                         DATE    NOT NULL,
+    protest_communicated                    DATE    NOT NULL,
+    by_contact_id                           INTEGER,
+    created                                 TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by                              VARCHAR(30),
+    updated                                 TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                              VARCHAR(30),
+    status                                  VARCHAR(30),
+    CONSTRAINT pk_wga_ntwc_id                                          PRIMARY KEY (id),
+    CONSTRAINT fk_wga_ntwc_production                                  FOREIGN KEY (production_id)                                      REFERENCES production        (id),
+    CONSTRAINT fk_wga_ntwc_episode                                     FOREIGN KEY (episode_id)                                         REFERENCES episode           (id),
+    CONSTRAINT fk_wga_ntwc_network                                     FOREIGN KEY (pilot_network_id)                                   REFERENCES network           (id),
+    CONSTRAINT fk_wga_ntwc_production_length                           FOREIGN KEY (pilot_production_lenght_id)                         REFERENCES production_length (id),
+    CONSTRAINT fk_wga_ntwc_executive_producer_contact                  FOREIGN KEY (executive_producer_contact_id)                      REFERENCES contact           (id),
+    CONSTRAINT fk_wga_ntwc_executive_producer_production_contact       FOREIGN KEY (production_id, executive_producer_contact_id)       REFERENCES production_contact (production_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_director_contact                            FOREIGN KEY (director_contact_id)                                REFERENCES contact           (id),
+    CONSTRAINT fk_wga_ntwc_director_production_contact                 FOREIGN KEY (production_id, director_contact_id)                 REFERENCES production_contact (production_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_story_editor_contact                        FOREIGN KEY (story_editor_contact_id)                            REFERENCES contact           (id),
+    CONSTRAINT fk_wga_ntwc_story_editor_production_contact             FOREIGN KEY (production_id, story_editor_contact_id)             REFERENCES production_contact (production_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_other_executive_producer_contact            FOREIGN KEY (other_executive_producer_contact_id)                REFERENCES contact           (id),
+    CONSTRAINT fk_wga_ntwc_other_executive_producer_production_contact FOREIGN KEY (production_id, other_executive_producer_contact_id) REFERENCES production_contact (production_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_producer_contact                            FOREIGN KEY (producer_contact_id)                                REFERENCES contact           (id),
+    CONSTRAINT fk_wga_ntwc_producer_production_contact                 FOREIGN KEY (production_id, producer_contact_id)                 REFERENCES production_contact (production_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_supervising_producer_contact                FOREIGN KEY (supervising_producer_contact_id)                    REFERENCES contact           (id),
+    CONSTRAINT fk_wga_ntwc_supervising_producer_production_contact     FOREIGN KEY (production_id, supervising_producer_contact_id)     REFERENCES production_contact (production_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_by_contact                                  FOREIGN KEY (by_contact_id)                                      REFERENCES contact           (id),
+    CONSTRAINT fk_wga_ntwc_by_production_contact                       FOREIGN KEY (production_id, by_contact_id)                       REFERENCES production_contact (production_id, contact_id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_ntwc_participant_writer(
+    wga_ntwc_id          INTEGER      NOT NULL,
+    contact_id           INTEGER      NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_ntwc_participant_writer PRIMARY KEY (wga_ntwc_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_participant_writer_wga_ntwc FOREIGN KEY (wga_ntwc_id) REFERENCES wga_ntwc (id),
+    CONSTRAINT fk_wga_ntwc_participant_writer_contact  FOREIGN KEY (contact_id)  REFERENCES contact  (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_ntwc_writing_credit(
+    wga_ntwc_id          INTEGER      NOT NULL,
+    contact_id           INTEGER      NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_ntwc_writing_credit PRIMARY KEY (wga_ntwc_id, contact_id),
+    CONSTRAINT fk_wga_ntwc_writing_credit_wga_ntwc FOREIGN KEY (wga_ntwc_id) REFERENCES wga_ntwc (id),
+    CONSTRAINT fk_wga_ntwc_writing_credit_contact  FOREIGN KEY (contact_id)  REFERENCES contact  (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_ntwc_source_material_episode(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    wga_ntwc_id          INT NOT NULL,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_ntwc_source_material_episode_id       PRIMARY KEY (id),
+    CONSTRAINT fk_wga_ntwc_source_material_episode_wga_ntwc FOREIGN KEY (wga_ntwc_id) REFERENCES wga_ntwc (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE wga_ntwc_source_material_production(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    wga_ntwc_id          INT NOT NULL,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_wga_ntwc_source_material_production_id       PRIMARY KEY (id),
+    CONSTRAINT fk_wga_ntwc_source_material_production_wga_ntwc FOREIGN KEY (wga_ntwc_id) REFERENCES wga_ntwc (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE sav_performer_type(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    code                 CHAR(3)      NOT NULL,
     title                VARCHAR(50)  NOT NULL,
     created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     created_by           VARCHAR(30),
     updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by           VARCHAR(30),
     status               VARCHAR(30),
-    CONSTRAINT pk_wga_field_of_work_id    PRIMARY KEY (id)
+    CONSTRAINT pk_sav_performer_type_id PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE sav_production_type(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    code                 VARCHAR(10),
+    title                VARCHAR(50),
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_sav_production_type_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE sav_final_cast_list_info(
+    id                      INTEGER      NOT NULL AUTO_INCREMENT,
+    date_filled             date         NOT NULL,
+    production_id           INT          NOT NULL,
+    shooting_location       VARCHAR(400) NOT NULL,
+    production_company_id   INT          NOT NULL,
+    start_date              DATE         NOT NULL,
+    end_date                DATE         NOT NULL,
+    federal_id              VARCHAR(50)  NOT NULL,
+    state_id                VARCHAR(50)  NOT NULL,
+    picture_id              VARCHAR(50)  NOT NULL,
+    distribuitor_id         VARCHAR(50)  NOT NULL,
+    sav_production_type_id  INT          NOT NULL,
+    created                 TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by              VARCHAR(30),
+    updated                 TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by              VARCHAR(30),
+    status                  VARCHAR(30),
+    CONSTRAINT pk_sav_final_cast_list_info_id                  PRIMARY KEY (id),
+    CONSTRAINT fk_sav_final_cast_list_info_production          FOREIGN KEY (production_id)          REFERENCES production          (id),
+    CONSTRAINT fk_sav_final_cast_list_info_production_company  FOREIGN KEY (production_company_id)  REFERENCES company             (id),
+    CONSTRAINT fk_sav_final_cast_list_info_sav_production_type FOREIGN KEY (sav_production_type_id) REFERENCES sav_production_type (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE sav_final_cast_list_info_item(
+    id                               INTEGER      NOT NULL AUTO_INCREMENT,
+    sav_final_cast_list_info_id      INT          NOT NULL,
+    production_id                    INT          NOT NULL,
+    contact_id                       INT          NOT NULL,
+    loan_out_corp                    VARCHAR(50),
+    federal_id                       VARCHAR(30),
+    days_number                      INT,
+    weeks_number                     INT,
+    start_date                       DATE,
+    end_date                         DATE,
+    contract_type                    CHAR(1),
+    sav_performer_type_id            INT NOT NULL,
+    salary_total_gross               NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    salary_base                      NUMERIC(15,2)  NOT NULL DEFAULT 0.00,
+    units_type                       INT,
+    units_salary                     INT,
+    units_total                      INT,
+    created                          TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    created_by                       VARCHAR(30),
+    updated                          TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by                       VARCHAR(30),
+    status                           VARCHAR(30),
+    CONSTRAINT pk_sav_final_cast_list_info_item_id                       PRIMARY KEY (id),
+    CONSTRAINT fk_sav_final_cast_list_info_item_sav_final_cast_list_info FOREIGN KEY (sav_final_cast_list_info_id) REFERENCES sav_final_cast_list_info (id),
+    CONSTRAINT fk_sav_final_cast_list_contact                            FOREIGN KEY (contact_id)                  REFERENCES contact                  (id),
+    CONSTRAINT fk_sav_final_cast_list_production                         FOREIGN KEY (production_id)               REFERENCES production               (id),
+    CONSTRAINT fk_sav_final_cast_list_production_contact                 FOREIGN KEY (production_id, contact_id)   REFERENCES production_contact       (production_id, contact_id),
+    CONSTRAINT fk_sav_final_cast_list_sav_performer_type                 FOREIGN KEY (sav_performer_type_id)       REFERENCES sav_performer_type       (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE sav_role(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    code                 CHAR(10),
+    title                VARCHAR(50),
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_sav_role_id    PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
  DELIMITER //
@@ -881,6 +1285,47 @@ BEGIN
 END //
 DELIMITER ;
 
+ DROP FUNCTION production_get_states;
+
+DELIMITER //
+CREATE FUNCTION production_get_states(production_id INT)
+RETURNS VARCHAR(1024)
+BEGIN
+    DECLARE wk_finished INTEGER       DEFAULT 0;
+    DECLARE wk_states   VARCHAR(1024) DEFAULT '';
+    DECLARE wk_state    VARCHAR(50);
+
+    DECLARE cr_states
+     CURSOR FOR
+     SELECT state.name
+       FROM production_state AS production_state INNER JOIN state AS state ON state.code = production_state.state_code
+      WHERE production_state.production_id = production_id;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET wk_finished = 1;
+
+    OPEN cr_states;
+    getStates: LOOP
+        FETCH cr_states INTO wk_state;
+
+        IF wk_finished = 1 THEN
+            LEAVE getStates;
+        END IF;
+
+        IF wk_states = '' THEN
+            SET wk_states = wk_state;
+        ELSE
+            SET wk_states = CONCAT(wk_states, ', ', wk_state);
+        END IF ;
+
+    END LOOP getStates;
+    CLOSE cr_states;
+
+
+    RETURN wk_states;
+
+END //
+DELIMITER ;
+
  CREATE OR REPLACE VIEW company_get_list(
     company_id,
     company_name,
@@ -894,6 +1339,7 @@ DELIMITER ;
     company_website,
     company_email,
     company_logo_path,
+    company_wga_company_number,
     company_media_company,
     company_production_company,
     company_payroll_company,
@@ -915,6 +1361,7 @@ DELIMITER ;
            company.website                                       AS company_website,
            company.email                                         AS company_email,
            company.logo_path                                     AS company_logo_path,
+           company.wga_company_number                            AS company_wga_company_number,
            company.media_company                                 AS company_media_company,
            company.production_company                            AS company_production_company,
            company.payroll_company                               AS company_payroll_company,
@@ -924,6 +1371,28 @@ DELIMITER ;
            company.updated_by                                    AS company_updated_by,
            company.status                                        AS company_status
       FROM company AS company LEFT JOIN state AS state on state.code = company.state_code;
+
+ CREATE OR REPLACE VIEW business_group_get_list(
+    business_group_id,
+    business_group_name,
+    business_group_company_id,
+    business_group_company_name,
+    business_group_created,
+    business_group_created_by,
+    business_group_updated,
+    business_group_updated_by,
+    business_group_status
+) AS
+    SELECT business_group.id                                              AS  business_group_id,
+           business_group.name                                            AS  business_group_name,
+           business_group.company_id                                      AS  business_group_company_id,
+           company.name                                                   AS  business_group_company_name,
+           DATE_FORMAT(business_group.created,'%m/%d/%Y %H:%i:%S')        AS  business_group_created,
+           business_group.created_by                                      AS  business_group_created_by,
+           DATE_FORMAT(business_group.updated,'%m/%d/%Y %H:%i:%S')        AS  business_group_updated,
+           business_group.updated_by                                      AS  business_group_updated_by,
+           business_group.status                                          AS  business_group_status
+      FROM business_group AS business_group INNER JOIN company AS company ON company.id = business_group.company_id;
 
  CREATE OR REPLACE VIEW company_media_get_list(
     company_media_id,
@@ -1047,6 +1516,8 @@ DELIMITER ;
     network_name,
     network_media_company_id,
     network_media_company_name,
+    network_business_group_id,
+    network_business_group_name,
     network_logo_path,
     network_created,
     network_created_by,
@@ -1058,13 +1529,16 @@ DELIMITER ;
            network.name                                          AS network_name,
            network.media_company_id                              AS network_media_company_id,
            media_company.name                                    AS network_media_company_name,
+           network.business_group_id                             AS network_business_group_id,
+           business_group.name                                   AS network_business_group_name,
            network.logo_path                                     AS network_logo_path,
            DATE_FORMAT(network.created,'%m/%d/%Y %H:%i:%S')      AS network_created,
            network.created_by                                    AS network_created_by,
            DATE_FORMAT(network.updated,'%m/%d/%Y %H:%i:%S')      AS network_updated,
            network.updated_by                                    AS network_updated_by,
            network.status                                        AS network_status
-      FROM network AS network INNER JOIN company AS media_company ON media_company.id = network.media_company_id;
+      FROM network AS network INNER JOIN company        AS media_company  ON media_company.id  = network.media_company_id
+                              INNER JOIN business_group AS business_group ON business_group.id = network.business_group_id;
 
  CREATE VIEW state_get_list(
     state_code,
@@ -1123,7 +1597,19 @@ DELIMITER ;
  CREATE OR REPLACE VIEW production_get_list(
     production_id,
     production_title,
+    production_media_company_id,
+    production_media_company_name,
+    production_business_group_id,
+    production_business_group_name,
+    production_network_id,
+    production_network_name,
+    production_pilot,
+    production_production_stage_id,
+    production_production_stage_name,
+    production_season_number,
+    production_episodes_number,
     production_budget,
+    production_states,
     production_writing_start_date,
     production_writing_end_date,
     production_pre_production_start_date,
@@ -1136,8 +1622,6 @@ DELIMITER ;
     production_network_production_end_date,
     production_production_length_id,
     production_production_length_name,
-    production_network_id,
-    production_network_name,
     production_production_type_id,
     production_production_type_name,
     production_production_company_id,
@@ -1153,21 +1637,31 @@ DELIMITER ;
 ) AS
     SELECT production.id                                                       AS production_id,
            production.title                                                    AS production_title,
-           production.budget                                                   AS production_budget,
-           production.writing_start_date                                       AS production_writing_start_date,
-           production.writing_end_date                                         AS production_writing_end_date,
-           DATE_FORMAT(production.pre_production_start_date,'%m/%d/%Y')        AS production_pre_production_start_date,
-           DATE_FORMAT(production.pre_production_end_date,'%m/%d/%Y')          AS production_pre_production_end_date,
-           DATE_FORMAT(production.photography_start_date,'%m/%d/%Y')           AS production_photography_start_date,
-           DATE_FORMAT(production.photography_end_date,'%m/%d/%Y')             AS production_photography_end_date,
-           DATE_FORMAT(production.post_production_start_date,'%m/%d/%Y')       AS production_post_production_start_date,
-           DATE_FORMAT(production.post_production_end_date,'%m/%d/%Y')         AS production_post_production_end_date,
-           DATE_FORMAT(production.network_production_start_date,'%m/%d/%Y')    AS production_network_production_start_date,
-           DATE_FORMAT(production.network_production_end_date,'%m/%d/%Y')      AS production_network_production_end_date,
-           production.production_length_id                                     AS production_production_length_id,
-           production_length.name                                              AS production_production_length_name,
+           production.media_company_id                                         AS production_media_company_id,
+           media_company.name                                                  AS production_media_company_name,
+           production.business_group_id                                        AS production_business_group_id,
+           business_group.name                                                 AS production_business_group_name,
            production.network_id                                               AS production_network_id,
            network.name                                                        AS production_network_name,
+           production.pilot                                                    AS production_pilot,
+           production.production_stage_id                                      AS production_production_stage_id,
+           production_stage.name                                               AS production_production_stage_name,
+           production.season_number                                            AS production_season_number,
+           production.episodes_number                                          AS production_episodes_number,
+           production.budget                                                   AS production_budget,
+           production_get_states(production.id)                                AS production_states,
+           production.writing_start_date                                       AS production_writing_start_date,
+           production.writing_end_date                                         AS production_writing_end_date,
+           DATE_FORMAT(production.pre_production_start_date,    '%m/%d/%Y')    AS production_pre_production_start_date,
+           DATE_FORMAT(production.pre_production_end_date,      '%m/%d/%Y')    AS production_pre_production_end_date,
+           DATE_FORMAT(production.photography_start_date,       '%m/%d/%Y')    AS production_photography_start_date,
+           DATE_FORMAT(production.photography_end_date,         '%m/%d/%Y')    AS production_photography_end_date,
+           DATE_FORMAT(production.post_production_start_date,   '%m/%d/%Y')    AS production_post_production_start_date,
+           DATE_FORMAT(production.post_production_end_date,     '%m/%d/%Y')    AS production_post_production_end_date,
+           DATE_FORMAT(production.network_production_start_date,'%m/%d/%Y')    AS production_network_production_start_date,
+           DATE_FORMAT(production.network_production_end_date,  '%m/%d/%Y')    AS production_network_production_end_date,
+           production.production_length_id                                     AS production_production_length_id,
+           production_length.name                                              AS production_production_length_name,
            production.production_type_id                                       AS production_production_type_id,
            production_type.name                                                AS production_production_type_name,
            production.production_company_id                                    AS production_production_company_id,
@@ -1184,11 +1678,16 @@ DELIMITER ;
                                     INNER JOIN production_length   AS production_length  ON production_length.id   =   production.production_length_id
                                     INNER JOIN production_type     AS production_type    ON production_type.id     =   production.production_type_id
                                     INNER JOIN company             AS production_company ON production_company.id  =   production.production_company_id
-                                    INNER JOIN company             AS payroll_company    ON payroll_company.id     =   production.payroll_company_id;
+                                    INNER JOIN company             AS payroll_company    ON payroll_company.id     =   production.payroll_company_id
+                                    INNER JOIN company             AS media_company      ON media_company.id       =   production.media_company_id
+                                    INNER JOIN business_group      AS business_group     ON business_group.id      =   production.business_group_id
+                                    INNER JOIN production_stage    AS production_stage   ON production_stage.id    =   production.production_stage_id;
+
 
  CREATE OR REPLACE VIEW production_state_get_list(
     production_state_production_id,
     production_state_state_code,
+    production_state_state_name,
     production_state_created,
     production_state_created_by,
     production_state_updated,
@@ -1197,24 +1696,31 @@ DELIMITER ;
 ) AS
 SELECT production_state.production_id                                  AS production_state_production_id,
        production_state.state_code                                     AS production_state_state_code,
+       state.name                                                      AS production_state_state_name,
        DATE_FORMAT(production_state.created,'%m/%d/%Y %H:%i:%S')       AS production_state_created,
        production_state.created_by                                     AS production_state_created_by,
        DATE_FORMAT(production_state.updated,'%m/%d/%Y %H:%i:%S')       AS production_state_updated,
        production_state.updated_by                                     AS production_state_updated_by,
        production_state.status                                         AS production_state_status
-  FROM production_state AS production_state;
+  FROM production_state AS production_state INNER JOIN state AS state ON state.code = production_state.state_code;
 
  CREATE OR REPLACE VIEW season_get_list(
     season_id,
     season_title,
     season_season_number,
+    season_media_company_id,
+    season_media_company_name,
+    season_business_group_id,
+    season_business_group_name,
+    season_network_id,
+    season_network_name,
     season_production_id,
     season_production_title,
     season_budget,
     season_production_production_length_id,
     season_production_production_length_name,
-    season_production_network_id,
-    season_production_network_name,
+    -- season_production_network_id,
+    -- season_production_network_name,
     season_production_production_type_id,
     season_production_production_type_name,
     season_writing_start_date,
@@ -1237,25 +1743,31 @@ SELECT production_state.production_id                                  AS produc
     SELECT season.id                                                               AS season_id,
            season.title                                                            AS season_title,
            LPAD(season.season_number, 2, 0)                                        AS season_season_number,
+           season.media_company_id                                                 AS season_media_company_id,
+           media_company.name                                                      AS season_media_company_name,
+           season.business_group_id                                                AS season_business_group_id,
+           business_group.name                                                     AS season_business_group_name,
+           season.network_id                                                       AS season_network_id,
+           network.name                                                            AS season_network_name,
            season.production_id                                                    AS season_production_id,
            production.title                                                        AS season_production_title,
            season.budget                                                           AS season_budget,
            production.production_length_id                                         AS season_production_production_length_id,
            production_length.name                                                  AS season_production_production_length_name,
-           production.network_id                                                   AS season_production_network_id,
-           network.name                                                            AS season_production_network_name,
+        --    production.network_id                                                   AS season_production_network_id,
+        --    network.name                                                            AS season_production_network_name,
            production.production_type_id                                           AS season_production_production_type_id,
            production_type.name                                                    AS season_production_production_type_name,
-           DATE_FORMAT(season.writing_start_date,'%m/%d/%Y')                       AS season_writing_start_date,
-           DATE_FORMAT(season.writing_end_date,'%m/%d/%Y')                         AS season_writing_end_date,
-           DATE_FORMAT(season.pre_production_start_date,'%m/%d/%Y')                AS season_pre_production_start_date,
-           DATE_FORMAT(season.pre_production_end_date,'%m/%d/%Y')                  AS season_pre_production_end_date,
-           DATE_FORMAT(season.photography_start_date,'%m/%d/%Y')                   AS season_photography_start_date,
-           DATE_FORMAT(season.photography_end_date,'%m/%d/%Y')                     AS season_photography_end_date,
-           DATE_FORMAT(season.post_production_start_date,'%m/%d/%Y')               AS season_post_production_start_date,
-           DATE_FORMAT(season.post_production_end_date,'%m/%d/%Y')                 AS season_post_production_end_date,
+           DATE_FORMAT(season.writing_start_date,           '%m/%d/%Y')            AS season_writing_start_date,
+           DATE_FORMAT(season.writing_end_date,             '%m/%d/%Y')            AS season_writing_end_date,
+           DATE_FORMAT(season.pre_production_start_date,    '%m/%d/%Y')            AS season_pre_production_start_date,
+           DATE_FORMAT(season.pre_production_end_date,      '%m/%d/%Y')            AS season_pre_production_end_date,
+           DATE_FORMAT(season.photography_start_date,       '%m/%d/%Y')            AS season_photography_start_date,
+           DATE_FORMAT(season.photography_end_date,         '%m/%d/%Y')            AS season_photography_end_date,
+           DATE_FORMAT(season.post_production_start_date,   '%m/%d/%Y')            AS season_post_production_start_date,
+           DATE_FORMAT(season.post_production_end_date,     '%m/%d/%Y')            AS season_post_production_end_date,
            DATE_FORMAT(season.network_production_start_date,'%m/%d/%Y')            AS season_network_production_start_date,
-           DATE_FORMAT(season.network_production_end_date,'%m/%d/%Y')              AS season_network_production_end_date,
+           DATE_FORMAT(season.network_production_end_date,  '%m/%d/%Y')            AS season_network_production_end_date,
            season.logo_path                                                        AS season_logo_path,
            DATE_FORMAT(season.created,'%m/%d/%Y %H:%i:%S')                         AS season_created,
            season.created_by                                                       AS season_created_by,
@@ -1263,27 +1775,31 @@ SELECT production_state.production_id                                  AS produc
            season.updated_by                                                       AS season_updated_by,
            season.status                                                           AS season_status
       FROM season AS season INNER JOIN production          AS production         ON production.id = season.production_id
-                            INNER JOIN network             AS network            ON network.id             =   production.network_id
+                            -- INNER JOIN network             AS network            ON network.id             =   production.network_id
                             INNER JOIN production_length   AS production_length  ON production_length.id   =   production.production_length_id
-                            INNER JOIN production_type     AS production_type    ON production_type.id     =   production.production_type_id;
+                            INNER JOIN production_type     AS production_type    ON production_type.id     =   production.production_type_id
+                            INNER JOIN company             AS media_company      ON media_company.id       =   season.media_company_id
+                            INNER JOIN business_group      AS business_group     ON business_group.id      =   season.business_group_id
+                            INNER JOIN network             AS network            ON network.id             =   season.network_id;
+
+
 
  CREATE OR REPLACE VIEW episode_get_list(
     episode_id,
     episode_title,
     episode_episode_number,
-    episode_episode_abreviation,
-    episode_season_id,
-    episode_season_title,
-    episode_season_number,
+    episode_episode_abbreviation,
+    episode_media_company_id,
+    episode_media_company_name,
+    episode_business_group_id,
+    episode_business_group_name,
+    episode_network_id,
+    episode_network_name,
     episode_production_id,
     episode_production_title,
+    episode_season_id,
+    episode_season_title,
     episode_budget,
-    episode_production_production_length_id,
-    episode_production_production_length_name,
-    episode_production_network_id,
-    episode_production_network_name,
-    episode_production_production_type_id,
-    episode_production_production_type_name,
     episode_writing_start_date,
     episode_writing_end_date,
     episode_pre_production_start_date,
@@ -1303,19 +1819,18 @@ SELECT production_state.production_id                                  AS produc
     SELECT episode.id                                                                               AS episode_id,
            episode.title                                                                            AS episode_title,
            LPAD(episode.episode_number, 2, 0)                                                       AS episode_episode_number,
-           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))   AS episode_episode_abreviation,
+           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))   AS episode_episode_abbreviation,
+           episode.media_company_id                                                                 AS episode_media_company_id,
+           media_company.name                                                                       AS episode_media_company_name,
+           episode.business_group_id                                                                AS episode_business_group_id,
+           business_group.name                                                                      AS episode_business_group_name,
+           episode.network_id                                                                       AS episode_network_id,
+           network.name                                                                             AS episode_network_name,
+           episode.production_id                                                                    AS episode_production_id,
+           production.title                                                                         AS episode_production_title,
            episode.season_id                                                                        AS episode_season_id,
            season.title                                                                             AS episode_season_title,
-           season.season_number                                                                     AS episode_season_number,
-           season.production_id                                                                     AS episode_production_id,
-           production.title                                                                         AS episode_production_title,
-           season.budget                                                                            AS episode_budget,
-           production.production_length_id                                                          AS episode_production_production_length_id,
-           production_length.name                                                                   AS episode_production_production_length_name,
-           production.network_id                                                                    AS episode_production_network_id,
-           network.name                                                                             AS episode_production_network_name,
-           production.production_type_id                                                            AS episode_production_production_type_id,
-           production_type.name                                                                     AS episode_production_production_type_name,
+           episode.budget                                                                           AS episode_budget,
            DATE_FORMAT(episode.writing_start_date,            '%m/%d/%Y')                           AS episode_writing_start_date,
            DATE_FORMAT(episode.writing_end_date,              '%m/%d/%Y')                           AS episode_writing_end_date,
            DATE_FORMAT(episode.pre_production_start_date,     '%m/%d/%Y')                           AS episode_pre_production_start_date,
@@ -1331,11 +1846,11 @@ SELECT production_state.production_id                                  AS produc
            DATE_FORMAT(episode.updated,                       '%m/%d/%Y %H:%i:%S')                  AS episode_updated,
            episode.updated_by                                                                       AS episode_updated_by,
            episode.status                                                                           AS episode_status
-      FROM episode AS episode INNER JOIN season              AS season             ON episode.season_id      = season.id
-                              INNER JOIN production          AS production         ON production.id          = season.production_id
-                              INNER JOIN network             AS network            ON network.id             = production.network_id
-                              INNER JOIN production_length   AS production_length  ON production_length.id   = production.production_length_id
-                              INNER JOIN production_type     AS production_type    ON production_type.id     = production.production_type_id;
+      FROM episode AS episode INNER JOIN company        AS media_company  ON media_company.id  = episode.media_company_id
+                              INNER JOIN business_group AS business_group ON business_group.id = episode.business_group_id
+                              INNER JOIN network        AS network        ON network.id        = episode.network_id
+                              INNER JOIN production     AS production     ON production.id     = episode.production_id
+                              INNER JOIN season         AS season         ON season.id         = episode.season_id;
 
  CREATE OR REPLACE VIEW contact_get_list(
     contact_id,
@@ -1350,6 +1865,7 @@ SELECT production_state.production_id                                  AS produc
     contact_state_name,
     contact_phone,
     contact_email,
+    contact_ssn,
     contact_website,
     contact_picture_path,
     contact_created,
@@ -1370,6 +1886,7 @@ SELECT production_state.production_id                                  AS produc
            state.name                                             AS contact_state_name,
            contact.phone                                          AS contact_phone,
            contact.email                                          AS contact_email,
+           contact.ssn                                            AS contact_ssn,
            contact.website                                        AS contact_website,
            contact.picture_path                                   AS contact_picture_path,
            DATE_FORMAT(contact.created,'%m/%d/%Y %H:%i:%S')       AS contact_created,
@@ -1497,6 +2014,8 @@ SELECT production_state.production_id                                  AS produc
     production_contact_production_title,
     production_contact_contact_id,
     production_contact_contact_name,
+    production_contact_contact_phone,
+    production_contact_contact_email,
     production_contact_contact_role_id,
     production_contact_contact_role_name,
     production_contact_created,
@@ -1509,6 +2028,8 @@ SELECT production_state.production_id                                  AS produc
            production.title                                            AS production_contact_production_title,
            production_contact.contact_id                               AS production_contact_contact_id,
            contact_get_full_name(contact.id)                           AS production_contact_contact_name,
+           contact.phone                                               AS production_contact_contact_phone,
+           contact.email                                               AS production_contact_contact_email,
            production_contact.contact_role_id                          AS production_contact_contact_role_id,
            contact_role.name                                           AS production_contact_contact_role_name,
            DATE_FORMAT(production_contact.created,'%m/%d/%Y %H:%i:%S') AS production_contact_created,
@@ -1519,6 +2040,231 @@ SELECT production_state.production_id                                  AS produc
       FROM production_contact AS production_contact INNER JOIN production   AS production   ON production.id   = production_contact.production_id
                                                     INNER JOIN contact      AS contact      ON contact.id      = production_contact.contact_id
                                                     INNER JOIN contact_role AS contact_role ON contact_role.id = production_contact.contact_role_id;
+
+ CREATE OR REPLACE VIEW production_stage_get_list(
+    production_stage_id,
+    production_stage_name,
+    production_stage_created,
+    production_stage_created_by,
+    production_stage_updated,
+    production_stage_updated_by,
+    production_stage_status
+) AS
+    SELECT production_stage.id                                            AS production_stage_id,
+           production_stage.name                                          AS production_stage_name,
+           DATE_FORMAT(production_stage.created,'%m/%d/%Y %H:%i:%S')      AS production_stage_created,
+           production_stage.created_by                                    AS production_stage_created_by,
+           DATE_FORMAT(production_stage.updated,'%m/%d/%Y %H:%i:%S')      AS production_stage_updated,
+           production_stage.updated_by                                    AS production_stage_updated_by,
+           production_stage.status                                        AS production_stage_status
+      FROM production_stage AS production_stage;
+
+ CREATE OR REPLACE VIEW production_guild_get_list(
+    production_guild_production_id,
+    production_guild_production_title,
+    production_guild_guild_id,
+    prodcution_guild_guild_acronym,
+    production_guild_guild_name,
+    production_guild_document_name,
+    production_guild_dga_sideletter_six,
+    production_guild_dga_all_rights_media,
+    production_guild_created,
+    production_guild_created_by,
+    production_guild_updated,
+    production_guild_updated_by,
+    production_guild_status
+) AS
+    SELECT production_guild.production_id                                  AS production_guild_production_id,
+           production.title                                                AS production_guild_production_title,
+           production_guild.guild_id                                       AS production_guild_guild_id,
+           guild.acronym                                                   AS prodcution_guild_guild_acronym,
+           guild.name                                                      AS production_guild_guild_name,
+           production_guild.document_name                                  AS production_guild_document_name,
+           production_guild.dga_sideletter_six                             AS production_guild_dga_sideletter_six,
+           production_guild.dga_all_rights_media                           AS production_guild_dga_all_rights_media,
+           DATE_FORMAT(production_guild.created,'%m/%d/%Y %H:%i:%S')       AS production_guild_created,
+           production_guild.created_by                                     AS production_guild_created_by,
+           DATE_FORMAT(production_guild.updated,'%m/%d/%Y %H:%i:%S')       AS production_guild_updated,
+           production_guild.updated_by                                     AS production_guild_updated_by,
+           production_guild.status                                         AS production_guild_status
+      FROM production_guild AS production_guild INNER JOIN production AS production ON production.id = production_guild.production_id
+                                                INNER JOIN guild      AS guild      ON guild.id      = production_guild.guild_id;
+
+ CREATE OR REPLACE VIEW ledger_get_list(
+    ledger_id,
+    ledger_code,
+    ledger_title,
+    ledger_media_company_id,
+    ledger_business_group_id,
+    ledger_network_id,
+    ledger_production_id,
+    ledger_season_id,
+    ledger_episode_id,
+    ledger_created,
+    ledger_created_by,
+    ledger_updated,
+    ledger_updated_by,
+    ledger_status
+) AS
+    SELECT ledger.id                                            AS ledger_id,
+           ledger.code                                          AS ledger_code,
+           ledger.title                                         AS ledger_title,
+           ledger.media_company_id                              AS ledger_media_company_id,
+           ledger.business_group_id                             AS ledger_business_group_id,
+           ledger.network_id                                    AS ledger_network_id,
+           ledger.production_id                                 AS ledger_production_id,
+           ledger.season_id                                     AS ledger_season_id,
+           ledger.episode_id                                    AS ledger_episode_id,
+           DATE_FORMAT(ledger.created,'%m/%d/%Y %H:%i:%S')      AS ledger_created,
+           ledger.created_by                                    AS ledger_created_by,
+           DATE_FORMAT(ledger.updated,'%m/%d/%Y %H:%i:%S')      AS ledger_updated,
+           ledger.updated_by                                    AS ledger_updated_by,
+           ledger.status                                        AS ledger_status
+      FROM ledger AS ledger;
+
+ CREATE OR REPLACE VIEW account_get_list(
+    account_id,
+    account_code,
+    account_title,
+    account_media_company_id,
+    account_business_group_id,
+    account_network_id,
+    account_production_id,
+    account_season_id,
+    account_episode_id,
+    account_ledger_id,
+    account_created,
+    account_created_by,
+    account_updated,
+    account_updated_by,
+    account_status
+) AS
+    SELECT account.id                                       AS account_id,
+           account.code                                     AS account_code,
+           account.title                                    AS account_title,
+           account.media_company_id                         AS account_media_company_id,
+           account.business_group_id                        AS account_business_group_id,
+           account.network_id                               AS account_network_id,
+           account.production_id                            AS account_production_id,
+           account.season_id                                AS account_season_id,
+           account.episode_id                               AS account_episode_id,
+           account.ledger_id                                AS account_ledger_id,
+           DATE_FORMAT(account.created,'%m/%d/%Y %H:%i:%S') AS account_created,
+           account.created_by                               AS account_created_by,
+           DATE_FORMAT(account.updated,'%m/%d/%Y %H:%i:%S') AS account_updated,
+           account.updated_by                               AS account_updated_by,
+           account.status                                   AS account_status
+      FROM account AS account;
+
+ CREATE OR REPLACE VIEW subaccount_get_list(
+    subaccount_id,
+    subaccount_code,
+    subaccount_title,
+    subaccount_media_company_id,
+    subaccount_business_group_id,
+    subaccount_network_id,
+    subaccount_production_id,
+    subaccount_season_id,
+    subaccount_episode_id,
+    subaccount_ledger_id,
+    subaccount_account_id,
+    subaccount_created,
+    subaccount_created_by,
+    subaccount_updated,
+    subaccount_updated_by,
+    subaccount_status
+) AS
+    SELECT subaccount.id                                        AS subaccount_id,
+           subaccount.code                                      AS subaccount_code,
+           subaccount.title                                     AS subaccount_title,
+           subaccount.media_company_id                          AS subaccount_media_company_id,
+           subaccount.business_group_id                         AS subaccount_business_group_id,
+           subaccount.network_id                                AS subaccount_network_id,
+           subaccount.production_id                             AS subaccount_production_id,
+           subaccount.season_id                                 AS subaccount_season_id,
+           subaccount.episode_id                                AS subaccount_episode_id,
+           subaccount.ledger_id                                 AS subaccount_ledger_id,
+           subaccount.account_id                                AS subaccount_account_id,
+           DATE_FORMAT(subaccount.created,'%m/%d/%Y %H:%i:%S')  AS subaccount_created,
+           subaccount.created_by                                AS subaccount_created_by,
+           DATE_FORMAT(subaccount.updated,'%m/%d/%Y %H:%i:%S')  AS subaccount_updated,
+           subaccount.updated_by                                AS subaccount_updated_by,
+           subaccount.status                                    AS subaccount_status
+      FROM subaccount AS subaccount;
+
+ CREATE OR REPLACE VIEW transaction_get_list(
+    transaction_id,
+    transaction_media_company_id,
+    transaction_business_group_id,
+    transaction_network_id,
+    transaction_production_id,
+    transaction_season_id,
+    transaction_episode_id,
+    transaction_ledger_id,
+    transaction_account_id,
+    transaction_subaccount_id,
+    transaction_description,
+    transaction_budget,
+    transaction_total_budget,
+    transaction_guarantee,
+    transaction_period_id,
+    transaction_period_name,
+    transaction_period_period,
+    transaction_period_plural,
+    transaction_actual,
+    transaction_total_actual,
+    transaction_comment,
+    transaction_created,
+    transaction_created_by,
+    transaction_updated,
+    transaction_updated_by,
+    transaction_status
+) AS
+    SELECT transaction.id                                       AS transaction_id,
+           transaction.media_company_id                         AS transaction_media_company_id,
+           transaction.business_group_id                        AS transaction_business_group_id,
+           transaction.network_id                               AS transaction_network_id,
+           transaction.production_id                            AS transaction_production_id,
+           transaction.season_id                                AS transaction_season_id,
+           transaction.episode_id                               AS transaction_episode_id,
+           transaction.ledger_id                                AS transaction_ledger_id,
+           transaction.account_id                               AS transaction_account_id,
+           transaction.subaccount_id                            AS transaction_subaccount_id,
+           transaction.description                              AS transaction_description,
+           transaction.budget                                   AS transaction_budget,
+           transaction.total_budget                             AS transaction_total_budget,
+           transaction.guarantee                                AS transaction_guarantee,
+           transaction.period_id                                AS transaction_period_id,
+           period.name                                          AS transaction_period_name,
+           period.period                                        AS transaction_period_period,
+           period.plural                                        AS transaction_period_plural,
+           transaction.actual                                   AS transaction_actual,
+           transaction.total_actual                             AS transaction_total_actual,
+           transaction.comment                                  AS transaction_comment,
+           DATE_FORMAT(transaction.created,'%m/%d/%Y %H:%i:%S') AS transaction_created,
+           transaction.created_by                               AS transaction_created_by,
+           DATE_FORMAT(transaction.updated,'%m/%d/%Y %H:%i:%S') AS transaction_updated,
+           transaction.updated_by                               AS transaction_updated_by,
+           transaction.status                                   AS transaction_status
+      FROM transaction AS transaction INNER JOIN period ON period.id = transaction.period_id;
+
+ CREATE OR REPLACE VIEW production_show_type_get_list(
+    production_show_type_id,
+    production_show_type_name,
+    production_show_type_created,
+    production_show_type_created_by,
+    production_show_type_updated,
+    production_show_type_updated_by,
+    production_show_type_status
+) AS
+    SELECT production_show_type.id                                       AS production_show_type_id,
+           production_show_type.name                                     AS production_show_type_name,
+           DATE_FORMAT(production_show_type.created,'%m/%d/%Y %H:%i:%S') AS production_show_type_created,
+           production_show_type.created_by                               AS production_show_type_created_by,
+           DATE_FORMAT(production_show_type.updated,'%m/%d/%Y %H:%i:%S') AS production_show_type_updated,
+           production_show_type.updated_by                               AS production_show_type_updated_by,
+           production_show_type.status                                   AS production_show_type_status
+      FROM production_show_type AS production_show_type;
 
  CREATE OR REPLACE VIEW dga_quarterly_earning_get_list(
     dga_quarterly_earning_id,
@@ -2519,11 +3265,15 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
     dga_pif_tv_company_id,
     dga_pif_tv_company_name,
     dga_pif_tv_contact_id,
+    dga_pif_tv_contact_full_name,
+    dga_pif_tv_contact_phone,
+    dga_pif_tv_contact_email,
     dga_pif_tv_production_id,
     dga_pif_tv_production_title,
     dga_pif_tv_copyright_holder,
     dga_pif_tv_copyright_holder_name,
     dga_pif_tv_copyright_holder_phone,
+    dga_pif_tv_writers,
     dga_pif_tv_budget,
     dga_pif_tv_locations,
     dga_pif_tv_date_pre_production,
@@ -2558,6 +3308,7 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
     dga_pif_tv_network_upn,
     dga_pif_tv_network_wb,
     dga_pif_tv_network_syndication,
+    dga_pif_tv_network_syndication_description,
     dga_pif_tv_basic_cable,
     dga_pif_tv_basic_cable_a_and_e,
     dga_pif_tv_basic_cable_disney,
@@ -2645,11 +3396,15 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
            dga_pif_tv.company_id                                         AS dga_pif_tv_company_id,
            company.name                                                  AS dga_pif_tv_company_name,
            dga_pif_tv.contact_id                                         AS dga_pif_tv_contact_id,
+           contact_get_full_name(dga_pif_tv.contact_id)                  AS dga_pif_tv_contact_full_name,
+           contact.phone                                                 AS dga_pif_tv_contact_phone,
+           contact.email                                                 AS dga_pif_tv_contact_email,
            dga_pif_tv.production_id                                      AS dga_pif_tv_production_id,
            production.title                                              AS dga_pif_tv_production_title,
            dga_pif_tv.copyright_holder                                   AS dga_pif_tv_copyright_holder,
            dga_pif_tv.copyright_holder_name                              AS dga_pif_tv_copyright_holder_name,
            dga_pif_tv.copyright_holder_phone                             AS dga_pif_tv_copyright_holder_phone,
+           dga_pif_tv.writers                                            AS dga_pif_tv_writers,
            dga_pif_tv.budget                                             AS dga_pif_tv_budget,
            dga_pif_tv.locations                                          AS dga_pif_tv_locations,
            DATE_FORMAT(dga_pif_tv.date_pre_production,'%m/%d/%Y')        AS dga_pif_tv_date_pre_production,
@@ -2684,6 +3439,7 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
            dga_pif_tv.network_upn                                        AS dga_pif_tv_network_upn,
            dga_pif_tv.network_wb                                         AS dga_pif_tv_network_wb,
            dga_pif_tv.network_syndication                                AS dga_pif_tv_network_syndication,
+           dga_pif_tv.network_syndication_description                    AS dga_pif_tv_network_syndication_description,
            dga_pif_tv.basic_cable                                        AS dga_pif_tv_basic_cable,
            dga_pif_tv.basic_cable_a_and_e                                AS dga_pif_tv_basic_cable_a_and_e,
            dga_pif_tv.basic_cable_disney                                 AS dga_pif_tv_basic_cable_disney,
@@ -2767,7 +3523,8 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
            dga_pif_tv.updated_by                                         AS dga_pif_tv_updated_by,
            dga_pif_tv.status                                             AS dga_pif_tv_status
       FROM dga_pif_tv AS dga_pif_tv INNER JOIN company    AS company    ON company.id    = dga_pif_tv.company_id
-                                    INNER JOIN production AS production ON production.id = dga_pif_tv.production_id;
+                                    INNER JOIN production AS production ON production.id = dga_pif_tv.production_id
+                                    INNER JOIN contact    AS contact    ON contact.id    = dga_pif_tv.contact_id;
 
  CREATE OR REPLACE VIEW dga_pif_tv_company_get_list(
     dga_pif_tv_company_id,
@@ -2804,7 +3561,6 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
     wga_work_list_company_website,
     wga_work_list_week_ending,
     wga_work_list_contact_id,
-    -- wga_work_list_contact_name,
     wga_work_list_contact_first_name,
     wga_work_list_contact_middle_name,
     wga_work_list_contact_last_name,
@@ -2816,7 +3572,6 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
     wga_work_list_contact_state_name,
     wga_work_list_contact_phone,
     wga_work_list_contact_email,
-    wga_work_list_name,
     wga_work_list_created,
     wga_work_list_created_by,
     wga_work_list_updated,
@@ -2825,7 +3580,7 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
 ) AS
     SELECT wga_work_list.id                                              AS wga_work_list_id,
            wga_work_list.company_id                                      AS wga_work_list_company_id,
-           wga_work_list.company_number                                  AS wga_work_list_company_number,
+           company.wga_company_number                                    AS wga_work_list_company_number,
            company.name                                                  AS wga_work_list_company_name,
            company.address                                               AS wga_work_list_company_address,
            company.city                                                  AS wga_work_list_company_city,
@@ -2835,7 +3590,6 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
            company.website                                               AS wga_work_list_company_website,
            wga_work_list.week_ending                                     AS wga_work_list_week_ending,
            wga_work_list.contact_id                                      AS wga_work_list_contact_id,
-        --    contact.name                                                  AS wga_work_list_contact_name,
            contact.first_name                                            AS wga_work_list_contact_first_name,
            contact.middle_name                                           AS wga_work_list_contact_middle_name,
            contact.last_name                                             AS wga_work_list_contact_last_name,
@@ -2847,7 +3601,6 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
            contact_state.name                                            AS wga_work_list_contact_state_name,
            contact.phone                                                 AS wga_work_list_contact_phone,
            contact.email                                                 AS wga_work_list_contact_email,
-           wga_work_list.name                                            AS wga_work_list_name,
            DATE_FORMAT(wga_work_list.created,'%m/%d/%Y %H:%i:%S')        AS wga_work_list_created,
            wga_work_list.created_by                                      AS wga_work_list_created_by,
            DATE_FORMAT(wga_work_list.updated,'%m/%d/%Y %H:%i:%S')        AS wga_work_list_updated,
@@ -2912,6 +3665,492 @@ CREATE OR REPLACE VIEW dga_weekly_work_get_list(
            wga_field_of_work.status                                                         AS wga_field_of_work_status
       FROM wga_field_of_work AS wga_field_of_work;
 
+ CREATE OR REPLACE VIEW wga_work_list_item_get_list(
+    wga_work_list_item_id,
+    wga_work_list_item_wga_work_list_id,
+    wga_work_list_item_contact_id,
+    wga_work_list_item_contact_first_name,
+    wga_work_list_item_contact_middle_name,
+    wga_work_list_item_contact_last_name,
+    wga_work_list_item_contact_full_name,
+    wga_work_list_item_contact_suffix,
+    wga_work_list_item_contact_address,
+    wga_work_list_item_contact_city,
+    wga_work_list_item_contact_state_code,
+    wga_work_list_item_contact_phone,
+    wga_work_list_item_contact_email,
+    wga_work_list_item_contact_ssn,
+    wga_work_list_production_id,
+    wga_work_list_production_title,
+    wga_work_list_item_episode_id,
+    wga_work_list_item_episode_title,
+    wga_work_list_item_episode_episode_number,
+    wga_work_list_item_episode_episode_abbreviation,
+    wga_work_list_item_deal_type_id,
+    wga_work_list_item_deal_type_code,
+    wga_work_list_item_deal_type_title,
+    wga_work_list_item_deal_type_full_title,
+    wga_work_list_item_field_of_work_id,
+    wga_work_list_item_field_of_work_code,
+    wga_work_list_item_field_of_work_title,
+    wga_work_list_item_field_of_work_full_title,
+    wga_work_list_item_date_start,
+    wga_work_list_item_date_end,
+    wga_work_list_item_additional_data,
+    wga_work_list_item_created,
+    wga_work_list_item_created_by,
+    wga_work_list_item_updated,
+    wga_work_list_item_updated_by,
+    wga_work_list_item_status
+) AS
+    SELECT wga_work_list_item.id                                                                    AS wga_work_list_item_id,
+           wga_work_list_item.wga_work_list_id                                                      AS wga_work_list_item_wga_work_list_id,
+           wga_work_list_item.contact_id                                                            AS wga_work_list_item_contact_id,
+           contact.first_name                                                                       AS wga_work_list_item_contact_first_name,
+           contact.middle_name                                                                      AS wga_work_list_item_contact_middle_name,
+           contact.last_name                                                                        AS wga_work_list_item_contact_last_name,
+           contact_get_full_name(contact.id)                                                        AS wga_work_list_item_contact_full_name,
+           contact.suffix                                                                           AS wga_work_list_item_contact_suffix,
+           contact.address                                                                          AS wga_work_list_item_contact_address,
+           contact.city                                                                             AS wga_work_list_item_contact_city,
+           contact.state_code                                                                       AS wga_work_list_item_contact_state_code,
+           contact.phone                                                                            AS wga_work_list_item_contact_phone,
+           contact.email                                                                            AS wga_work_list_item_contact_email,
+           contact.ssn                                                                              AS wga_work_list_item_contact_ssn,
+           production.id                                                                            AS wga_work_list_production_id,
+           production.title                                                                         AS wga_work_list_production_title,
+           wga_work_list_item.episode_id                                                            AS wga_work_list_item_episode_id,
+           episode.title                                                                            AS wga_work_list_item_episode_title,
+           LPAD(episode.episode_number, 2, 0)                                                       AS wga_work_list_item_episode_episode_number,
+           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))   AS wga_work_list_item_episode_episode_abbreviation,
+           wga_work_list_item.deal_type_id                                                          AS wga_work_list_item_deal_type_id,
+           wga_deal_type.code                                                                       AS wga_work_list_item_deal_type_code,
+           wga_deal_type.title                                                                      AS wga_work_list_item_deal_type_title,
+           CASE WHEN TRIM(wga_deal_type.code) IS NULL
+                  OR TRIM(wga_deal_type.code) = '' THEN
+                wga_deal_type.title
+           ELSE
+                CONCAT(wga_deal_type.code, ' - ', wga_deal_type.title)
+           END                                                                                      AS wga_work_list_deal_type_full_title,
+           wga_work_list_item.field_of_work_id                                                      AS wga_work_list_item_field_of_work_id,
+           wga_field_of_work.code                                                                   AS wga_work_list_item_field_of_work_code,
+           wga_field_of_work.title                                                                  AS wga_work_list_item_field_of_work_title,
+           CASE WHEN TRIM(wga_field_of_work.code) IS NULL
+                  OR TRIM(wga_field_of_work.code) = '' THEN
+                wga_field_of_work.title
+           ELSE
+                CONCAT(wga_field_of_work.code, ' - ', wga_field_of_work.title)
+           END                                                                                      AS wga_work_list_item_field_of_work_full_title,
+           DATE_FORMAT(wga_work_list_item.date_start,  '%m/%d/%Y')                                  AS wga_work_list_item_date_start,
+           DATE_FORMAT(wga_work_list_item.date_end,    '%m/%d/%Y')                                  AS wga_work_list_item_date_end,
+           wga_work_list_item.additional_data                                                       AS wga_work_list_item_additional_data,
+           DATE_FORMAT(wga_work_list_item.created,     '%m/%d/%Y %H:%i:%S')                         AS wga_work_list_item_created,
+           wga_work_list_item.created_by                                                            AS wga_work_list_item_created_by,
+           DATE_FORMAT(wga_work_list_item.updated,     '%m/%d/%Y %H:%i:%S')                         AS wga_work_list_item_updated,
+           wga_work_list_item.updated_by                                                            AS wga_work_list_item_updated_by,
+           wga_work_list_item.status                                                                AS wga_work_list_item_status
+      FROM wga_work_list_item AS wga_work_list_item INNER JOIN contact           AS contact           ON contact.id           = wga_work_list_item.contact_id
+                                                    INNER JOIN episode           AS episode           ON episode.id           = wga_work_list_item.episode_id
+                                                    INNER JOIN season            AS season            ON episode.season_id    = season.id
+                                                    INNER JOIN production        AS production        ON production.id        = season.production_id
+                                                    INNER JOIN wga_deal_type     AS wga_deal_type     ON wga_deal_type.id     = wga_work_list_item.deal_type_id
+                                                    INNER JOIN wga_field_of_work AS wga_field_of_work ON wga_field_of_work.id = wga_work_list_item.field_of_work_id;
+
+ CREATE OR REPLACE VIEW wga_ntwc_get_list(
+    wga_ntwc_id,
+    wga_ntwc_date,
+    wga_ntwc_production_id,
+    wga_ntwc_production_title,
+    wga_ntwc_production_number,
+    wga_ntwc_episode_id,
+    wga_ntwc_episode_title,
+    wga_ntwc_episode_episode_number,
+    wga_ntwc_episode_episode_abbreviation,
+    wga_ntwc_pilot,
+    wga_ntwc_pilot_network_id,
+    wga_ntwc_pilot_network_name,
+    wga_ntwc_pilot_production_lenght_id,
+    wga_ntwc_pilot_production_lenght_name,
+    wga_ntwc_executive_producer_contact_id,
+    wga_ntwc_director_contact_id,
+    wga_ntwc_story_editor_contact_id,
+    wga_ntwc_other_executive_producer_contact_id,
+    wga_ntwc_producer_contact_id,
+    wga_ntwc_supervising_producer_contact_id,
+    wga_ntwc_sent_to_writers,
+    wga_ntwc_protest_communicated,
+    wga_ntwc_by_contact_id,
+    wga_ntwc_created,
+    wga_ntwc_created_by,
+    wga_ntwc_updated,
+    wga_ntwc_updated_by,
+    wga_ntwc_status
+) AS
+    SELECT wga_ntwc.id                                                                              AS wga_ntwc_id,
+           DATE_FORMAT(wga_ntwc.date,'%m/%d/%Y')                                                    AS wga_ntwc_date,
+           wga_ntwc.production_id                                                                   AS wga_ntwc_production_id,
+           production.title                                                                         AS wga_ntwc_production_title,
+           wga_ntwc.production_number                                                               AS wga_ntwc_production_number,
+           wga_ntwc.episode_id                                                                      AS wga_ntwc_episode_id,
+           episode.title                                                                            AS wga_ntwc_episode_title,
+           LPAD(episode.episode_number, 2, 0)                                                       AS wga_ntwc_episode_episode_number,
+           CONCAT('S', LPAD(season.season_number, 2, 0), 'E', LPAD(episode.episode_number, 2, 0))   AS wga_ntwc_episode_episode_abbreviation,
+           wga_ntwc.pilot                                                                           AS wga_ntwc_pilot,
+           wga_ntwc.pilot_network_id                                                                AS wga_ntwc_pilot_network_id,
+           network.name                                                                             AS wga_ntwc_pilot_network_name,
+           wga_ntwc.pilot_production_lenght_id                                                      AS wga_ntwc_pilot_production_lenght_id,
+           production_length.name                                                                   AS wga_ntwc_pilot_production_lenght_name,
+           wga_ntwc.executive_producer_contact_id                                                   AS wga_ntwc_executive_producer_contact_id,
+           wga_ntwc.director_contact_id                                                             AS wga_ntwc_director_contact_id,
+           wga_ntwc.story_editor_contact_id                                                         AS wga_ntwc_story_editor_contact_id,
+           wga_ntwc.other_executive_producer_contact_id                                             AS wga_ntwc_other_executive_producer_contact_id,
+           wga_ntwc.producer_contact_id                                                             AS wga_ntwc_producer_contact_id,
+           wga_ntwc.supervising_producer_contact_id                                                 AS wga_ntwc_supervising_producer_contact_id,
+           DATE_FORMAT(wga_ntwc.sent_to_writers,      '%m/%d/%Y')                                   AS wga_ntwc_sent_to_writers,
+           DATE_FORMAT(wga_ntwc.protest_communicated, '%m/%d/%Y')                                   AS wga_ntwc_protest_communicated,
+           wga_ntwc.by_contact_id                                                                   AS wga_ntwc_by_contact_id,
+           DATE_FORMAT(wga_ntwc.created, '%m/%d/%Y %H:%i:%S')                                       AS wga_ntwc_created,
+           wga_ntwc.created_by                                                                      AS wga_ntwc_created_by,
+           DATE_FORMAT(wga_ntwc.updated, '%m/%d/%Y %H:%i:%S')                                       AS wga_ntwc_updated,
+           wga_ntwc.updated_by                                                                      AS wga_ntwc_updated_by,
+           wga_ntwc.status                                                                          AS wga_ntwc_status
+      FROM wga_ntwc AS wga_ntwc INNER JOIN production        AS production        ON production.id        = wga_ntwc.production_id
+                                INNER JOIN episode           AS episode           ON episode.id           = wga_ntwc.episode_id
+                                INNER JOIN season            AS season            ON season.id            = episode.season_id
+                                LEFT  JOIN network           AS network           ON network.id           = wga_ntwc.pilot_network_id
+                                LEFT  JOIN production_length AS production_length ON production_length.id = wga_ntwc.pilot_production_lenght_id
+                                ;
+
+ CREATE OR REPLACE VIEW wga_ntwc_participant_writer_get_list(
+    wga_ntwc_participant_writer_wga_ntwc_id,
+    wga_ntwc_participant_writer_contact_id,
+    wga_ntwc_participant_writer_contact_first_name,
+    wga_ntwc_participant_writer_contact_middle_name,
+    wga_ntwc_participant_writer_contact_last_name,
+    wga_ntwc_participant_writer_contact_suffix,
+    wga_ntwc_participant_writer_contact_full_name,
+    wga_ntwc_participant_writer_contact_address,
+    wga_ntwc_participant_writer_contact_city,
+    wga_ntwc_participant_writer_contact_state_code,
+    wga_ntwc_participant_writer_created,
+    wga_ntwc_participant_writer_created_by,
+    wga_ntwc_participant_writer_updated,
+    wga_ntwc_participant_writer_updated_by,
+    wga_ntwc_participant_writer_status
+) AS
+    SELECT wga_ntwc_participant_writer.wga_ntwc_id                                   AS wga_ntwc_participant_writer_wga_ntwc_id,
+           wga_ntwc_participant_writer.contact_id                                    AS wga_ntwc_participant_writer_contact_id,
+           contact.first_name                                                        AS wga_ntwc_participant_writer_contact_first_name,
+           contact.middle_name                                                       AS wga_ntwc_participant_writer_contact_middle_name,
+           contact.last_name                                                         AS wga_ntwc_participant_writer_contact_last_name,
+           contact.suffix                                                            AS wga_ntwc_participant_writer_contact_suffix,
+           contact_get_full_name(contact.id)                                         AS wga_ntwc_participant_writer_contact_full_name,
+           contact.address                                                           AS wga_ntwc_participant_writer_contact_address,
+           contact.city                                                              AS wga_ntwc_participant_writer_contact_city,
+           contact.state_code                                                        AS wga_ntwc_participant_writer_contact_state_code,
+           DATE_FORMAT(wga_ntwc_participant_writer.created,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_participant_writer_created,
+           wga_ntwc_participant_writer.created_by                                    AS wga_ntwc_participant_writer_created_by,
+           DATE_FORMAT(wga_ntwc_participant_writer.updated,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_participant_writer_updated,
+           wga_ntwc_participant_writer.updated_by                                    AS wga_ntwc_participant_writer_updated_by,
+           wga_ntwc_participant_writer.status                                        AS wga_ntwc_participant_writer_status
+      FROM wga_ntwc_participant_writer AS wga_ntwc_participant_writer INNER JOIN contact AS contact ON contact.id = wga_ntwc_participant_writer.contact_id;
+
+ CREATE OR REPLACE VIEW wga_ntwc_writing_credit_get_list(
+    wga_ntwc_writing_credit_wga_ntwc_id,
+    wga_ntwc_writing_credit_contact_id,
+    wga_ntwc_writing_credit_contact_first_name,
+    wga_ntwc_writing_credit_contact_middle_name,
+    wga_ntwc_writing_credit_contact_last_name,
+    wga_ntwc_writing_credit_contact_suffix,
+    wga_ntwc_writing_credit_contact_full_name,
+    wga_ntwc_writing_credit_contact_address,
+    wga_ntwc_writing_credit_contact_city,
+    wga_ntwc_writing_credit_contact_state_code,
+    wga_ntwc_writing_credit_created,
+    wga_ntwc_writing_credit_created_by,
+    wga_ntwc_writing_credit_updated,
+    wga_ntwc_writing_credit_updated_by,
+    wga_ntwc_writing_credit_status
+) AS
+    SELECT wga_ntwc_writing_credit.wga_ntwc_id                                   AS wga_ntwc_writing_credit_wga_ntwc_id,
+           wga_ntwc_writing_credit.contact_id                                    AS wga_ntwc_writing_credit_contact_id,
+           contact.first_name                                                    AS wga_ntwc_writing_credit_contact_first_name,
+           contact.middle_name                                                   AS wga_ntwc_writing_credit_contact_middle_name,
+           contact.last_name                                                     AS wga_ntwc_writing_credit_contact_last_name,
+           contact.suffix                                                        AS wga_ntwc_writing_credit_contact_suffix,
+           contact_get_full_name(contact.id)                                     AS wga_ntwc_writing_credit_contact_full_name,
+           contact.address                                                       AS wga_ntwc_writing_credit_contact_address,
+           contact.city                                                          AS wga_ntwc_writing_credit_contact_city,
+           contact.state_code                                                    AS wga_ntwc_writing_credit_contact_state_code,
+           DATE_FORMAT(wga_ntwc_writing_credit.created,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_writing_credit_created,
+           wga_ntwc_writing_credit.created_by                                    AS wga_ntwc_writing_credit_created_by,
+           DATE_FORMAT(wga_ntwc_writing_credit.updated,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_writing_credit_updated,
+           wga_ntwc_writing_credit.updated_by                                    AS wga_ntwc_writing_credit_updated_by,
+           wga_ntwc_writing_credit.status                                        AS wga_ntwc_writing_credit_status
+      FROM wga_ntwc_writing_credit AS wga_ntwc_writing_credit INNER JOIN contact AS contact ON contact.id = wga_ntwc_writing_credit.contact_id;
+
+ CREATE OR REPLACE VIEW wga_ntwc_source_material_episode_get_list(
+    wga_ntwc_source_material_episode_id,
+    wga_ntwc_source_material_episode_wga_ntwc_id,
+    wga_ntwc_source_material_episode_name,
+    wga_ntwc_source_material_episode_created,
+    wga_ntwc_source_material_episode_created_by,
+    wga_ntwc_source_material_episode_updated,
+    wga_ntwc_source_material_episode_updated_by,
+    wga_ntwc_source_material_episode_status
+) AS
+    SELECT wga_ntwc_source_material_episode.id                                            AS wga_ntwc_source_material_episode_id,
+           wga_ntwc_source_material_episode.wga_ntwc_id                                   AS wga_ntwc_source_material_episode_wga_ntwc_id,
+           wga_ntwc_source_material_episode.name                                          AS wga_ntwc_source_material_episode_name,
+           DATE_FORMAT(wga_ntwc_source_material_episode.created,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_source_material_episode_created,
+           wga_ntwc_source_material_episode.created_by                                    AS wga_ntwc_source_material_episode_created_by,
+           DATE_FORMAT(wga_ntwc_source_material_episode.updated,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_source_material_episode_updated,
+           wga_ntwc_source_material_episode.updated_by                                    AS wga_ntwc_source_material_episode_updated_by,
+           wga_ntwc_source_material_episode.status                                        AS wga_ntwc_source_material_episode_status
+      FROM wga_ntwc_source_material_episode AS wga_ntwc_source_material_episode;
+
+ CREATE OR REPLACE VIEW wga_ntwc_source_material_production_get_list(
+    wga_ntwc_source_material_production_id,
+    wga_ntwc_source_material_production_wga_ntwc_id,
+    wga_ntwc_source_material_production_name,
+    wga_ntwc_source_material_production_created,
+    wga_ntwc_source_material_production_created_by,
+    wga_ntwc_source_material_production_updated,
+    wga_ntwc_source_material_production_updated_by,
+    wga_ntwc_source_material_production_status
+) AS
+    SELECT wga_ntwc_source_material_production.id                                            AS wga_ntwc_source_material_production_id,
+           wga_ntwc_source_material_production.wga_ntwc_id                                   AS wga_ntwc_source_material_production_wga_ntwc_id,
+           wga_ntwc_source_material_production.name                                          AS wga_ntwc_source_material_production_name,
+           DATE_FORMAT(wga_ntwc_source_material_production.created,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_source_material_production_created,
+           wga_ntwc_source_material_production.created_by                                    AS wga_ntwc_source_material_production_created_by,
+           DATE_FORMAT(wga_ntwc_source_material_production.updated,'%m/%d/%Y %H:%i:%S')      AS wga_ntwc_source_material_production_updated,
+           wga_ntwc_source_material_production.updated_by                                    AS wga_ntwc_source_material_production_updated_by,
+           wga_ntwc_source_material_production.status                                        AS wga_ntwc_source_material_production_status
+      FROM wga_ntwc_source_material_production AS wga_ntwc_source_material_production;
+
+ CREATE OR REPLACE VIEW sav_performer_type_get_list(
+    sav_performer_type_id,
+    sav_performer_type_code,
+    sav_performer_type_title,
+    sav_performer_type_full_title,
+    sav_performer_type_created,
+    sav_performer_type_created_by,
+    sav_performer_type_updated,
+    sav_performer_type_updated_by,
+    sav_performer_type_status
+) AS
+    SELECT sav_performer_type.id                                                      AS sav_performer_type_id,
+           sav_performer_type.code                                                    AS sav_performer_type_code,
+           sav_performer_type.title                                                   AS sav_performer_type_title,
+           CONCAT(TRIM(sav_performer_type.code),' - ',TRIM(sav_performer_type.title)) AS sav_performer_type_full_title,
+           DATE_FORMAT(sav_performer_type.created,'%m/%d/%Y %H:%i:%S')                AS sav_performer_type_created,
+           sav_performer_type.created_by                                              AS sav_performer_type_created_by,
+           DATE_FORMAT(sav_performer_type.updated,'%m/%d/%Y %H:%i:%S')                AS sav_performer_type_updated,
+           sav_performer_type.updated_by                                              AS sav_performer_type_updated_by,
+           sav_performer_type.status                                                  AS sav_performer_type_status
+      FROM sav_performer_type AS sav_performer_type;
+
+ CREATE OR REPLACE VIEW sav_production_type_get_list(
+    sav_production_type_id,
+    sav_production_type_code,
+    sav_production_type_title,
+    sav_production_type_full_title,
+    sav_production_type_created,
+    sav_production_type_created_by,
+    sav_production_type_updated,
+    sav_production_type_updated_by,
+    sav_production_type_status
+) AS
+    SELECT sav_production_type.id                                          AS sav_production_type_id,
+           sav_production_type.code                                        AS sav_production_type_code,
+           sav_production_type.title                                       AS sav_production_type_title,
+           CASE WHEN TRIM(sav_production_type.code) IS NULL
+                  OR TRIM(sav_production_type.code) = '' THEN
+                  sav_production_type.title
+           ELSE
+                CONCAT(TRIM(sav_production_type.code), ' - ',TRIM(sav_production_type.title))
+           END                                                             AS sav_production_type_full_title,
+           DATE_FORMAT(sav_production_type.created,'%m/%d/%Y %H:%i:%S')    AS sav_production_type_created,
+           sav_production_type.created_by                                  AS sav_production_type_created_by,
+           DATE_FORMAT(sav_production_type.updated,'%m/%d/%Y %H:%i:%S')    AS sav_production_type_updated,
+           sav_production_type.updated_by                                  AS sav_production_type_updated_by,
+           sav_production_type.status                                      AS sav_production_type_status
+      FROM sav_production_type AS sav_production_type;
+
+ CREATE OR REPLACE VIEW sav_final_cast_list_info_get_list(
+    sav_final_cast_list_info_id,
+    sav_final_cast_list_info_production_title,
+    sav_final_cast_list_info_date_filled,
+    sav_final_cast_list_info_production_id,
+    sav_final_cast_list_info_shooting_location,
+    sav_final_cast_list_info_production_company_id,
+    sav_final_cast_list_info_production_company_name,
+    sav_final_cast_list_info_production_company_address,
+    sav_final_cast_list_info_production_company_city,
+    sav_final_cast_list_info_production_company_state_code,
+    sav_final_cast_list_info_production_company_state_name,
+    sav_final_cast_list_info_production_company_zipcode,
+    sav_final_cast_list_info_production_company_phone,
+    sav_final_cast_list_info_production_company_faxnumber,
+    sav_final_cast_list_info_production_company_website,
+    sav_final_cast_list_info_production_company_email,
+    sav_final_cast_list_info_start_date,
+    sav_final_cast_list_info_end_date,
+    sav_final_cast_list_info_federal_id,
+    sav_final_cast_list_info_state_id,
+    sav_final_cast_list_info_picture_id,
+    sav_final_cast_list_info_distribuitor_id,
+    sav_final_cast_list_info_sav_production_type_id,
+    sav_final_cast_list_info_sav_production_type_code,
+    sav_final_cast_list_info_sav_production_type_title,
+    sav_final_cast_list_info_sav_production_type_full_title,
+    sav_final_cast_list_info_created,
+    sav_final_cast_list_info_created_by,
+    sav_final_cast_list_info_updated,
+    sav_final_cast_list_info_updated_by,
+    sav_final_cast_list_info_status
+) AS
+    SELECT sav_final_cast_list_info.id                                                      AS sav_final_cast_list_info_id,
+           DATE_FORMAT(sav_final_cast_list_info.date_filled,'%m/%d/%Y')                     AS sav_final_cast_list_info_date_filled,
+           sav_final_cast_list_info.production_id                                           AS sav_final_cast_list_info_production_id,
+           production.title                                                                 AS sav_final_cast_list_info_production_title,
+           sav_final_cast_list_info.shooting_location                                       AS sav_final_cast_list_info_shooting_location,
+           sav_final_cast_list_info.production_company_id                                   AS sav_final_cast_list_info_production_company_id,
+           production_company.name                                                          AS sav_final_cast_list_info_production_company_name,
+           production_company.address                                                       AS sav_final_cast_list_info_production_company_address,
+           production_company.city                                                          AS sav_final_cast_list_info_production_company_city,
+           production_company.state_code                                                    AS sav_final_cast_list_info_production_company_state_code,
+           production_company_state.name                                                    AS sav_final_cast_list_info_production_company_state_name,
+           production_company.zipcode                                                       AS sav_final_cast_list_info_production_company_zipcode,
+           production_company.phone                                                         AS sav_final_cast_list_info_production_company_phone,
+           production_company.faxnumber                                                     AS sav_final_cast_list_info_production_company_faxnumber,
+           production_company.website                                                       AS sav_final_cast_list_info_production_company_website,
+           production_company.email                                                         AS sav_final_cast_list_info_production_company_email,
+           DATE_FORMAT(sav_final_cast_list_info.start_date,'%m/%d/%Y')                      AS sav_final_cast_list_info_start_date,
+           DATE_FORMAT(sav_final_cast_list_info.end_date,  '%m/%d/%Y')                      AS sav_final_cast_list_info_end_date,
+           sav_final_cast_list_info.federal_id                                              AS sav_final_cast_list_info_federal_id,
+           sav_final_cast_list_info.state_id                                                AS sav_final_cast_list_info_state_id,
+           sav_final_cast_list_info.picture_id                                              AS sav_final_cast_list_info_picture_id,
+           sav_final_cast_list_info.distribuitor_id                                         AS sav_final_cast_list_info_distribuitor_id,
+           sav_final_cast_list_info.sav_production_type_id                                  AS sav_final_cast_list_info_sav_production_type_id,
+           sav_production_type.code                                                         AS sav_final_cast_list_info_sav_production_type_code,
+           sav_production_type.title                                                        AS sav_final_cast_list_info_sav_production_type_title,
+           CASE WHEN TRIM(sav_production_type.code) IS NULL
+                  OR TRIM(sav_production_type.code) = '' THEN
+                  sav_production_type.title
+           ELSE
+                CONCAT(TRIM(sav_production_type.code), ' - ',TRIM(sav_production_type.title))
+           END                                                                              AS sav_final_cast_list_info_sav_production_type_full_title,
+           DATE_FORMAT(sav_final_cast_list_info.created,'%m/%d/%Y %H:%i:%S')                AS sav_final_cast_list_info_created,
+           sav_final_cast_list_info.created_by                                              AS sav_final_cast_list_info_created_by,
+           DATE_FORMAT(sav_final_cast_list_info.updated,'%m/%d/%Y %H:%i:%S')                AS sav_final_cast_list_info_updated,
+           sav_final_cast_list_info.updated_by                                              AS sav_final_cast_list_info_updated_by,
+           sav_final_cast_list_info.status                                                  AS sav_final_cast_list_info_status
+      FROM sav_final_cast_list_info AS sav_final_cast_list_info INNER JOIN production          AS production               ON production.id                 = sav_final_cast_list_info.production_id
+                                                                INNER JOIN company             AS production_company       ON production_company.id         = sav_final_cast_list_info.production_company_id
+                                                                INNER JOIN state               AS production_company_state ON production_company_state.code = production_company.state_code
+                                                                INNER JOIN sav_production_type AS sav_production_type      ON sav_production_type.id        = sav_final_cast_list_info.sav_production_type_id;
+
+
+ CREATE OR REPLACE VIEW sav_final_cast_list_info_item_get_list(
+    sav_final_cast_list_info_item_id,
+    sav_final_cast_list_info_item_sav_final_cast_list_info_id,
+    sav_final_cast_list_info_item_production_id,
+    sav_final_cast_list_info_item_production_title,
+    sav_final_cast_list_info_item_contact_id,
+    sav_final_cast_list_info_item_contact_full_name,
+    sav_final_cast_list_info_item_contact_address,
+    sav_final_cast_list_info_item_contact_city,
+    sav_final_cast_list_info_item_contact_state_code,
+    sav_final_cast_list_info_item_contact_phone,
+    sav_final_cast_list_info_item_contact_email,
+    sav_final_cast_list_info_item_contact_ssn,
+    sav_final_cast_list_info_item_contact_name_ssn,
+    sav_final_cast_list_info_item_loan_out_corp,
+    sav_final_cast_list_info_item_federal_id,
+    sav_final_cast_list_info_item_loan_out_corp_federal_id,
+    sav_final_cast_list_info_item_days_number,
+    sav_final_cast_list_info_item_weeks_number,
+    sav_final_cast_list_info_item_start_date,
+    sav_final_cast_list_info_item_end_date,
+    sav_final_cast_list_info_item_contract_type,
+    sav_final_cast_list_info_item_sav_performer_type_id,
+    sav_final_cast_list_info_item_sav_performer_type_code,
+    sav_final_cast_list_info_item_sav_performer_type_title,
+    sav_final_cast_list_info_item_sav_performer_type_full_title,
+    sav_final_cast_list_info_item_salary_total_gross,
+    sav_final_cast_list_info_item_salary_base,
+    sav_final_cast_list_info_item_units_type,
+    sav_final_cast_list_info_item_units_salary,
+    sav_final_cast_list_info_item_units_total,
+    sav_final_cast_list_info_item_created,
+    sav_final_cast_list_info_item_created_by,
+    sav_final_cast_list_info_item_updated,
+    sav_final_cast_list_info_item_updated_by,
+    sav_final_cast_list_info_item_status
+) AS
+    SELECT sav_final_cast_list_info_item.id                                                                               AS sav_final_cast_list_info_item_id,
+           sav_final_cast_list_info_item.sav_final_cast_list_info_id                                                      AS sav_final_cast_list_info_item_sav_final_cast_list_info_id,
+           sav_final_cast_list_info_item.production_id                                                                    AS sav_final_cast_list_info_item_production_id,
+           production.title                                                                                               AS sav_final_cast_list_info_item_production_title,
+           sav_final_cast_list_info_item.contact_id                                                                       AS sav_final_cast_list_info_item_contact_id,
+           contact_get_full_name(contact.id)                                                                              AS sav_final_cast_list_info_item_contact_full_name,
+           contact.address                                                                                                AS sav_final_cast_list_info_item_contact_address,
+           contact.city                                                                                                   AS sav_final_cast_list_info_item_contact_city,
+           contact.state_code                                                                                             AS sav_final_cast_list_info_item_contact_state_code,
+           contact.phone                                                                                                  AS sav_final_cast_list_info_item_contact_phone,
+           contact.email                                                                                                  AS sav_final_cast_list_info_item_contact_email,
+           contact.ssn                                                                                                    AS sav_final_cast_list_info_item_contact_ssn,
+           CONCAT(contact_get_full_name(contact.id), ' SSN# ', contact.ssn)                                               AS sav_final_cast_list_info_item_contact_name_ssn,
+           sav_final_cast_list_info_item.loan_out_corp                                                                    AS sav_final_cast_list_info_item_loan_out_corp,
+           sav_final_cast_list_info_item.federal_id                                                                       AS sav_final_cast_list_info_item_federal_id,
+           CONCAT(sav_final_cast_list_info_item.loan_out_corp, ' Federal ID# ', sav_final_cast_list_info_item.federal_id) AS sav_final_cast_list_info_item_loan_out_corp_federal_id,
+           sav_final_cast_list_info_item.days_number                                                                      AS sav_final_cast_list_info_item_days_number,
+           sav_final_cast_list_info_item.weeks_number                                                                     AS sav_final_cast_list_info_item_weeks_number,
+           DATE_FORMAT(sav_final_cast_list_info_item.start_date,'%m/%d/%Y')                                               AS sav_final_cast_list_info_item_start_date,
+           DATE_FORMAT(sav_final_cast_list_info_item.end_date,'%m/%d/%Y')                                                 AS sav_final_cast_list_info_item_end_date,
+           sav_final_cast_list_info_item.contract_type                                                                    AS sav_final_cast_list_info_item_contract_type,
+           sav_final_cast_list_info_item.sav_performer_type_id                                                            AS sav_final_cast_list_info_item_sav_performer_type_id,
+           sav_performer_type.code                                                                                        AS sav_final_cast_list_info_item_sav_performer_type_code,
+           sav_performer_type.title                                                                                       AS sav_final_cast_list_info_item_sav_performer_type_title,
+           CONCAT(TRIM(sav_performer_type.code),' - ',TRIM(sav_performer_type.title))                                     AS sav_final_cast_list_info_item_sav_performer_type_full_title,
+           sav_final_cast_list_info_item.salary_total_gross                                                               AS sav_final_cast_list_info_item_salary_total_gross,
+           sav_final_cast_list_info_item.salary_base                                                                      AS sav_final_cast_list_info_item_salary_base,
+           sav_final_cast_list_info_item.units_type                                                                       AS sav_final_cast_list_info_item_units_type,
+           sav_final_cast_list_info_item.units_salary                                                                     AS sav_final_cast_list_info_item_units_salary,
+           sav_final_cast_list_info_item.units_total                                                                      AS sav_final_cast_list_info_item_units_total,
+           DATE_FORMAT(sav_final_cast_list_info_item.created,'%m/%d/%Y %H:%i:%S')                                         AS sav_final_cast_list_info_item_created,
+           sav_final_cast_list_info_item.created_by                                                                       AS sav_final_cast_list_info_item_created_by,
+           DATE_FORMAT(sav_final_cast_list_info_item.updated,'%m/%d/%Y %H:%i:%S')                                         AS sav_final_cast_list_info_item_updated,
+           sav_final_cast_list_info_item.updated_by                                                                       AS sav_final_cast_list_info_item_updated_by,
+           sav_final_cast_list_info_item.status                                                                           AS sav_final_cast_list_info_item_status
+      FROM sav_final_cast_list_info_item AS sav_final_cast_list_info_item INNER JOIN production         AS production         ON production.id         = sav_final_cast_list_info_item.production_id
+                                                                          INNER JOIN contact            AS contact            ON contact.id            = sav_final_cast_list_info_item.contact_id
+                                                                          INNER JOIN sav_performer_type AS sav_performer_type ON sav_performer_type.id = sav_final_cast_list_info_item.sav_performer_type_id;
+
+ CREATE OR REPLACE VIEW sav_role_get_list(
+    sav_role_id,
+    sav_role_code,
+    sav_role_title,
+    sav_role_full_title,
+    sav_role_created,
+    sav_role_created_by,
+    sav_role_updated,
+    sav_role_updated_by,
+    sav_role_status
+) AS
+    SELECT sav_role.id                                               AS sav_role_id,
+           sav_role.code                                             AS sav_role_code,
+           sav_role.title                                            AS sav_role_title,
+           CONCAT(TRIM(sav_role.code), ' - ', TRIM(sav_role.title))  AS sav_role_full_title,
+           DATE_FORMAT(sav_role.created,'%m/%d/%Y %H:%i:%S')         AS sav_role_created,
+           sav_role.created_by                                       AS sav_role_created_by,
+           DATE_FORMAT(sav_role.updated,'%m/%d/%Y %H:%i:%S')         AS sav_role_updated,
+           sav_role.updated_by                                       AS sav_role_updated_by,
+           sav_role.status                                           AS sav_role_status
+      FROM sav_role AS sav_role;
+
  DELIMITER //
 CREATE PROCEDURE company_set_list(
     IN  company_id                   INTEGER,
@@ -2925,6 +4164,7 @@ CREATE PROCEDURE company_set_list(
     IN  company_email                VARCHAR(100),
     IN  company_website              VARCHAR(100),
     IN  company_logo_path            VARCHAR(120),
+    IN  company_wga_company_number   VARCHAR(50),
     IN  company_media_company        CHAR(1),
     IN  company_production_company   CHAR(1),
     IN  company_payroll_company      CHAR(1),
@@ -2953,6 +4193,7 @@ BEGIN
             email,
             website,
             logo_path,
+            wga_company_number,
             media_company,
             production_company,
             payroll_company,
@@ -2972,6 +4213,7 @@ BEGIN
             company_email,
             company_website,
             company_logo_path,
+            company_wga_company_number,
             company_media_company,
             company_production_company,
             company_payroll_company,
@@ -2985,24 +4227,82 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE company
-           SET name               =    company_name,
-               address            =    company_address,
-               city               =    company_city,
-               state_code         =    company_state_code,
-               zipcode            =    company_zipcode,
-               phone              =    company_phone,
-               faxnumber          =    company_faxnumber,
-               email              =    company_email,
-               website            =    company_website,
-               logo_path          =    company_logo_path,
-               media_company      =    company_media_company,
-               production_company =    company_production_company,
-               payroll_company    =    company_payroll_company,
-               updated_by         =    company_updated_by,
-               status             =    'UPDATED'
-         WHERE id                 =    company_id;
+           SET name               =  company_name,
+               address            =  company_address,
+               city               =  company_city,
+               state_code         =  company_state_code,
+               zipcode            =  company_zipcode,
+               phone              =  company_phone,
+               faxnumber          =  company_faxnumber,
+               email              =  company_email,
+               website            =  company_website,
+               logo_path          =  company_logo_path,
+               wga_company_number =  company_wga_company_number,
+               media_company      =  company_media_company,
+               production_company =  company_production_company,
+               payroll_company    =  company_payroll_company,
+               updated_by         =  company_updated_by,
+               status             =  'UPDATED'
+         WHERE id                 =  company_id;
 
          SET return_value = company_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE business_group_set_list(
+    IN business_group_id            INT,
+    IN business_group_name          VARCHAR(50),
+    IN business_group_company_id    INT,
+    IN business_group_created_by    VARCHAR(30),
+    IN business_group_updated_by    VARCHAR(30),
+    IN business_group_status        VARCHAR(30),
+    OUT return_value                INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM business_group
+     WHERE id = business_group_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO business_group
+        (
+            name,
+            company_id,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            business_group_name,
+            business_group_company_id,
+            business_group_created,
+            business_group_created_by,
+            business_group_updated,
+            business_group_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE business_group
+           SET name         =  business_group_name,
+               company_id   =  business_group_company_id,
+               created_by   =  business_group_created_by,
+               updated_by   =  business_group_updated_by,
+               status       =  'UPDATED'
+         WHERE id           =  business_group_id;
+
+        SET return_value = business_group_id;
      END IF;
 
      COMMIT;
@@ -3014,6 +4314,7 @@ CREATE PROCEDURE network_set_list(
     IN  network_id                 INTEGER,
     IN  network_name               VARCHAR(50),
     IN  network_media_company_id   INTEGER,
+    IN  network_business_group_id  INTEGER,
     IN  network_logo_path          VARCHAR(120),
     IN  network_created_by         VARCHAR(30),
     IN  network_updated_by         VARCHAR(30),
@@ -3031,6 +4332,7 @@ BEGIN
         INSERT INTO network
         (
             media_company_id,
+            business_group_id,
             name,
             logo_path,
             created_by,
@@ -3040,6 +4342,7 @@ BEGIN
         VALUES
         (
             network_media_company_id,
+            network_business_group_id,
             network_name,
             network_logo_path,
             network_created_by,
@@ -3052,12 +4355,13 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE network
-           SET media_company_id = network_media_company_id,
-               name             = network_name,
-               logo_path        = network_logo_path,
-               updated_by       = network_updated_by,
-               status           = 'UPDATED'
-         WHERE id               = network_id;
+           SET media_company_id  = network_media_company_id,
+               business_group_id = network_business_group_id,
+               name              = network_name,
+               logo_path         = network_logo_path,
+               updated_by        = network_updated_by,
+               status            = 'UPDATED'
+         WHERE id                = network_id;
 
          SET return_value = network_id;
      END IF;
@@ -3167,29 +4471,35 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE production_set_list(
-    IN  production_id                               INTEGER,
-    IN  production_title                            VARCHAR(50),
-    IN  production_budget                           NUMERIC(15,2),
-    IN  production_writing_start_date               DATE,
-    IN  production_writing_end_date                 DATE,
-    IN  production_pre_production_start_date        DATE,
-    IN  production_pre_production_end_date          DATE,
-    IN  production_photography_start_date           DATE,
-    IN  production_photography_end_date             DATE,
-    IN  production_post_production_start_date       DATE,
-    IN  production_post_production_end_date         DATE,
-    IN  production_network_production_start_date    DATE,
-    IN  production_network_production_end_date      DATE,
-    IN  production_production_length_id             INTEGER,
-    IN  production_network_id                       INTEGER,
-    IN  production_production_type_id               INTEGER,
-    IN  production_production_company_id            INTEGER,
-    IN  production_payroll_company_id               INTEGER,
-    IN  production_logo_path                        VARCHAR(120),
-    IN  production_created_by                       VARCHAR(30),
-    IN  production_updated_by                       VARCHAR(30),
-    IN  production_status                           VARCHAR(30),
-    OUT return_value                                INTEGER
+    IN production_id                               INT,
+    IN production_title                            VARCHAR(50),
+    IN production_media_company_id                 INT,
+    IN production_business_group_id                INT,
+    IN production_network_id                       INT,
+    IN production_pilot                            CHAR(1),
+    IN production_production_stage_id              INT,
+    IN production_season_number                    INT,
+    IN production_episodes_number                  INT,
+    IN production_budget                           DECIMAL,
+    IN production_writing_start_date               DATE,
+    IN production_writing_end_date                 DATE,
+    IN production_pre_production_start_date        DATE,
+    IN production_pre_production_end_date          DATE,
+    IN production_photography_start_date           DATE,
+    IN production_photography_end_date             DATE,
+    IN production_post_production_start_date       DATE,
+    IN production_post_production_end_date         DATE,
+    IN production_network_production_start_date    DATE,
+    IN production_network_production_end_date      DATE,
+    IN production_production_length_id             INT,
+    IN production_production_type_id               INT,
+    IN production_production_company_id            INT,
+    IN production_payroll_company_id               INT,
+    IN production_logo_path                        VARCHAR(120),
+    IN production_created_by                       VARCHAR(30),
+    IN production_updated_by                       VARCHAR(30),
+    IN production_status                           VARCHAR(30),
+    OUT return_value                               INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -3203,6 +4513,13 @@ BEGIN
         INSERT INTO production
         (
             title,
+            media_company_id,
+            business_group_id,
+            network_id,
+            pilot,
+            production_stage_id,
+            season_number,
+            episodes_number,
             budget,
             writing_start_date,
             writing_end_date,
@@ -3215,7 +4532,6 @@ BEGIN
             network_production_start_date,
             network_production_end_date,
             production_length_id,
-            network_id,
             production_type_id,
             production_company_id,
             payroll_company_id,
@@ -3227,6 +4543,13 @@ BEGIN
         VALUES
         (
             production_title,
+            production_media_company_id,
+            production_business_group_id,
+            production_network_id,
+            production_pilot,
+            production_production_stage_id,
+            production_season_number,
+            production_episodes_number,
             production_budget,
             production_writing_start_date,
             production_writing_end_date,
@@ -3239,7 +4562,6 @@ BEGIN
             production_network_production_start_date,
             production_network_production_end_date,
             production_production_length_id,
-            production_network_id,
             production_production_type_id,
             production_production_company_id,
             production_payroll_company_id,
@@ -3254,27 +4576,34 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE production
-           SET title                          =  production_title,
-               budget                         =  production_budget,
-               writing_start_date             =  production_writing_start_date,
-               writing_end_date               =  production_writing_end_date,
-               pre_production_start_date      =  production_pre_production_start_date,
-               pre_production_end_date        =  production_pre_production_end_date,
-               photography_start_date         =  production_photography_start_date,
-               photography_end_date           =  production_photography_end_date,
-               post_production_start_date     =  production_post_production_start_date,
-               post_production_end_date       =  production_post_production_end_date,
-               network_production_start_date  =  production_network_production_start_date,
-               network_production_end_date    =  production_network_production_end_date,
-               production_length_id           =  production_production_length_id,
-               network_id                     =  production_network_id,
-               production_type_id             =  production_production_type_id,
-               production_company_id          =  production_production_company_id,
-               payroll_company_id             =  production_payroll_company_id,
-               logo_path                      =  production_logo_path,
-               updated_by                     =  production_updated_by,
-               status                         =  'UPDATED'
-         WHERE id                             =  production_id;
+           SET title                         = production_title,
+               media_company_id              = production_media_company_id,
+               business_group_id             = production_business_group_id,
+               network_id                    = production_network_id,
+               pilot                         = production_pilot,
+               production_stage_id           = production_production_stage_id,
+               season_number                 = production_season_number,
+               episodes_number               = production_episodes_number,
+               budget                        = production_budget,
+               writing_start_date            = production_writing_start_date,
+               writing_end_date              = production_writing_end_date,
+               pre_production_start_date     = production_pre_production_start_date,
+               pre_production_end_date       = production_pre_production_end_date,
+               photography_start_date        = production_photography_start_date,
+               photography_end_date          = production_photography_end_date,
+               post_production_start_date    = production_post_production_start_date,
+               post_production_end_date      = production_post_production_end_date,
+               network_production_start_date = production_network_production_start_date,
+               network_production_end_date   = production_network_production_end_date,
+               production_length_id          = production_production_length_id,
+               production_type_id            = production_production_type_id,
+               production_company_id         = production_production_company_id,
+               payroll_company_id            = production_payroll_company_id,
+               logo_path                     = production_logo_path,
+               created_by                    = production_created_by,
+               updated_by                    = production_updated_by,
+               status                        = 'UPDATED'
+         WHERE id                            = production_id;
 
          SET return_value = production_id;
      END IF;
@@ -3283,13 +4612,72 @@ BEGIN
 END //
 DELIMITER ;
 
- 
+ DELIMITER //
+CREATE PROCEDURE production_set_closed(
+    IN  production_id                   INTEGER,
+    IN  production_updated_by           VARCHAR(30)
+)
+BEGIN
+
+    UPDATE production
+       SET status = 'CLOSED'
+     WHERE id = production_id;
+
+    COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE production_state_set_list(
+    IN production_state_production_id    INT,
+    IN production_state_state_code       CHAR(2),
+    IN production_state_created_by       VARCHAR(30),
+    IN production_state_updated_by       VARCHAR(30),
+    IN production_state_status           VARCHAR(30)
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM production_state
+     WHERE production_id = production_state_production_id
+       AND state_code    = production_state_state_code;
+
+    IF (ROW_EXISTS = 0) THEN
+
+        INSERT INTO production_state
+        (
+            production_id,
+            state_code,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            production_state_production_id,
+            production_state_state_code,
+            production_state_created_by,
+            production_state_updated_by,
+            'CREATED'
+        );
+
+        COMMIT;
+
+    END IF;
+
+END //
+DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE season_set_list(
     IN  season_id                               INTEGER,
     IN  season_title                            VARCHAR(50),
     IN  season_season_number                    INTEGER,
+    IN  season_media_company_id                 INTEGER,
+    IN  season_business_group_id                INTEGER,
+    IN  season_network_id                       INTEGER,
     IN  season_production_id                    INTEGER,
     IN  season_budget                           NUMERIC(15,2),
     IN  season_writing_start_date               DATE,
@@ -3321,6 +4709,9 @@ BEGIN
             id,
             title,
             season_number,
+            media_company_id,
+            business_group_id,
+            network_id,
             production_id,
             budget,
             writing_start_date,
@@ -3343,6 +4734,9 @@ BEGIN
             season_id,
             season_title,
             season_season_number,
+            season_media_company_id,
+            season_business_group_id,
+            season_network_id,
             season_production_id,
             season_budget,
             season_writing_start_date,
@@ -3368,6 +4762,9 @@ BEGIN
         UPDATE season
            SET title                          =  season_title,
                season_number                  =  season_season_number,
+               company_id                     =  season_media_company_id,
+               business_group_id              =  season_business_group_id,
+               network_id                     =  season_network_id,
                production_id                  =  season_production_id,
                budget                         =  season_budget,
                writing_start_date             =  season_writing_start_date,
@@ -3397,8 +4794,12 @@ DELIMITER ;
 CREATE PROCEDURE episode_set_list(
     IN  episode_id                               INTEGER,
     IN  episode_title                            VARCHAR(50),
-    IN  episode_episode_number                   INTEGER,
+    IN  episode_media_company_id                 INTEGER,
+    IN  episode_business_group_id                INTEGER,
+    IN  episode_network_id                       INTEGER,
+    IN  episode_production_id                    INTEGER,
     IN  episode_season_id                        INTEGER,
+    IN  episode_episode_number                   INTEGER,
     IN  episode_budget                           NUMERIC(15,2),
     IN  episode_writing_start_date               DATE,
     IN  episode_writing_end_date                 DATE,
@@ -3428,6 +4829,10 @@ BEGIN
             id,
             title,
             episode_number,
+            media_company_id,
+            business_group_id,
+            network_id,
+            production_id,
             season_id,
             budget,
             writing_start_date,
@@ -3449,6 +4854,10 @@ BEGIN
             episode_id,
             episode_title,
             episode_episode_number,
+            episode_media_company_id,
+            episode_business_group_id,
+            episode_network_id,
+            episode_production_id,
             episode_season_id,
             episode_budget,
             episode_writing_start_date,
@@ -3473,6 +4882,10 @@ BEGIN
         UPDATE episode
            SET title                          =  episode_title,
                episode_number                 =  episode_episode_number,
+               media_company_id               =  episode_media_company_id,
+               business_group_id              =  episode_business_group_id,
+               network_id                     =  episode_network_id,
+               production_id                  =  episode_production_id,
                season_id                      =  episode_season_id,
                budget                         =  episode_budget,
                writing_start_date             =  episode_writing_start_date,
@@ -3499,19 +4912,23 @@ DELIMITER ;
 
  DELIMITER //
 CREATE PROCEDURE contact_set_list(
-    IN  contact_id                   INTEGER,
-    IN  contact_name                 VARCHAR(100),
-    IN  contact_address              VARCHAR(100),
-    IN  contact_city                 VARCHAR(100),
-    IN  contact_state_code           CHAR(2),
-    IN  contact_phone                VARCHAR(20),
-    IN  contact_email                VARCHAR(100),
-    IN  contact_website              VARCHAR(100),
-    IN  contact_picture_path         VARCHAR(120),
-    IN  contact_created_by           VARCHAR(30),
-    IN  contact_updated_by           VARCHAR(30),
-    IN  contact_status               VARCHAR(30),
-    OUT return_value                 INTEGER
+    IN contact_id              INT,
+    IN contact_first_name      VARCHAR(50),
+    IN contact_middle_name     VARCHAR(50),
+    IN contact_last_name       VARCHAR(50),
+    IN contact_suffix          VARCHAR(50),
+    IN contact_address         VARCHAR(100),
+    IN contact_city            VARCHAR(100),
+    IN contact_state_code      CHAR(2),
+    IN contact_phone           VARCHAR(20),
+    IN contact_email           VARCHAR(100),
+    IN contact_ssn             VARCHAR(11),
+    IN contact_website         VARCHAR(100),
+    IN contact_picture_path    VARCHAR(120),
+    IN contact_created_by      VARCHAR(30),
+    IN contact_updated_by      VARCHAR(30),
+    IN contact_status          VARCHAR(30),
+    OUT return_value           INTEGER
 )
 BEGIN
     DECLARE ROW_EXISTS INTEGER;
@@ -3524,12 +4941,16 @@ BEGIN
      IF (ROW_EXISTS = 0) THEN
         INSERT INTO contact
         (
-            name,
+            first_name,
+            middle_name,
+            last_name,
+            suffix,
             address,
             city,
             state_code,
             phone,
             email,
+            ssn,
             website,
             picture_path,
             created_by,
@@ -3538,12 +4959,17 @@ BEGIN
         )
         VALUES
         (
-            contact_name,
+            contact_id,
+            contact_first_name,
+            contact_middle_name,
+            contact_last_name,
+            contact_suffix,
             contact_address,
             contact_city,
             contact_state_code,
             contact_phone,
             contact_email,
+            contact_ssn,
             contact_website,
             contact_picture_path,
             contact_created_by,
@@ -3556,16 +4982,20 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE contact
-           SET name         = name,
-               address      = address,
-               city         = city,
-               state_code   = state_code,
-               phone        = phone,
-               email        = email,
-               website      = website,
-               picture_path = picture_path,
-               created_by   = created_by,
-               updated_by   = updated_by,
+           SET first_name   = contact_first_name,
+               middle_name  = contact_middle_name,
+               last_name    = contact_last_name,
+               suffix       = contact_suffix,
+               address      = contact_address,
+               city         = contact_city,
+               state_code   = contact_state_code,
+               phone        = contact_phone,
+               email        = contact_email,
+               ssn          = contact_ssn,
+               website      = contact_website,
+               picture_path = contact_picture_path,
+               created_by   = contact_created_by,
+               updated_by   = contact_updated_by,
                status       = 'UPDATED'
          WHERE id           = contact_id;
 
@@ -3740,6 +5170,544 @@ BEGIN
            AND contact_id      = production_contact_contact_id;
 
         SET return_value = 0;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE production_stage_set_list(
+    IN  production_stage_id                   INTEGER,
+    IN  production_stage_name                 VARCHAR(50),
+    IN  production_stage_created_by           VARCHAR(30),
+    IN  production_stage_updated_by           VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM production_stage
+     WHERE id = production_stage_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO production_stage
+        (
+            name,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            production_stage_name,
+            production_stage_created_by,
+            production_stage_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE production_stage
+           SET name               =    production_stage_name,
+               updated_by         =    production_stage_updated_by,
+               status             =    'UPDATED'
+         WHERE id                 =    production_stage_id;
+        SET return_value = production_stage_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE production_guild_set_list(
+    IN production_guild_production_id        INT,
+    IN production_guild_guild_id             INT,
+    IN production_guild_document_name        VARCHAR(100),
+    IN production_guild_dga_sideletter_six   CHAR(1),
+    IN production_guild_dga_all_rights_media CHAR(1),
+    IN production_guild_created_by           VARCHAR(30),
+    IN production_guild_updated_by           VARCHAR(30),
+    IN production_guild_status               VARCHAR(30),
+    OUT return_value                         INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM production_guild
+     WHERE production_id = production_guild_production_id
+       AND guild_id      = production_guild_guild_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO production_guild
+        (
+            production_id,
+            guild_id,
+            document_name,
+            dga_sideletter_six,
+            dga_all_rights_media,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            production_guild_production_id,
+            production_guild_guild_id,
+            production_guild_document_name,
+            production_guild_dga_sideletter_six,
+            production_guild_dga_all_rights_media,
+            production_guild_created_by,
+            production_guild_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = 0;
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE production_guild
+           SET document_name        = production_guild_document_name,
+               dga_sideletter_six   = production_guild_dga_sideletter_six,
+               dga_all_rights_media = production_guild_dga_all_rights_media,
+               updated_by           = production_guild_updated_by,
+               status               = 'UPDATED'
+         WHERE production_id = production_guild_production_id
+           AND guild_id      = production_guild_guild_id;
+
+        SET return_value = 0;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE ledger_set_list(
+    IN ledger_id                  INT,
+    IN ledger_code                CHAR(10),
+    IN ledger_title               VARCHAR(50),
+    IN ledger_media_company_id    INT,
+    IN ledger_business_group_id   INT,
+    IN ledger_network_id          INT,
+    IN ledger_production_id       INT,
+    IN ledger_season_id           INT,
+    IN ledger_episode_id          INT,
+    IN ledger_created_by          VARCHAR(30),
+    IN ledger_updated_by          VARCHAR(30),
+    IN ledger_status              VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM ledger
+     WHERE id = ledger_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO ledger
+        (
+            code,
+            title,
+            media_company_id,
+            business_group_id,
+            network_id,
+            production_id,
+            season_id,
+            episode_id,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            ledger_code,
+            ledger_title,
+            ledger_media_company_id,
+            ledger_business_group_id,
+            ledger_network_id,
+            ledger_production_id,
+            ledger_season_id,
+            ledger_episode_id,
+            ledger_created_by,
+            ledger_updated_by,
+            'UPDATE'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE ledger
+           SET code              = ledger_code,
+               title             = ledger_title,
+               media_company_id  = ledger_media_company_id,
+               business_group_id = ledger_business_group_id,
+               network_id        = ledger_network_id,
+               production_id     = ledger_production_id,
+               season_id         = ledger_season_id,
+               episode_id        = ledger_episode_id,
+               created_by        = ledger_created_by,
+               updated_by        = ledger_updated_by,
+               status            = 'UPDATED'
+         WHERE id                = ledger_id;
+
+        SET return_value = ledger_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE account_set_list(
+    IN account_id                   INT,
+    IN account_code                 CHAR(10),
+    IN account_title                VARCHAR(50),
+    IN account_media_company_id     INT,
+    IN account_business_group_id    INT,
+    IN account_network_id           INT,
+    IN account_production_id        INT,
+    IN account_season_id            INT,
+    IN account_episode_id           INT,
+    IN account_ledger_id            INT,
+    IN account_created_by           VARCHAR(30),
+    IN account_updated_by           VARCHAR(30),
+    IN account_status               VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM account
+     WHERE id = account_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO account
+        (
+            code,
+            title,
+            media_company_id,
+            business_group_id,
+            network_id,
+            production_id,
+            season_id,
+            episode_id,
+            ledger_id,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            account_id,
+            account_code,
+            account_title,
+            account_media_company_id,
+            account_business_group_id,
+            account_network_id,
+            account_production_id,
+            account_season_id,
+            account_episode_id,
+            account_ledger_id,
+            account_created_by,
+            account_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE account
+           SET code              = account_code,
+               title             = account_title,
+               media_company_id  = account_media_company_id,
+               business_group_id = account_business_group_id,
+               network_id        = account_network_id,
+               production_id     = account_production_id,
+               season_id         = account_season_id,
+               episode_id        = account_episode_id,
+               ledger_id         = account_ledger_id,
+               created           = account_created,
+               created_by        = account_created_by,
+               updated           = account_updated,
+               updated_by        = account_updated_by,
+               status            = 'UPDATED'
+         WHERE id                =    account_id;
+
+        SET return_value = account_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE subaccount_set_list(
+    IN subaccount_id                   INT,
+    IN subaccount_code                 CHAR(10),
+    IN subaccount_title                VARCHAR(50),
+    IN subaccount_media_company_id     INT,
+    IN subaccount_business_group_id    INT,
+    IN subaccount_network_id           INT,
+    IN subaccount_production_id        INT,
+    IN subaccount_season_id            INT,
+    IN subaccount_episode_id           INT,
+    IN subaccount_ledger_id            INT,
+    IN subaccount_account_id           INT,
+    IN subaccount_created_by           VARCHAR(30),
+    IN subaccount_updated_by           VARCHAR(30),
+    IN subaccount_status               VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM subaccount
+     WHERE id = subaccount_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO subaccount
+        (
+            code,
+            title,
+            media_company_id,
+            business_group_id,
+            network_id,
+            production_id,
+            season_id,
+            episode_id,
+            ledger_id,
+            account_id,
+            created,
+            created_by,
+            updated,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            subaccount_code,
+            subaccount_title,
+            subaccount_media_company_id,
+            subaccount_business_group_id,
+            subaccount_network_id,
+            subaccount_production_id,
+            subaccount_season_id,
+            subaccount_episode_id,
+            subaccount_ledger_id,
+            subaccount_account_id,
+            subaccount_created,
+            subaccount_created_by,
+            subaccount_updated,
+            subaccount_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE subaccount
+           SET code               = subaccount_code,
+               title              = subaccount_title,
+               media_company_id   = subaccount_media_company_id,
+               business_group_id  = subaccount_business_group_id,
+               network_id         = subaccount_network_id,
+               production_id      = subaccount_production_id,
+               season_id          = subaccount_season_id,
+               episode_id         = subaccount_episode_id,
+               ledger_id          = subaccount_ledger_id,
+               account_id         = subaccount_account_id,
+               created            = subaccount_created,
+               created_by         = subaccount_created_by,
+               updated            = subaccount_updated,
+               updated_by         = subaccount_updated_by,
+               status             = 'UPDATED'
+         WHERE id                 = subaccount_id;
+
+        SET return_value          = subaccount_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE transaction_set_list(
+    IN transaction_id                   INT,
+    IN transaction_media_company_id     INT,
+    IN transaction_business_group_id    INT,
+    IN transaction_network_id           INT,
+    IN transaction_production_id        INT,
+    IN transaction_season_id            INT,
+    IN transaction_episode_id           INT,
+    IN transaction_ledger_id            INT,
+    IN transaction_account_id           INT,
+    IN transaction_subaccount_id        INT,
+    IN transaction_description          VARCHAR(50),
+    IN transaction_budget               DECIMAL,
+    IN transaction_total_budget         DECIMAL,
+    IN transaction_guarantee            INT,
+    IN transaction_period_id            INT,
+    IN transaction_actual               DECIMAL,
+    IN transaction_total_actual         DECIMAL,
+    IN transaction_comment              VARCHAR(255),
+    IN transaction_created_by           VARCHAR(30),
+    IN transaction_updated_by           VARCHAR(30),
+    IN transaction_status               VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM transaction
+     WHERE id = transaction_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO transaction
+        (
+            media_company_id,
+            business_group_id,
+            network_id,
+            production_id,
+            season_id,
+            episode_id,
+            ledger_id,
+            account_id,
+            subaccount_id,
+            description,
+            budget,
+            total_budget,
+            guarantee,
+            period_id,
+            actual,
+            total_actual,
+            comment,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            transaction_media_company_id,
+            transaction_business_group_id,
+            transaction_network_id,
+            transaction_production_id,
+            transaction_season_id,
+            transaction_episode_id,
+            transaction_ledger_id,
+            transaction_account_id,
+            transaction_subaccount_id,
+            transaction_description,
+            transaction_budget,
+            transaction_total_budget,
+            transaction_guarantee,
+            transaction_period_id,
+            transaction_actual,
+            transaction_total_actual,
+            transaction_comment,
+            transaction_created,
+            transaction_created_by,
+            transaction_updated,
+            transaction_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE transaction
+           SET media_company_id  =    transaction_media_company_id,
+               business_group_id =    transaction_business_group_id,
+               network_id        =    transaction_network_id,
+               production_id     =    transaction_production_id,
+               season_id         =    transaction_season_id,
+               episode_id        =    transaction_episode_id,
+               ledger_id         =    transaction_ledger_id,
+               account_id        =    transaction_account_id,
+               subaccount_id     =    transaction_subaccount_id,
+               description       =    transaction_description,
+               budget            =    transaction_budget,
+               total_budget      =    transaction_total_budget,
+               guarantee         =    transaction_guarantee,
+               period_id         =    transaction_period_id,
+               actual            =    transaction_actual,
+               total_actual      =    transaction_total_actual,
+               comment           =    transaction_comment,
+               created           =    transaction_created,
+               created_by        =    transaction_created_by,
+               updated           =    transaction_updated,
+               updated_by        =    transaction_updated_by,
+               status            =    'UPDATED'
+         WHERE id                =    transaction_id;
+
+        SET return_value = transaction_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE production_show_type_set_list(
+     IN production_show_type_id            INT,
+     IN production_show_type_name          VARCHAR(50),
+     IN production_show_type_created_by    VARCHAR(30),
+     IN production_show_type_updated_by    VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM production_show_type
+     WHERE id = production_show_type_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO production_show_type
+        (
+            name,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            production_show_type_name,
+            production_show_type_created_by,
+            production_show_type_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE production_show_type
+           SET name               =    production_show_type_name,
+               updated_by         =    production_show_type_updated_by,
+               status             =    'UPDATED'
+         WHERE id                 =    production_show_type_id;
+        SET return_value = production_show_type_id;
      END IF;
 
      COMMIT;
@@ -5395,6 +7363,7 @@ CREATE PROCEDURE dga_pif_tv_set_list(
     IN dga_pif_tv_copyright_holder                               VARCHAR(50),
     IN dga_pif_tv_copyright_holder_name                          VARCHAR(50),
     IN dga_pif_tv_copyright_holder_phone                         VARCHAR(20),
+    IN dga_pif_tv_writers                                        VARCHAR(255),
     IN dga_pif_tv_budget                                         DECIMAL,
     IN dga_pif_tv_locations                                      VARCHAR(255),
     IN dga_pif_tv_date_pre_production                            DATE,
@@ -5429,6 +7398,7 @@ CREATE PROCEDURE dga_pif_tv_set_list(
     IN dga_pif_tv_network_upn                                    CHAR(1),
     IN dga_pif_tv_network_wb                                     CHAR(1),
     IN dga_pif_tv_network_syndication                            CHAR(1),
+    IN dga_pif_tv_network_syndication_description                VARCHAR(50),
     IN dga_pif_tv_basic_cable                                    CHAR(1),
     IN dga_pif_tv_basic_cable_a_and_e                            CHAR(1),
     IN dga_pif_tv_basic_cable_disney                             CHAR(1),
@@ -5528,6 +7498,7 @@ BEGIN
             copyright_holder,
             copyright_holder_name,
             copyright_holder_phone,
+            writers,
             budget,
             locations,
             date_pre_production,
@@ -5562,6 +7533,7 @@ BEGIN
             network_upn,
             network_wb,
             network_syndication,
+            network_syndication_description,
             basic_cable,
             basic_cable_a_and_e,
             basic_cable_disney,
@@ -5651,6 +7623,7 @@ BEGIN
             dga_pif_tv_copyright_holder,
             dga_pif_tv_copyright_holder_name,
             dga_pif_tv_copyright_holder_phone,
+            dga_pif_tv_writers,
             dga_pif_tv_budget,
             dga_pif_tv_locations,
             dga_pif_tv_date_pre_production,
@@ -5685,6 +7658,7 @@ BEGIN
             dga_pif_tv_network_upn,
             dga_pif_tv_network_wb,
             dga_pif_tv_network_syndication,
+            dga_pif_tv_network_syndication_description,
             dga_pif_tv_basic_cable,
             dga_pif_tv_basic_cable_a_and_e,
             dga_pif_tv_basic_cable_disney,
@@ -5778,6 +7752,7 @@ BEGIN
                copyright_holder                              = dga_pif_tv_copyright_holder,
                copyright_holder_name                         = dga_pif_tv_copyright_holder_name,
                copyright_holder_phone                        = dga_pif_tv_copyright_holder_phone,
+               writers                                       = dga_pif_tv_writers,
                budget                                        = dga_pif_tv_budget,
                locations                                     = dga_pif_tv_locations,
                date_pre_production                           = dga_pif_tv_date_pre_production,
@@ -5812,6 +7787,7 @@ BEGIN
                network_upn                                   = dga_pif_tv_network_upn,
                network_wb                                    = dga_pif_tv_network_wb,
                network_syndication                           = dga_pif_tv_network_syndication,
+               network_syndication_description               = dga_pif_tv_network_syndication_description,
                basic_cable                                   = dga_pif_tv_basic_cable,
                basic_cable_a_and_e                           = dga_pif_tv_basic_cable_a_and_e,
                basic_cable_disney                            = dga_pif_tv_basic_cable_disney,
@@ -5949,7 +7925,7 @@ BEGIN
                created_by    = dga_pif_tv_company_created_by,
                updated_by    = dga_pif_tv_company_updated_by,
                status        = 'UPDATED'
-         WHERE id            =    dga_pif_tv_company_id;
+         WHERE id            =  dga_pif_tv_company_id;
 
         SET return_value = dga_pif_tv_company_id;
      END IF;
@@ -5985,10 +7961,8 @@ DELIMITER ;
 CREATE PROCEDURE wga_work_list_set_list(
     IN  wga_work_list_id                INT,
     IN  wga_work_list_company_id        INT,
-    IN  wga_work_list_company_number    INT,
     IN  wga_work_list_week_ending       INT,
     IN  wga_work_list_contact_id        INT,
-    IN  wga_work_list_name              VARCHAR(50),
     IN  wga_work_list_created_by        VARCHAR(30),
     IN  wga_work_list_updated_by        VARCHAR(30),
     OUT return_value                    INTEGER
@@ -6005,10 +7979,8 @@ BEGIN
         INSERT INTO wga_work_list
         (
             company_id,
-            company_number,
             week_ending,
             contact_id,
-            name,
             created_by,
             updated_by,
             status
@@ -6016,13 +7988,10 @@ BEGIN
         VALUES
         (
             wga_work_list_company_id,
-            wga_work_list_company_number,
             wga_work_list_week_ending,
             wga_work_list_contact_id,
-            wga_work_list_name,
             wga_work_list_created_by,
             wga_work_list_updated_by,
-            wga_work_list_status,
             'CREATED'
         );
 
@@ -6032,18 +8001,72 @@ BEGIN
      IF (ROW_EXISTS >= 1) THEN
         UPDATE wga_work_list
            SET company_id     = wga_work_list_company_id,
-               company_number = wga_work_list_company_number,
                week_ending    = wga_work_list_week_ending,
                contact_id     = wga_work_list_contact_id,
-               name           = wga_work_list_name,
-               created        = wga_work_list_created,
                created_by     = wga_work_list_created_by,
-               updated        = wga_work_list_updated,
                updated_by     = wga_work_list_updated_by,
                status         = 'UPDATED'
          WHERE id             = wga_work_list_id;
 
          SET return_value = wga_work_list_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_deal_type_set_list(
+    IN wga_deal_type_id          INT,
+    IN wga_deal_type_code        CHAR(2),
+    IN wga_deal_type_title       VARCHAR(30),
+    IN wga_deal_type_created_by  VARCHAR(30),
+    IN wga_deal_type_updated_by  VARCHAR(30),
+    IN wga_deal_type_status      VARCHAR(30),
+    OUT return_value             INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM wga_deal_type
+     WHERE id = wga_deal_type_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO wga_deal_type
+        (
+            code,
+            title,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            wga_deal_type_code,
+            wga_deal_type_title,
+            wga_deal_type_created,
+            wga_deal_type_created_by,
+            wga_deal_type_updated,
+            wga_deal_type_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE wga_deal_type
+           SET code       = wga_deal_type_code,
+               title      = wga_deal_type_title,
+               created    = wga_deal_type_created,
+               created_by = wga_deal_type_created_by,
+               updated    = wga_deal_type_updated,
+               updated_by = wga_deal_type_updated_by,
+               status     = 'UPDATED'
+         WHERE id         = wga_deal_type_id;
+        SET return_value = wga_deal_type_id;
      END IF;
 
      COMMIT;
@@ -6061,6 +8084,806 @@ BEGIN
        SET updated_by     = wga_work_list_updated_by,
            status         = 'CLOSED'
      WHERE id             = wga_work_list_id;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_work_list_item_set_list(
+    IN wga_work_list_item_id                  INT,
+    IN wga_work_list_item_wga_work_list_id    INT,
+    IN wga_work_list_item_contact_id          INT,
+    IN wga_work_list_item_episode_id          INT,
+    IN wga_work_list_item_deal_type_id        INT,
+    IN wga_work_list_item_field_of_work_id    INT,
+    IN wga_work_list_item_date_start          DATE,
+    IN wga_work_list_item_date_end            DATE,
+    IN wga_work_list_item_additional_data     VARCHAR(100),
+    IN wga_work_list_item_created_by          VARCHAR(30),
+    IN wga_work_list_item_updated_by          VARCHAR(30),
+    IN wga_work_list_item_status              VARCHAR(30),
+    OUT return_value                          INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM wga_work_list_item
+     WHERE id = wga_work_list_item_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO wga_work_list_item
+        (
+            wga_work_list_id,
+            contact_id,
+            episode_id,
+            deal_type_id,
+            field_of_work_id,
+            date_start,
+            date_end,
+            additional_data,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            wga_work_list_item_wga_work_list_id,
+            wga_work_list_item_contact_id,
+            wga_work_list_item_episode_id,
+            wga_work_list_item_deal_type_id,
+            wga_work_list_item_field_of_work_id,
+            wga_work_list_item_date_start,
+            wga_work_list_item_date_end,
+            wga_work_list_item_additional_data,
+            wga_work_list_item_created_by,
+            wga_work_list_item_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE wga_work_list_item
+           SET wga_work_list_id   = wga_work_list_item_wga_work_list_id,
+               contact_id         = wga_work_list_item_contact_id,
+               episode_id         = wga_work_list_item_episode_id,
+               deal_type_id       = wga_work_list_item_deal_type_id,
+               field_of_work_id   = wga_work_list_item_field_of_work_id,
+               date_start         = wga_work_list_item_date_start,
+               date_end           = wga_work_list_item_date_end,
+               additional_data    = wga_work_list_item_additional_data,
+               created_by         = wga_work_list_item_created_by,
+               updated_by         = wga_work_list_item_updated_by,
+               status             = 'UPDATED'
+         WHERE id                 = wga_work_list_item_id;
+
+        SET return_value = wga_work_list_item_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_set_list(
+    IN wga_ntwc_id                                     INT,
+    IN wga_ntwc_date                                   DATE,
+    IN wga_ntwc_production_id                          INT,
+    IN wga_ntwc_production_number                      VARCHAR(30),
+    IN wga_ntwc_episode_id                             INT,
+    IN wga_ntwc_pilot                                  CHAR(1),
+    IN wga_ntwc_pilot_network_id                       INT,
+    IN wga_ntwc_pilot_production_lenght_id             INT,
+    IN wga_ntwc_executive_producer_contact_id          INT,
+    IN wga_ntwc_director_contact_id                    INT,
+    IN wga_ntwc_story_editor_contact_id                INT,
+    IN wga_ntwc_other_executive_producer_contact_id    INT,
+    IN wga_ntwc_producer_contact_id                    INT,
+    IN wga_ntwc_supervising_producer_contact_id        INT,
+    IN wga_ntwc_sent_to_writers                        DATE,
+    IN wga_ntwc_protest_communicated                   DATE,
+    IN wga_ntwc_by_contact_id                          INT,
+    IN wga_ntwc_created_by                             VARCHAR(30),
+    IN wga_ntwc_updated_by                             VARCHAR(30),
+    IN wga_ntwc_status                                 VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM wga_ntwc
+     WHERE id = wga_ntwc_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO wga_ntwc
+        (
+            date,
+            production_id,
+            production_number,
+            episode_id,
+            pilot,
+            pilot_network_id,
+            pilot_production_lenght_id,
+            executive_producer_contact_id,
+            director_contact_id,
+            story_editor_contact_id,
+            other_executive_producer_contact_id,
+            producer_contact_id,
+            supervising_producer_contact_id,
+            sent_to_writers,
+            protest_communicated,
+            by_contact_id,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            wga_ntwc_date,
+            wga_ntwc_production_id,
+            wga_ntwc_production_number,
+            wga_ntwc_episode_id,
+            wga_ntwc_pilot,
+            wga_ntwc_pilot_network_id,
+            wga_ntwc_pilot_production_lenght_id,
+            wga_ntwc_executive_producer_contact_id,
+            wga_ntwc_director_contact_id,
+            wga_ntwc_story_editor_contact_id,
+            wga_ntwc_other_executive_producer_contact_id,
+            wga_ntwc_producer_contact_id,
+            wga_ntwc_supervising_producer_contact_id,
+            wga_ntwc_sent_to_writers,
+            wga_ntwc_protest_communicated,
+            wga_ntwc_by_contact_id,
+            wga_ntwc_created_by,
+            wga_ntwc_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE wga_ntwc
+           SET date                                = wga_ntwc_date,
+               production_id                       = wga_ntwc_production_id,
+               production_number                   = wga_ntwc_production_number,
+               episode_id                          = wga_ntwc_episode_id,
+               pilot                               = wga_ntwc_pilot,
+               pilot_network_id                    = wga_ntwc_pilot_network_id,
+               pilot_production_lenght_id          = wga_ntwc_pilot_production_lenght_id,
+               executive_producer_contact_id       = wga_ntwc_executive_producer_contact_id,
+               director_contact_id                 = wga_ntwc_director_contact_id,
+               story_editor_contact_id             = wga_ntwc_story_editor_contact_id,
+               other_executive_producer_contact_id = wga_ntwc_other_executive_producer_contact_id,
+               producer_contact_id                 = wga_ntwc_producer_contact_id,
+               supervising_producer_contact_id     = wga_ntwc_supervising_producer_contact_id,
+               sent_to_writers                     = wga_ntwc_sent_to_writers,
+               protest_communicated                = wga_ntwc_protest_communicated,
+               by_contact_id                       = wga_ntwc_by_contact_id,
+               created                             = wga_ntwc_created,
+               created_by                          = wga_ntwc_created_by,
+               updated                             = wga_ntwc_updated,
+               updated_by                          = wga_ntwc_updated_by,
+               status                              = 'UPDATED'
+         WHERE id                                  = wga_ntwc_id;
+
+        SET return_value = wga_ntwc_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_participant_writer_set_list(
+    IN wga_ntwc_participant_writer_wga_ntwc_id    INT,
+    IN wga_ntwc_participant_writer_contact_id     INT,
+    IN wga_ntwc_participant_writer_created_by     VARCHAR(30),
+    IN wga_ntwc_participant_writer_updated_by     VARCHAR(30),
+    IN wga_ntwc_participant_writer_status         VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+
+    INSERT INTO wga_ntwc_participant_writer
+    (
+        wga_ntwc_id,
+        contact_id,
+        created_by,
+        updated_by,
+        status
+    )
+    VALUES
+    (
+        wga_ntwc_participant_writer_wga_ntwc_id,
+        wga_ntwc_participant_writer_contact_id,
+        wga_ntwc_participant_writer_created_by,
+        wga_ntwc_participant_writer_updated_by,
+        'CREATED'
+    );
+
+    SET return_value = 1;
+
+    COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_participant_writer_delete(
+    IN wga_ntwc_participant_writer_wga_ntwc_id    INT,
+    IN wga_ntwc_participant_writer_contact_id     INT,
+    OUT return_value            INTEGER
+)
+BEGIN
+
+    DELETE
+      FROM wga_ntwc_participant_writer
+     WHERE wga_ntwc_id = wga_ntwc_participant_writer_wga_ntwc_id
+       AND contact_id  = wga_ntwc_participant_writer_contact_id;
+
+    SET return_value = 0;
+
+    COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_writing_credit_set_list(
+    IN wga_ntwc_writing_credit_wga_ntwc_id    INT,
+    IN wga_ntwc_writing_credit_contact_id     INT,
+    IN wga_ntwc_writing_credit_created_by     VARCHAR(30),
+    IN wga_ntwc_writing_credit_updated_by     VARCHAR(30),
+    IN wga_ntwc_writing_credit_status         VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+
+    INSERT INTO wga_ntwc_writing_credit
+    (
+        wga_ntwc_id,
+        contact_id,
+        created_by,
+        updated_by,
+        status
+    )
+    VALUES
+    (
+        wga_ntwc_writing_credit_wga_ntwc_id,
+        wga_ntwc_writing_credit_contact_id,
+        wga_ntwc_writing_credit_created_by,
+        wga_ntwc_writing_credit_updated_by,
+        'CREATED'
+    );
+
+    SET return_value = 1;
+
+    COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_writing_credit_delete(
+    IN wga_ntwc_writing_credit_wga_ntwc_id    INT,
+    IN wga_ntwc_writing_credit_contact_id     INT,
+    OUT return_value            INTEGER
+)
+BEGIN
+
+    DELETE
+      FROM wga_ntwc_writing_credit
+     WHERE wga_ntwc_id = wga_ntwc_writing_credit_wga_ntwc_id
+       AND contact_id  = wga_ntwc_writing_credit_contact_id;
+
+    SET return_value = 0;
+
+    COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_source_material_episode_set_list(
+    IN wga_ntwc_source_material_episode_id             INT,
+    IN wga_ntwc_source_material_episode_wga_ntwc_id    INT,
+    IN wga_ntwc_source_material_episode_name           VARCHAR(50),
+    IN wga_ntwc_source_material_episode_created_by     VARCHAR(30),
+    IN wga_ntwc_source_material_episode_updated_by     VARCHAR(30),
+    IN wga_ntwc_source_material_episode_status         VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM wga_ntwc_source_material_episode
+     WHERE id = wga_ntwc_source_material_episode_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO wga_ntwc_source_material_episode
+        (
+            wga_ntwc_id,
+            name,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            wga_ntwc_source_material_episode_wga_ntwc_id,
+            wga_ntwc_source_material_episode_name,
+            wga_ntwc_source_material_episode_created_by,
+            wga_ntwc_source_material_episode_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE wga_ntwc_source_material_episode
+           SET wga_ntwc_id = wga_ntwc_source_material_episode_wga_ntwc_id,
+               name        = wga_ntwc_source_material_episode_name,
+               created_by  = wga_ntwc_source_material_episode_created_by,
+               updated_by  = wga_ntwc_source_material_episode_updated_by,
+               status      = 'UPDATED'
+         WHERE id          = wga_ntwc_source_material_episode_id;
+
+        SET return_value = wga_ntwc_source_material_episode_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_source_material_episode_delete(
+    IN  wga_ntwc_source_material_episode_id INTEGER
+)
+BEGIN
+    DELETE
+      FROM wga_ntwc_source_material_episode
+     WHERE id = wga_ntwc_source_material_episode_id;
+
+    COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_source_material_production_set_list(
+    IN wga_ntwc_source_material_production_id             INT,
+    IN wga_ntwc_source_material_production_wga_ntwc_id    INT,
+    IN wga_ntwc_source_material_production_name           VARCHAR(50),
+    IN wga_ntwc_source_material_production_created_by     VARCHAR(30),
+    IN wga_ntwc_source_material_production_updated_by     VARCHAR(30),
+    IN wga_ntwc_source_material_production_status         VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM wga_ntwc_source_material_production
+     WHERE id = wga_ntwc_source_material_production_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO wga_ntwc_source_material_production
+        (
+            wga_ntwc_id,
+            name,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            wga_ntwc_source_material_production_wga_ntwc_id,
+            wga_ntwc_source_material_production_name,
+            wga_ntwc_source_material_production_created_by,
+            wga_ntwc_source_material_production_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE wga_ntwc_source_material_production
+           SET wga_ntwc_id = wga_ntwc_source_material_production_wga_ntwc_id,
+               name        = wga_ntwc_source_material_production_name,
+               created_by  = wga_ntwc_source_material_production_created_by,
+               updated_by  = wga_ntwc_source_material_production_updated_by,
+               status      = 'UPDATED'
+         WHERE id          = wga_ntwc_source_material_production_id;
+
+        SET return_value = wga_ntwc_source_material_production_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE wga_ntwc_source_material_production_delete(
+    IN  wga_ntwc_source_material_production_id INTEGER
+)
+BEGIN
+    DELETE
+      FROM wga_ntwc_source_material_production
+     WHERE id = wga_ntwc_source_material_production_id;
+
+    COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE sav_performer_type_set_list(
+    IN sav_performer_type_id            INT,
+    IN sav_performer_type_code          CHAR(3),
+    IN sav_performer_type_title         VARCHAR(50),
+    IN sav_performer_type_created_by    VARCHAR(30),
+    IN sav_performer_type_updated_by    VARCHAR(30),
+    IN sav_performer_type_status        VARCHAR(30),
+    OUT return_value                INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM sav_performer_type
+     WHERE id = sav_performer_type_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO sav_performer_type
+        (
+            code,
+            title,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            sav_performer_type_id,
+            sav_performer_type_code,
+            sav_performer_type_title,
+            sav_performer_type_created_by,
+            sav_performer_type_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE sav_performer_type
+           SET code       = sav_performer_type_code,
+               title      = sav_performer_type_title,
+               created_by = sav_performer_type_created_by,
+               updated_by = sav_performer_type_updated_by,
+               status     = 'UPDATED'
+         WHERE id         = sav_performer_type_id;
+
+        SET return_value  = sav_performer_type_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE sav_production_type_set_list(
+    IN sav_production_type_id            INT,
+    IN sav_production_type_code          VARCHAR(10),
+    IN sav_production_type_title         VARCHAR(50),
+    IN sav_production_type_created_by    VARCHAR(30),
+    IN sav_production_type_updated_by    VARCHAR(30),
+    IN sav_production_type_status        VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM sav_production_type
+     WHERE id = sav_production_type_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO sav_production_type
+        (
+            code,
+            title,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            sav_production_type_code,
+            sav_production_type_title,
+            sav_production_type_created,
+            sav_production_type_created_by,
+            sav_production_type_updated,
+            sav_production_type_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE sav_production_type
+           SET code       = sav_production_type_code,
+               title      = sav_production_type_title,
+               created_by = sav_production_type_created_by,
+               updated_by = sav_production_type_updated_by,
+               status     = 'UPDATED'
+         WHERE id         = sav_production_type_id;
+
+        SET return_value = sav_production_type_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE sav_final_cast_list_info_set_list(
+    IN sav_final_cast_list_info_id                        INT,
+    IN sav_final_cast_list_info_date_filled               DATE,
+    IN sav_final_cast_list_info_production_id             INT,
+    IN sav_final_cast_list_info_shooting_location         VARCHAR(400),
+    IN sav_final_cast_list_info_production_company_id     INT,
+    IN sav_final_cast_list_info_start_date                DATE,
+    IN sav_final_cast_list_info_end_date                  DATE,
+    IN sav_final_cast_list_info_federal_id                VARCHAR(50),
+    IN sav_final_cast_list_info_state_id                  VARCHAR(50),
+    IN sav_final_cast_list_info_picture_id                VARCHAR(50),
+    IN sav_final_cast_list_info_distribuitor_id           VARCHAR(50),
+    IN sav_final_cast_list_info_sav_production_type_id    INT,
+    IN sav_final_cast_list_info_created_by                VARCHAR(30),
+    IN sav_final_cast_list_info_updated_by                VARCHAR(30),
+    IN sav_final_cast_list_info_status                    VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM sav_final_cast_list_info
+     WHERE id = sav_final_cast_list_info_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO sav_final_cast_list_info
+        (
+            date_filled,
+            production_id,
+            shooting_location,
+            production_company_id,
+            start_date,
+            end_date,
+            federal_id,
+            state_id,
+            picture_id,
+            distribuitor_id,
+            sav_production_type_id,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            sav_final_cast_list_info_date_filled,
+            sav_final_cast_list_info_production_id,
+            sav_final_cast_list_info_shooting_location,
+            sav_final_cast_list_info_production_company_id,
+            sav_final_cast_list_info_start_date,
+            sav_final_cast_list_info_end_date,
+            sav_final_cast_list_info_federal_id,
+            sav_final_cast_list_info_state_id,
+            sav_final_cast_list_info_picture_id,
+            sav_final_cast_list_info_distribuitor_id,
+            sav_final_cast_list_info_sav_production_type_id,
+            sav_final_cast_list_info_created_by,
+            sav_final_cast_list_info_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE sav_final_cast_list_info
+           SET date_filled            = sav_final_cast_list_info_date_filled,
+               production_id          = sav_final_cast_list_info_production_id,
+               shooting_location      = sav_final_cast_list_info_shooting_location,
+               production_company_id  = sav_final_cast_list_info_production_company_id,
+               start_date             = sav_final_cast_list_info_start_date,
+               end_date               = sav_final_cast_list_info_end_date,
+               federal_id             = sav_final_cast_list_info_federal_id,
+               state_id               = sav_final_cast_list_info_state_id,
+               picture_id             = sav_final_cast_list_info_picture_id,
+               distribuitor_id        = sav_final_cast_list_info_distribuitor_id,
+               sav_production_type_id = sav_final_cast_list_info_sav_production_type_id,
+               created_by             = sav_final_cast_list_info_created_by,
+               updated_by             = sav_final_cast_list_info_updated_by,
+               status                 = 'UPDATED'
+         WHERE id                     = sav_final_cast_list_info_id;
+
+        SET return_value = sav_final_cast_list_info_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE sav_final_cast_list_info_item_set_list(
+    IN sav_final_cast_list_info_item_id                             INT,
+    IN sav_final_cast_list_info_item_sav_final_cast_list_info_id    INT,
+    IN sav_final_cast_list_info_item_production_id                  INT,
+    IN sav_final_cast_list_info_item_contact_id                     INT,
+    IN sav_final_cast_list_info_item_loan_out_corp                  VARCHAR(50),
+    IN sav_final_cast_list_info_item_federal_id                     VARCHAR(30),
+    IN sav_final_cast_list_info_item_days_number                    INT,
+    IN sav_final_cast_list_info_item_weeks_number                   INT,
+    IN sav_final_cast_list_info_item_start_date                     DATE,
+    IN sav_final_cast_list_info_item_end_date                       DATE,
+    IN sav_final_cast_list_info_item_contract_type                  CHAR(1),
+    IN sav_final_cast_list_info_item_sav_performer_type_id          INT,
+    IN sav_final_cast_list_info_item_salary_total_gross             DECIMAL,
+    IN sav_final_cast_list_info_item_salary_base                    DECIMAL,
+    IN sav_final_cast_list_info_item_units_type                     INT,
+    IN sav_final_cast_list_info_item_units_salary                   INT,
+    IN sav_final_cast_list_info_item_units_total                    INT,
+    IN sav_final_cast_list_info_item_created_by                     VARCHAR(30),
+    IN sav_final_cast_list_info_item_updated_by                     VARCHAR(30),
+    OUT return_value            INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM sav_final_cast_list_info_item
+     WHERE id = sav_final_cast_list_info_item_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO sav_final_cast_list_info_item
+        (
+            sav_final_cast_list_info_id,
+            production_id,
+            contact_id,
+            loan_out_corp,
+            federal_id,
+            days_number,
+            weeks_number,
+            start_date,
+            end_date,
+            contract_type,
+            sav_performer_type_id,
+            salary_total_gross,
+            salary_base,
+            units_type,
+            units_salary,
+            units_total,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            sav_final_cast_list_info_item_sav_final_cast_list_info_id,
+            sav_final_cast_list_info_item_production_id,
+            sav_final_cast_list_info_item_contact_id,
+            sav_final_cast_list_info_item_loan_out_corp,
+            sav_final_cast_list_info_item_federal_id,
+            sav_final_cast_list_info_item_days_number,
+            sav_final_cast_list_info_item_weeks_number,
+            sav_final_cast_list_info_item_start_date,
+            sav_final_cast_list_info_item_end_date,
+            sav_final_cast_list_info_item_contract_type,
+            sav_final_cast_list_info_item_sav_performer_type_id,
+            sav_final_cast_list_info_item_salary_total_gross,
+            sav_final_cast_list_info_item_salary_base,
+            sav_final_cast_list_info_item_units_type,
+            sav_final_cast_list_info_item_units_salary,
+            sav_final_cast_list_info_item_units_total,
+            sav_final_cast_list_info_item_created_by,
+            sav_final_cast_list_info_item_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE sav_final_cast_list_info_item
+           SET sav_final_cast_list_info_id = sav_final_cast_list_info_item_sav_final_cast_list_info_id,
+               production_id               = sav_final_cast_list_info_item_production_id,
+               contact_id                  = sav_final_cast_list_info_item_contact_id,
+               loan_out_corp               = sav_final_cast_list_info_item_loan_out_corp,
+               federal_id                  = sav_final_cast_list_info_item_federal_id,
+               days_number                 = sav_final_cast_list_info_item_days_number,
+               weeks_number                = sav_final_cast_list_info_item_weeks_number,
+               start_date                  = sav_final_cast_list_info_item_start_date,
+               end_date                    = sav_final_cast_list_info_item_end_date,
+               contract_type               = sav_final_cast_list_info_item_contract_type,
+               sav_performer_type_id       = sav_final_cast_list_info_item_sav_performer_type_id,
+               salary_total_gross          = sav_final_cast_list_info_item_salary_total_gross,
+               salary_base                 = sav_final_cast_list_info_item_salary_base,
+               units_type                  = sav_final_cast_list_info_item_units_type,
+               units_salary                = sav_final_cast_list_info_item_units_salary,
+               units_total                 = sav_final_cast_list_info_item_units_total,
+               created_by                  = sav_final_cast_list_info_item_created_by,
+               updated_by                  = sav_final_cast_list_info_item_updated_by,
+               status                      = 'UPDATED'
+         WHERE id                 =    sav_final_cast_list_info_item_id;
+        SET return_value = sav_final_cast_list_info_item_id;
+     END IF;
+
+     COMMIT;
+END //
+DELIMITER ;
+
+ DELIMITER //
+CREATE PROCEDURE sav_role_set_list(
+    IN sav_role_id            INT,
+    IN sav_role_code          CHAR(10),
+    IN sav_role_title         VARCHAR(50),
+    IN sav_role_created_by    VARCHAR(30),
+    IN sav_role_updated_by    VARCHAR(30),
+    OUT return_value          INTEGER
+)
+BEGIN
+    DECLARE ROW_EXISTS INTEGER;
+
+    SELECT COUNT(*)
+      INTO ROW_EXISTS
+      FROM sav_role
+     WHERE id = sav_role_id;
+
+     IF (ROW_EXISTS = 0) THEN
+        INSERT INTO sav_role
+        (
+            code,
+            title,
+            created_by,
+            updated_by,
+            status
+        )
+        VALUES
+        (
+            sav_role_code,
+            sav_role_title,
+            sav_role_created_by,
+            sav_role_updated_by,
+            'CREATED'
+        );
+
+        SET return_value = LAST_INSERT_ID();
+     END IF;
+
+     IF (ROW_EXISTS >= 1) THEN
+        UPDATE sav_role
+           SET code       = sav_role_code,
+               title      = sav_role_title,
+               created_by = sav_role_created_by,
+               updated_by = sav_role_updated_by,
+               status     = 'UPDATED'
+         WHERE id                 =    sav_role_id;
+        SET return_value = sav_role_id;
+     END IF;
 
      COMMIT;
 END //
@@ -6269,3 +9092,138 @@ VALUES
 ('Labor',          'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Residuals',      'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Third Party',    'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO production_stage
+(name, created_by, updated_by, status)
+VALUES
+('Pre-Production',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('Production',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('Post-Production', 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO business_group
+(name, company_id, created_by, updated_by, status)
+VALUES
+('Global Enterteniment Group', 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Business Unit One',          1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Business Unit Two',          1, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO sav_performer_type
+(code, title, created_by, updated_by, status)
+VALUES
+('A',   'Actor',                          'RKAMMER', 'RKAMMER', 'CREATED'),
+('ST',  'Stunt',                          'RKAMMER', 'RKAMMER', 'CREATED'),
+('P',   'Pilot',                          'RKAMMER', 'RKAMMER', 'CREATED'),
+('SG',  'Singer',                         'RKAMMER', 'RKAMMER', 'CREATED'),
+('ADR', 'Automated Dialogue Replacement', 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO sav_production_type
+(code, title, created_by, updated_by, status)
+VALUES
+('MP',  'Motion Picture',    'RKAMMER', 'RKAMMER', 'CREATED'),
+('TV',  'Television',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('MOW', 'Movie of the Week', 'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL,  'Industrial',        'RKAMMER', 'RKAMMER', 'CREATED'),
+(NULL,  'Other',             'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO sav_role
+(code, title, created_by, updated_by, status)
+VALUES
+('B',  'Background',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('DA', 'Dancer',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('D',  'Dubbing',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('G',  'Guest Star',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('L',  'Looping',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('P',  'Principal',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('SR', 'Series Regular', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('S',  'Singer',         'RKAMMER', 'RKAMMER', 'CREATED'),
+('ST', 'Stunt',          'RKAMMER', 'RKAMMER', 'CREATED'),
+('V',  'Voice-Over',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('A',  'Announcer',      'RKAMMER', 'RKAMMER', 'CREATED'),
+('GD', 'Group Dancer',   'RKAMMER', 'RKAMMER', 'CREATED'),
+('GS', 'Group Singer',   'RKAMMER', 'RKAMMER', 'CREATED'),
+('SA', 'Specialty Act',  'RKAMMER', 'RKAMMER', 'CREATED'),
+('SI', 'Stand-In',       'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO contact
+(first_name, middle_name, last_name, suffix, address, city, state_code, phone, email, website, picture_path, created_by, updated_by, status)
+VALUES
+('Stephanie', 'G.', 'Hilton',     '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Evelyn',    'C.', 'McAllister', '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Ira',       'K.', 'Walton',     '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Ileen',     'C.', 'Coleman',    '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Sandra',    'B.', 'Weber',      '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Judith',    'W.', 'Ford',       '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Kevin',     'J.', 'Laflamme',   '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Florence',  'K.', 'Osborn',     '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Jon',       'C.', 'Fouts',      '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Arthur',    'T.', 'Barrett',    '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Michael',   'D.', 'Morrison',   '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Krystal',   'E.', 'Gee',        '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO production_contact
+(production_id, contact_id, contact_role_id, created_by, updated_by, status)
+VALUES
+(3,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO production_show_type
+(name, created_by, updated_by, status)
+VALUES
+('Pilot',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('Presentation', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Series',       'RKAMMER', 'RKAMMER', 'CREATED'),
+('Special',      'RKAMMER', 'RKAMMER', 'CREATED');
