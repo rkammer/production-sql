@@ -253,3 +253,86 @@ VALUES
 ('GS', 'Group Singer',   'RKAMMER', 'RKAMMER', 'CREATED'),
 ('SA', 'Specialty Act',  'RKAMMER', 'RKAMMER', 'CREATED'),
 ('SI', 'Stand-In',       'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO contact
+(first_name, middle_name, last_name, suffix, address, city, state_code, phone, email, website, picture_path, created_by, updated_by, status)
+VALUES
+('Stephanie', 'G.', 'Hilton',     '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Evelyn',    'C.', 'McAllister', '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Ira',       'K.', 'Walton',     '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Ileen',     'C.', 'Coleman',    '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Sandra',    'B.', 'Weber',      '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Judith',    'W.', 'Ford',       '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Kevin',     'J.', 'Laflamme',   '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Florence',  'K.', 'Osborn',     '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Jon',       'C.', 'Fouts',      '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Arthur',    'T.', 'Barrett',    '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Michael',   'D.', 'Morrison',   '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Krystal',   'E.', 'Gee',        '', '341 Hyram St.', 'Oxnard', 'CA', '805 555 8080', 'person_one@level.com',   NULL, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO production_contact
+(production_id, contact_id, contact_role_id, created_by, updated_by, status)
+VALUES
+(3,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(3, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(4, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(5, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(6, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  6, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  7, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  8, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7,  9, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 10, 5, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 11, 6, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 12, 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 13, 2, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 14, 3, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 15, 4, 'RKAMMER', 'RKAMMER', 'CREATED'),
+(7, 16, 5, 'RKAMMER', 'RKAMMER', 'CREATED');
+
+INSERT INTO production_show_type
+(name, created_by, updated_by, status)
+VALUES
+('Pilot',        'RKAMMER', 'RKAMMER', 'CREATED'),
+('Presentation', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Series',       'RKAMMER', 'RKAMMER', 'CREATED'),
+('Special',      'RKAMMER', 'RKAMMER', 'CREATED');
