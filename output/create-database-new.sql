@@ -88,7 +88,7 @@ CREATE TABLE state(
  CREATE TABLE production(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
     title                            VARCHAR(50)    NOT NULL,
-    media_company_id                 INTEGER        NOT NULL,
+    media_company_id                 INTEGER,
     business_group_id                INTEGER        NOT NULL,
     network_id                       INTEGER        NOT NULL,
     pilot                            CHAR(1) NOT NULL DEFAULT 'F',
