@@ -36,8 +36,8 @@ CREATE OR REPLACE VIEW production_get_list(
     production_production_type_name,
     production_production_company_id,
     production_production_company_name,
-    production_payroll_company_id,
-    production_payroll_name,
+    -- production_payroll_company_id,
+    -- production_payroll_name,
     production_logo_path,
     production_created,
     production_created_by,
@@ -82,8 +82,8 @@ CREATE OR REPLACE VIEW production_get_list(
            production_type.name                                                AS production_production_type_name,
            production.production_company_id                                    AS production_production_company_id,
            production_company.name                                             AS production_production_company_name,
-           production.payroll_company_id                                       AS production_payroll_company_id,
-           payroll_company.name                                                AS production_payroll_name,
+        --    production.payroll_company_id                                       AS production_payroll_company_id,
+        --    payroll_company.name                                                AS production_payroll_name,
            production.logo_path                                                AS production_logo_path,
            DATE_FORMAT(production.created,'%m/%d/%Y %H:%i:%S')                 AS production_created,
            production.created_by                                               AS production_created_by,
@@ -94,7 +94,7 @@ CREATE OR REPLACE VIEW production_get_list(
                                     INNER JOIN production_length       AS production_length      ON production_length.id      =   production.production_length_id
                                     INNER JOIN production_type         AS production_type        ON production_type.id        =   production.production_type_id
                                     INNER JOIN company                 AS production_company     ON production_company.id     =   production.production_company_id
-                                    INNER JOIN company                 AS payroll_company        ON payroll_company.id        =   production.payroll_company_id
+                                    -- INNER JOIN company                 AS payroll_company        ON payroll_company.id        =   production.payroll_company_id
                                     INNER JOIN company                 AS media_company          ON media_company.id          =   production.media_company_id
                                     INNER JOIN business_group          AS business_group         ON business_group.id         =   production.business_group_id
                                     INNER JOIN production_stage        AS production_stage       ON production_stage.id       =   production.production_stage_id
