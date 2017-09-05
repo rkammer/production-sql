@@ -7,7 +7,9 @@ CREATE OR REPLACE VIEW production_get_list(
     production_business_group_name,
     production_network_id,
     production_network_name,
-    production_pilot,
+    -- production_pilot,
+    production_show_type_id,
+    production_show_type_name,
     production_production_stage_id,
     production_production_stage_name,
     production_season_number,
@@ -47,7 +49,9 @@ CREATE OR REPLACE VIEW production_get_list(
            business_group.name                                                 AS production_business_group_name,
            production.network_id                                               AS production_network_id,
            network.name                                                        AS production_network_name,
-           production.pilot                                                    AS production_pilot,
+        --    production.pilot                                                    AS production_pilot,
+           production.production_show_type_id                                  AS production_production_show_type_id,
+           production_show_type.name                                           AS production_show_type_name,
            production.production_stage_id                                      AS production_production_stage_id,
            production_stage.name                                               AS production_production_stage_name,
            production.season_number                                            AS production_season_number,
@@ -78,11 +82,12 @@ CREATE OR REPLACE VIEW production_get_list(
            DATE_FORMAT(production.updated,'%m/%d/%Y %H:%i:%S')                 AS production_updated,
            production.updated_by                                               AS production_updated_by,
            production.status                                                   AS production_status
-      FROM production AS production INNER JOIN network             AS network            ON network.id             =   production.network_id
-                                    INNER JOIN production_length   AS production_length  ON production_length.id   =   production.production_length_id
-                                    INNER JOIN production_type     AS production_type    ON production_type.id     =   production.production_type_id
-                                    INNER JOIN company             AS production_company ON production_company.id  =   production.production_company_id
-                                    INNER JOIN company             AS payroll_company    ON payroll_company.id     =   production.payroll_company_id
-                                    INNER JOIN company             AS media_company      ON media_company.id       =   production.media_company_id
-                                    INNER JOIN business_group      AS business_group     ON business_group.id      =   production.business_group_id
-                                    INNER JOIN production_stage    AS production_stage   ON production_stage.id    =   production.production_stage_id;
+      FROM production AS production INNER JOIN network                 AS network                ON network.id                =   production.network_id
+                                    INNER JOIN production_length       AS production_length      ON production_length.id      =   production.production_length_id
+                                    INNER JOIN production_type         AS production_type        ON production_type.id        =   production.production_type_id
+                                    INNER JOIN company                 AS production_company     ON production_company.id     =   production.production_company_id
+                                    INNER JOIN company                 AS payroll_company        ON payroll_company.id        =   production.payroll_company_id
+                                    INNER JOIN company                 AS media_company          ON media_company.id          =   production.media_company_id
+                                    INNER JOIN business_group          AS business_group         ON business_group.id         =   production.business_group_id
+                                    INNER JOIN production_stage        AS production_stage       ON production_stage.id       =   production.production_stage_id
+                                    INNER JOIN production_show_type    AS production_show_type   ON production_show_type.id   =   production.production_show_type_id;
