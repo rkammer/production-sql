@@ -14,14 +14,23 @@ CREATE OR REPLACE VIEW wga_ntwc_get_list(
     wga_ntwc_pilot_production_lenght_id,
     wga_ntwc_pilot_production_lenght_name,
     wga_ntwc_executive_producer_contact_id,
+    wga_ntwc_executive_producer_contact_full_name,
     wga_ntwc_director_contact_id,
+    wga_ntwc_director_contact_full_name,
     wga_ntwc_story_editor_contact_id,
+    wga_ntwc_story_editor_contact_full_name,
     wga_ntwc_other_executive_producer_contact_id,
+    wga_ntwc_other_executive_producer_contact_full_name,
     wga_ntwc_producer_contact_id,
+    wga_ntwc_producer_contact_full_name,
     wga_ntwc_supervising_producer_contact_id,
+    wga_ntwc_supervising_producer_contact_full_name,
     wga_ntwc_sent_to_writers,
     wga_ntwc_protest_communicated,
     wga_ntwc_by_contact_id,
+    wga_ntwc_by_contact_full_name,
+    wga_ntwc_by_contact_address,
+    wga_ntwc_by_contact_phone,
     wga_ntwc_created,
     wga_ntwc_created_by,
     wga_ntwc_updated,
@@ -43,22 +52,31 @@ CREATE OR REPLACE VIEW wga_ntwc_get_list(
            wga_ntwc.pilot_production_lenght_id                                                      AS wga_ntwc_pilot_production_lenght_id,
            production_length.name                                                                   AS wga_ntwc_pilot_production_lenght_name,
            wga_ntwc.executive_producer_contact_id                                                   AS wga_ntwc_executive_producer_contact_id,
+           contact_get_full_name(wga_ntwc.executive_producer_contact_id)                            AS wga_ntwc_executive_producer_contact_full_name,
            wga_ntwc.director_contact_id                                                             AS wga_ntwc_director_contact_id,
+           contact_get_full_name(wga_ntwc.director_contact_id)                                      AS wga_ntwc_director_contact_full_name,
            wga_ntwc.story_editor_contact_id                                                         AS wga_ntwc_story_editor_contact_id,
+           contact_get_full_name(wga_ntwc.story_editor_contact_id)                                  AS wga_ntwc_story_editor_contact_full_name,
            wga_ntwc.other_executive_producer_contact_id                                             AS wga_ntwc_other_executive_producer_contact_id,
+           contact_get_full_name(wga_ntwc.other_executive_producer_contact_id)                      AS wga_ntwc_other_executive_producer_contact_full_name,
            wga_ntwc.producer_contact_id                                                             AS wga_ntwc_producer_contact_id,
+           contact_get_full_name(wga_ntwc.producer_contact_id)                                      AS wga_ntwc_producer_contact_full_name,
            wga_ntwc.supervising_producer_contact_id                                                 AS wga_ntwc_supervising_producer_contact_id,
+           contact_get_full_name(wga_ntwc.supervising_producer_contact_id)                          AS wga_ntwc_supervising_producer_contact_full_name,
            DATE_FORMAT(wga_ntwc.sent_to_writers,      '%m/%d/%Y')                                   AS wga_ntwc_sent_to_writers,
            DATE_FORMAT(wga_ntwc.protest_communicated, '%m/%d/%Y')                                   AS wga_ntwc_protest_communicated,
            wga_ntwc.by_contact_id                                                                   AS wga_ntwc_by_contact_id,
+           contact_get_full_name(wga_ntwc.by_contact_id)                                            AS wga_ntwc_by_contact_full_name,
+           contact.address                                                                          AS wga_ntwc_by_contact_address,
+           contact.phone                                                                            AS wga_ntwc_by_contact_phone,
            DATE_FORMAT(wga_ntwc.created, '%m/%d/%Y %H:%i:%S')                                       AS wga_ntwc_created,
            wga_ntwc.created_by                                                                      AS wga_ntwc_created_by,
            DATE_FORMAT(wga_ntwc.updated, '%m/%d/%Y %H:%i:%S')                                       AS wga_ntwc_updated,
            wga_ntwc.updated_by                                                                      AS wga_ntwc_updated_by,
            wga_ntwc.status                                                                          AS wga_ntwc_status
-      FROM wga_ntwc AS wga_ntwc INNER JOIN production        AS production        ON production.id        = wga_ntwc.production_id
-                                INNER JOIN episode           AS episode           ON episode.id           = wga_ntwc.episode_id
-                                INNER JOIN season            AS season            ON season.id            = episode.season_id
-                                LEFT  JOIN network           AS network           ON network.id           = wga_ntwc.pilot_network_id
-                                LEFT  JOIN production_length AS production_length ON production_length.id = wga_ntwc.pilot_production_lenght_id
-                                ;
+      FROM wga_ntwc AS wga_ntwc INNER JOIN production        AS production                 ON production.id        = wga_ntwc.production_id
+                                INNER JOIN episode           AS episode                    ON episode.id           = wga_ntwc.episode_id
+                                INNER JOIN season            AS season                     ON season.id            = episode.season_id
+                                LEFT  JOIN network           AS network                    ON network.id           = wga_ntwc.pilot_network_id
+                                LEFT  JOIN production_length AS production_length          ON production_length.id = wga_ntwc.pilot_production_lenght_id
+                                LEFT  JOIN contact           AS contact                    ON contact.id           = wga_ntwc.by_contact_id;
