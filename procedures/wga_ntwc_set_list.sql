@@ -97,9 +97,7 @@ BEGIN
                sent_to_writers                     = wga_ntwc_sent_to_writers,
                protest_communicated                = wga_ntwc_protest_communicated,
                by_contact_id                       = wga_ntwc_by_contact_id,
-               created                             = wga_ntwc_created,
                created_by                          = wga_ntwc_created_by,
-               updated                             = wga_ntwc_updated,
                updated_by                          = wga_ntwc_updated_by,
                status                              = 'UPDATED'
          WHERE id                                  = wga_ntwc_id;
