@@ -1,4 +1,5 @@
 CREATE OR REPLACE VIEW wga_ntwc_writing_credit_get_list(
+    wga_ntwc_writing_credit_id,
     wga_ntwc_writing_credit_wga_ntwc_id,
     wga_ntwc_writing_credit_contact_id,
     wga_ntwc_writing_credit_contact_first_name,
@@ -15,7 +16,8 @@ CREATE OR REPLACE VIEW wga_ntwc_writing_credit_get_list(
     wga_ntwc_writing_credit_updated_by,
     wga_ntwc_writing_credit_status
 ) AS
-    SELECT wga_ntwc_writing_credit.wga_ntwc_id                                   AS wga_ntwc_writing_credit_wga_ntwc_id,
+    SELECT wga_ntwc_writing_credit.id                                            AS wga_ntwc_writing_credit_id,
+           wga_ntwc_writing_credit.wga_ntwc_id                                   AS wga_ntwc_writing_credit_wga_ntwc_id,
            wga_ntwc_writing_credit.contact_id                                    AS wga_ntwc_writing_credit_contact_id,
            contact.first_name                                                    AS wga_ntwc_writing_credit_contact_first_name,
            contact.middle_name                                                   AS wga_ntwc_writing_credit_contact_middle_name,

@@ -1,4 +1,5 @@
 CREATE OR REPLACE VIEW wga_ntwc_participant_writer_get_list(
+    wga_ntwc_participant_writer_id,
     wga_ntwc_participant_writer_wga_ntwc_id,
     wga_ntwc_participant_writer_contact_id,
     wga_ntwc_participant_writer_contact_first_name,
@@ -15,7 +16,8 @@ CREATE OR REPLACE VIEW wga_ntwc_participant_writer_get_list(
     wga_ntwc_participant_writer_updated_by,
     wga_ntwc_participant_writer_status
 ) AS
-    SELECT wga_ntwc_participant_writer.wga_ntwc_id                                   AS wga_ntwc_participant_writer_wga_ntwc_id,
+    SELECT wga_ntwc_participant_writer.id                                            AS wga_ntwc_participant_writer_id,
+           wga_ntwc_participant_writer.wga_ntwc_id                                   AS wga_ntwc_participant_writer_wga_ntwc_id,
            wga_ntwc_participant_writer.contact_id                                    AS wga_ntwc_participant_writer_contact_id,
            contact.first_name                                                        AS wga_ntwc_participant_writer_contact_first_name,
            contact.middle_name                                                       AS wga_ntwc_participant_writer_contact_middle_name,

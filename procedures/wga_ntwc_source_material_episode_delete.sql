@@ -1,6 +1,6 @@
 DELIMITER //
 CREATE PROCEDURE wga_ntwc_source_material_episode_delete(
-    IN  wga_ntwc_source_material_episode_id INTEGER
+    IN wga_ntwc_source_material_episode_id INT
 )
 BEGIN
     DELETE

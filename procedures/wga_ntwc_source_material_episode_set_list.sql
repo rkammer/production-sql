@@ -1,11 +1,10 @@
 DELIMITER //
 CREATE PROCEDURE wga_ntwc_source_material_episode_set_list(
-    IN wga_ntwc_source_material_episode_id             INT,
-    IN wga_ntwc_source_material_episode_wga_ntwc_id    INT,
-    IN wga_ntwc_source_material_episode_name           VARCHAR(50),
-    IN wga_ntwc_source_material_episode_created_by     VARCHAR(30),
-    IN wga_ntwc_source_material_episode_updated_by     VARCHAR(30),
-    IN wga_ntwc_source_material_episode_status         VARCHAR(30),
+    IN wga_ntwc_source_material_episode_id           INT,
+    IN wga_ntwc_source_material_episode_wga_ntwc_id  INT,
+    IN wga_ntwc_source_material_episode_contact_id   INT,
+    IN wga_ntwc_source_material_episode_created_by   VARCHAR(30),
+    IN wga_ntwc_source_material_episode_updated_by   VARCHAR(30),
     OUT return_value            INTEGER
 )
 BEGIN
@@ -20,7 +19,7 @@ BEGIN
         INSERT INTO wga_ntwc_source_material_episode
         (
             wga_ntwc_id,
-            name,
+            contact_id,
             created_by,
             updated_by,
             status
@@ -28,7 +27,7 @@ BEGIN
         VALUES
         (
             wga_ntwc_source_material_episode_wga_ntwc_id,
-            wga_ntwc_source_material_episode_name,
+            wga_ntwc_source_material_episode_contact_id,
             wga_ntwc_source_material_episode_created_by,
             wga_ntwc_source_material_episode_updated_by,
             'CREATED'
@@ -39,12 +38,12 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE wga_ntwc_source_material_episode
-           SET name        = wga_ntwc_source_material_episode_name,
+           SET wga_ntwc_id = wga_ntwc_source_material_episode_wga_ntwc_id,
+               contact_id  = wga_ntwc_source_material_episode_contact_id,
                created_by  = wga_ntwc_source_material_episode_created_by,
                updated_by  = wga_ntwc_source_material_episode_updated_by,
                status      = 'UPDATED'
-         WHERE id          = wga_ntwc_source_material_episode_id
-           AND wga_ntwc_id = wga_ntwc_source_material_episode_wga_ntwc_id;
+         WHERE id                 =    wga_ntwc_source_material_episode_id;
 
         SET return_value = wga_ntwc_source_material_episode_id;
      END IF;
