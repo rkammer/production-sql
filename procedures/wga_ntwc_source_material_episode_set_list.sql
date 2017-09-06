@@ -39,12 +39,12 @@ BEGIN
 
      IF (ROW_EXISTS >= 1) THEN
         UPDATE wga_ntwc_source_material_episode
-           SET wga_ntwc_id = wga_ntwc_source_material_episode_wga_ntwc_id,
-               name        = wga_ntwc_source_material_episode_name,
+           SET name        = wga_ntwc_source_material_episode_name,
                created_by  = wga_ntwc_source_material_episode_created_by,
                updated_by  = wga_ntwc_source_material_episode_updated_by,
                status      = 'UPDATED'
-         WHERE id          = wga_ntwc_source_material_episode_id;
+         WHERE id          = wga_ntwc_source_material_episode_id
+           AND wga_ntwc_id = wga_ntwc_source_material_episode_wga_ntwc_id;
 
         SET return_value = wga_ntwc_source_material_episode_id;
      END IF;
