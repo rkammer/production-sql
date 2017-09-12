@@ -7,7 +7,7 @@ CREATE TABLE production_contact(
     updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by           VARCHAR(30),
     status               VARCHAR(30),
-    CONSTRAINT pk_production_contact_id    PRIMARY KEY (production_id, contact_id),
+    CONSTRAINT pk_production_contact_id         PRIMARY KEY (production_id, contact_id),
     CONSTRAINT fk_production_contact_production FOREIGN KEY (production_id)   REFERENCES production   (id),
     CONSTRAINT fk_production_contact_contact    FOREIGN KEY (contact_id)      REFERENCES contact      (id),
     CONSTRAINT fk_production_contact_role       FOREIGN KEY (contact_role_id) REFERENCES contact_role (id)
