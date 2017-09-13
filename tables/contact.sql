@@ -7,6 +7,7 @@ CREATE TABLE contact(
     address              VARCHAR(100),
     city                 VARCHAR(100),
     state_code           CHAR(2),
+    zipcode              VARCHAR(10),
     phone                VARCHAR(20),
     email                VARCHAR(100),
     ssn                  VARCHAR(11),

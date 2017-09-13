@@ -1,0 +1,1 @@
+ALTER TABLE contact ADD COLUMN zipcode VARCHAR(10) AFTER state_code;
