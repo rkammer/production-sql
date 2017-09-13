@@ -14,7 +14,6 @@ CREATE PROCEDURE user_set_list(
     IN user_picture_path    VARCHAR(120),
     IN user_created_by      VARCHAR(30),
     IN user_updated_by      VARCHAR(30),
-    IN user_status          VARCHAR(30),
     OUT return_value        INTEGER
 )
 BEGIN

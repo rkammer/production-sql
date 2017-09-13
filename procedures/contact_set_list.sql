@@ -15,7 +15,6 @@ CREATE PROCEDURE contact_set_list(
     IN contact_picture_path    VARCHAR(120),
     IN contact_created_by      VARCHAR(30),
     IN contact_updated_by      VARCHAR(30),
-    IN contact_status          VARCHAR(30),
     OUT return_value           INTEGER
 )
 BEGIN
@@ -47,7 +46,6 @@ BEGIN
         )
         VALUES
         (
-            contact_id,
             contact_first_name,
             contact_middle_name,
             contact_last_name,
