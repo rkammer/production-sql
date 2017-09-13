@@ -338,3 +338,12 @@ VALUES
 ('Presentation', 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Series',       'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Special',      'RKAMMER', 'RKAMMER', 'CREATED');
+
+
+INSERT INTO location_type
+(name, created_by, updated_by, status)
+VALUES
+('Park',           'RKAMMER', 'RKAMMER', 'CREATED'),
+('Bar', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Coffeeshop',     'RKAMMER', 'RKAMMER', 'CREATED'),
+('Book Store',     'RKAMMER', 'RKAMMER', 'CREATED');
