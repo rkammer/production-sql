@@ -1,6 +1,5 @@
-DROP FUNCTION production_get_states;
-
 DELIMITER //
+
 CREATE FUNCTION production_get_states(production_id INT)
 RETURNS VARCHAR(1024)
 BEGIN

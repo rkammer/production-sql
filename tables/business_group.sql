@@ -7,6 +7,6 @@ CREATE TABLE business_group(
     updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by           VARCHAR(30),
     status               VARCHAR(30),
-    CONSTRAINT pk_business_group_id    PRIMARY KEY (id),
+    CONSTRAINT pk_business_group_id      PRIMARY KEY (id),
     CONSTRAINT fk_business_group_company FOREIGN KEY (company_id) REFERENCES company (id)
 ) ENGINE = InnoDB;
