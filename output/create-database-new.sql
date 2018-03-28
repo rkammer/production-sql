@@ -85,6 +85,28 @@ CREATE TABLE state(
     CONSTRAINT pk_production_type_id PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
+ CREATE TABLE production_stage(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_production_stage_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+ CREATE TABLE production_show_type(
+    id                   INTEGER      NOT NULL AUTO_INCREMENT,
+    name                 VARCHAR(50)  NOT NULL,
+    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_by           VARCHAR(30),
+    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by           VARCHAR(30),
+    status               VARCHAR(30),
+    CONSTRAINT pk_production_show_type_id    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
  CREATE TABLE production(
     id                               INTEGER        NOT NULL AUTO_INCREMENT,
     title                            VARCHAR(50)    NOT NULL,
@@ -307,17 +329,6 @@ CREATE TABLE state(
     CONSTRAINT fk_production_contact_role       FOREIGN KEY (contact_role_id) REFERENCES contact_role (id)
 ) ENGINE = InnoDB;
 
- CREATE TABLE production_stage(
-    id                   INTEGER      NOT NULL AUTO_INCREMENT,
-    name                 VARCHAR(50)  NOT NULL,
-    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-    created_by           VARCHAR(30),
-    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by           VARCHAR(30),
-    status               VARCHAR(30),
-    CONSTRAINT pk_production_stage_id    PRIMARY KEY (id)
-) ENGINE = InnoDB;
-
  CREATE TABLE production_guild(
     production_id        INTEGER     NOT NULL,
     guild_id             INTEGER     NOT NULL,
@@ -451,17 +462,6 @@ CREATE TABLE state(
     CONSTRAINT fk_transaction_account        FOREIGN KEY (account_id)        REFERENCES account        (id),
     CONSTRAINT fk_transaction_subaccount     FOREIGN KEY (subaccount_id)     REFERENCES subaccount     (id),
     CONSTRAINT fk_transaction_period         FOREIGN KEY (period_id)         REFERENCES period         (id)
-) ENGINE = InnoDB;
-
- CREATE TABLE production_show_type(
-    id                   INTEGER      NOT NULL AUTO_INCREMENT,
-    name                 VARCHAR(50)  NOT NULL,
-    created              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-    created_by           VARCHAR(30),
-    updated              TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by           VARCHAR(30),
-    status               VARCHAR(30),
-    CONSTRAINT pk_production_show_type_id    PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
  CREATE TABLE location_type(
@@ -9507,13 +9507,19 @@ VALUES
 ('Payroll Company I',     NULL, NULL, 'CA', NULL, NULL, NULL, 'F', 'F', 'T', 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Payroll Company II',    NULL, NULL, 'CA', NULL, NULL, NULL, 'F', 'F', 'T', 'RKAMMER', 'RKAMMER', 'CREATED');
 
+INSERT INTO business_group
+(name, company_id, created_by, updated_by, status)
+VALUES
+('Global Enterteniment Group', 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Business Unit One',          1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Business Unit Two',          1, 'RKAMMER', 'RKAMMER', 'CREATED');
 
 INSERT INTO network
-(name, media_company_id, logo_path, created_by, updated_by, status)
+(name, media_company_id, business_group_id,  logo_path, created_by, updated_by, status)
 VALUES
-('Network One',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
-('Network Two',   1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
-('Network Three', 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
+('Network One',   1, 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Network Two',   1, 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED'),
+('Network Three', 1, 1, NULL, 'RKAMMER', 'RKAMMER', 'CREATED');
 
 -- INSERT INTO dga_quarter
 -- (name, description, created_by, updated_by, status)
@@ -9589,7 +9595,7 @@ VALUES
 INSERT INTO guild
 (acronym, name, created_by, updated_by, status)
 VALUES
-('SAG-AFTRA', 'Screen Actors Guild‐American Federation of Television and Radio Artists', 'RKAMMER', 'RKAMMER', 'CREATED'),
+('SAG-AFTRA', 'Screen Actors Guild American Federation of Television and Radio Artists', 'RKAMMER', 'RKAMMER', 'CREATED'),
 ('WGA',       'Writers Guild of America',                                                'RKAMMER', 'RKAMMER', 'CREATED'),
 ('IATSE',     'The International Alliance of Theatrical Stage Employees',                'RKAMMER', 'RKAMMER', 'CREATED'),
 ('AFM',       'American Federations of Musicians',                                       'RKAMMER', 'RKAMMER', 'CREATED'),
@@ -9622,12 +9628,12 @@ VALUES
 ('Production',      'RKAMMER', 'RKAMMER', 'CREATED'),
 ('Post-Production', 'RKAMMER', 'RKAMMER', 'CREATED');
 
-INSERT INTO business_group
-(name, company_id, created_by, updated_by, status)
-VALUES
-('Global Enterteniment Group', 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
-('Business Unit One',          1, 'RKAMMER', 'RKAMMER', 'CREATED'),
-('Business Unit Two',          1, 'RKAMMER', 'RKAMMER', 'CREATED');
+-- INSERT INTO business_group
+-- (name, company_id, created_by, updated_by, status)
+-- VALUES
+-- ('Global Enterteniment Group', 1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('Business Unit One',          1, 'RKAMMER', 'RKAMMER', 'CREATED'),
+-- ('Business Unit Two',          1, 'RKAMMER', 'RKAMMER', 'CREATED');
 
 INSERT INTO sav_performer_type
 (code, title, created_by, updated_by, status)
